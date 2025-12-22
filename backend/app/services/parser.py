@@ -60,7 +60,7 @@ class AutomationParser:
                 if parsed:
                     automations.append(parsed)
             
-            logger.info(f"Parsed {len(automations)} automations from YAML")
+            logger.info("Parsed %d automations from YAML", len(automations))
             
         except yaml.YAMLError as e:
             logger.error(f"YAML parsing error: {e}")

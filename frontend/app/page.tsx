@@ -31,7 +31,11 @@ interface Statistics {
   total_automations: number;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+if (!API_BASE_URL) {
+  console.error('NEXT_PUBLIC_API_URL environment variable is not set');
+}
 
 export default function Home() {
   const [query, setQuery] = useState('');

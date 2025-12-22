@@ -1,6 +1,7 @@
 """GitHub API integration service for discovering repositories with ha-discover topic."""
 import os
 import logging
+import base64
 from typing import List, Dict, Optional
 import httpx
 
@@ -104,7 +105,6 @@ class GitHubService:
                 data = response.json()
                 
                 # GitHub returns base64 encoded content
-                import base64
                 content = base64.b64decode(data["content"]).decode("utf-8")
                 return content
                 

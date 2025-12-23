@@ -46,7 +46,7 @@ The system follows a traditional three-tier architecture with clear separation b
                     ┌────────▼────────┐
                     │ SQLite Database │
                     └─────────────────┘
-                             
+
                     ┌─────────────────┐
                     │   GitHub API    │
                     └─────────────────┘
@@ -57,7 +57,7 @@ The system follows a traditional three-tier architecture with clear separation b
 ### Indexing Flow
 
 1. **Trigger**: User clicks "Trigger Re-Index" or scheduled job runs
-2. **Repository Discovery**: 
+2. **Repository Discovery**:
    - Backend calls GitHub API to search for repositories with `ha-discover` topic
    - Returns list of repository metadata (owner, name, URL, default branch)
 3. **File Discovery**:
@@ -300,7 +300,7 @@ The API follows REST conventions:
 Backend allows requests from:
 - `http://localhost:3000`
 - `http://127.0.0.1:3000`
-- `https://devsecninja.github.io`
+- `https://hadiscover-frontend.ambitiousriver-9676de6e.westeurope.azurecontainerapps.io`
 
 This enables local development with separate backend/frontend servers.
 

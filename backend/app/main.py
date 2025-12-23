@@ -34,7 +34,7 @@ app = FastAPI(
 # Configure CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "https://devsecninja.github.io"],  # Next.js default
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "https://hadiscover-frontend.ambitiousriver-9676de6e.westeurope.azurecontainerapps.io"],  # Next.js default
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

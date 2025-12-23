@@ -99,7 +99,7 @@ backend/
 The backend is configured to accept requests from:
 - `http://localhost:3000` (local frontend)
 - `http://127.0.0.1:3000` (local frontend)
-- `https://devsecninja.github.io` (production frontend)
+- `https://hadiscover-frontend.ambitiousriver-9676de6e.westeurope.azurecontainerapps.io` (production frontend)
 
 If you fork the repository, update the CORS origins in `app/main.py`.
 

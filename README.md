@@ -8,7 +8,7 @@ HA Discover indexes Home Assistant automation files from GitHub repositories tha
 
 Think of it as a specialized search engine for Home Assistant configurations—similar to how kubesearch.dev works for Kubernetes resources, but focused specifically on Home Assistant automations.
 
-[Try it out now!](https://devsecninja.github.io/ha-discover/)
+[Try it out now!](https://hadiscover-frontend.ambitiousriver-9676de6e.westeurope.azurecontainerapps.io/)
 
 ## Why HA Discover?
 

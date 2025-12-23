@@ -162,17 +162,7 @@ For detailed backend deployment instructions, see **[BACKEND_DEPLOYMENT.md](./BA
 
 The backend can be deployed to:
 
-- **Railway** (recommended) - Free tier, auto-deploys from GitHub
-- **Render** - Free tier, simple configuration  
-- **Heroku** - Well-established platform with free tier
-- **Vercel** - Serverless option
 - **Docker** - Self-hosted or cloud deployment
-
-Configuration files are included for all platforms:
-- `backend/railway.toml` - Railway configuration
-- `backend/render.yaml` - Render configuration
-- `backend/Procfile` - Heroku configuration
-- `backend/runtime.txt` - Python version specification
 
 After deploying your backend:
 

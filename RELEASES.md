@@ -98,6 +98,16 @@ The release workflow will automatically detect the tag and create a release.
 4. Enter the version number (e.g., `1.0.0`) without the `v` prefix
 5. Click "Run workflow"
 
+### Configuring Frontend API URL
+
+The frontend Docker image needs to know where the backend API is located. Configure this via GitHub repository variables:
+
+1. Go to repository Settings → Secrets and variables → Actions → Variables
+2. Create a new variable named `FRONTEND_API_URL`
+3. Set the value to your backend API URL (e.g., `https://api.example.com/api/v1`)
+
+If not configured, the frontend will default to `http://localhost:8000/api/v1`.
+
 ## Docker Images
 
 Docker images are automatically built and pushed to GitHub Container Registry during the release process.

@@ -148,6 +148,10 @@ For detailed information about the system architecture, data flow, and design de
 
 ## Deployment
 
+### 🚀 Quick Deployment Guide
+
+**New to deployment?** Start here: **[QUICKSTART_DEPLOYMENT.md](./QUICKSTART_DEPLOYMENT.md)** - Get your backend deployed in 5 minutes with Railway.
+
 ### Frontend Deployment (GitHub Pages)
 
 The frontend is deployed to GitHub Pages for free static hosting. See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions.
@@ -158,7 +162,9 @@ The frontend is deployed to GitHub Pages for free static hosting. See [DEPLOYMEN
 
 ⚠️ **Important**: The backend API must be deployed separately since GitHub Pages only hosts static files.
 
-See **[BACKEND_DEPLOYMENT.md](./BACKEND_DEPLOYMENT.md)** for comprehensive deployment instructions.
+**Documentation:**
+- **[QUICKSTART_DEPLOYMENT.md](./QUICKSTART_DEPLOYMENT.md)** - 5-minute quick start with Railway
+- **[BACKEND_DEPLOYMENT.md](./BACKEND_DEPLOYMENT.md)** - Comprehensive guide for all platforms
 
 **Quick start options:**
 - **[Railway](https://railway.app/)** - Recommended, free tier, auto-deploys from GitHub
@@ -170,7 +176,7 @@ See **[BACKEND_DEPLOYMENT.md](./BACKEND_DEPLOYMENT.md)** for comprehensive deplo
 1. **Deploy backend** using one of the platforms above (includes config files)
 2. **Get your backend URL** (e.g., `https://your-app.railway.app`)
 3. **Configure frontend**:
-   - **Option A**: Add GitHub Secret named `API_URL` with your backend URL
+   - **Option A**: Add GitHub Secret named `API_URL` with your backend URL + `/api/v1`
    - **Option B**: Edit `.github/workflows/deploy.yml` and set `NEXT_PUBLIC_API_URL`
 4. **Deploy frontend**: Push to `main` branch to trigger GitHub Actions deployment
 5. **Access your site**: `https://<username>.github.io/<repository>/`

@@ -146,6 +146,21 @@ All tests should pass. The test suite includes:
 
 For detailed information about the system architecture, data flow, and design decisions, see [ARCHITECTURE.md](./ARCHITECTURE.md).
 
+## Deployment
+
+### GitHub Pages Deployment
+
+The frontend can be deployed to GitHub Pages for free hosting. See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions.
+
+**Quick steps:**
+
+1. Enable GitHub Pages in repository settings (Source: GitHub Actions)
+2. Update the API URL in `.github/workflows/deploy.yml`
+3. Push to `main` branch or manually trigger the workflow
+4. Access your site at `https://<username>.github.io/<repository>/`
+
+**Note**: You'll need to deploy the backend API separately to a hosting service (Heroku, Railway, Render, etc.) and configure the API URL in the deployment workflow.
+
 ## Contributing
 
 Contributions are welcome! Whether it's bug fixes, feature enhancements, or documentation improvements, feel free to open an issue or submit a pull request.

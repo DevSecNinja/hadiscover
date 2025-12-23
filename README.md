@@ -148,19 +148,42 @@ For detailed information about the system architecture, data flow, and design de
 
 ## Deployment
 
-### GitHub Pages Deployment
+### Frontend Deployment (GitHub Pages)
 
-The frontend can be deployed to GitHub Pages for free hosting. See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions.
+The frontend is deployed to GitHub Pages for free static hosting. See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions.
 
-**Quick steps:**
+**Current deployment**: `https://devsecninja.github.io/ha-discover/`
 
-1. Enable GitHub Pages in repository settings (Source: GitHub Actions)
-2. Update the API URL in `.github/workflows/deploy.yml`
-3. Push to `main` branch or manually trigger the workflow
-4. Backend tests run automatically before deployment
-5. Access your site at `https://<username>.github.io/<repository>/`
+### Backend Deployment (Required)
 
-**Note**: You'll need to deploy the backend API separately to a hosting service (Heroku, Railway, Render, etc.) and configure the API URL in the deployment workflow. The deployment workflow runs all backend tests before deploying to ensure code quality.
+⚠️ **Important**: The backend API must be deployed separately since GitHub Pages only hosts static files.
+
+See **[BACKEND_DEPLOYMENT.md](./BACKEND_DEPLOYMENT.md)** for comprehensive deployment instructions.
+
+**Quick start options:**
+- **[Railway](https://railway.app/)** - Recommended, free tier, auto-deploys from GitHub
+- **[Render](https://render.com/)** - Free tier, simple configuration
+- **[Heroku](https://heroku.com/)** - Established platform with free tier
+
+**Setup steps:**
+
+1. **Deploy backend** using one of the platforms above (includes config files)
+2. **Get your backend URL** (e.g., `https://your-app.railway.app`)
+3. **Configure frontend**:
+   - **Option A**: Add GitHub Secret named `API_URL` with your backend URL
+   - **Option B**: Edit `.github/workflows/deploy.yml` and set `NEXT_PUBLIC_API_URL`
+4. **Deploy frontend**: Push to `main` branch to trigger GitHub Actions deployment
+5. **Access your site**: `https://<username>.github.io/<repository>/`
+
+The deployment workflow automatically runs all backend tests before deploying to ensure code quality.
+
+**Configuration files included:**
+- `backend/railway.toml` - Railway deployment
+- `backend/render.yaml` - Render deployment
+- `backend/Procfile` - Heroku deployment
+- `backend/runtime.txt` - Python version
+
+For detailed step-by-step instructions, troubleshooting, and advanced options, see **[BACKEND_DEPLOYMENT.md](./BACKEND_DEPLOYMENT.md)**.
 
 ## Contributing
 

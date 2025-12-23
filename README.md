@@ -27,6 +27,8 @@ Home Assistant users often create sophisticated automations and share them on Gi
 - 🔗 **Direct GitHub Links**: Every automation links directly to its source on GitHub
 - 🎨 **Modern UI**: Clean, responsive interface built with Next.js and Tailwind CSS
 - ⚡ **Fast API**: RESTful API powered by FastAPI for quick searches
+- 🐳 **Docker Ready**: Pre-built Docker images available via GitHub Container Registry
+- 🔧 **Auto-Updates**: Renovate bot keeps dependencies automatically up-to-date
 
 ## How It Works
 

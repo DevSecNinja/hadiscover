@@ -1,6 +1,6 @@
 # Release Process
 
-This document describes the release process for HA Discover, including versioning, Docker image creation, and GitHub releases.
+This document describes the release process for HA Discover, including versioning, Docker image creation, GitHub releases, and dependency management.
 
 ## Versioning Strategy
 
@@ -9,6 +9,60 @@ HA Discover follows [Semantic Versioning 2.0.0](https://semver.org/):
 - **MAJOR** version (X.0.0): Incompatible API changes
 - **MINOR** version (0.X.0): New functionality in a backwards-compatible manner
 - **PATCH** version (0.0.X): Backwards-compatible bug fixes
+
+## Dependency Management
+
+HA Discover uses [Renovate Bot](https://docs.renovatebot.com/) to automatically keep dependencies up-to-date.
+
+### How Renovate Works
+
+- **Automatic Updates**: Renovate checks for dependency updates every 6 hours
+- **Pull Requests**: Creates PRs for outdated dependencies
+- **Grouping**: Minor and patch updates are grouped together for easier review
+- **Security**: Security updates are prioritized and labeled appropriately
+- **Automerge**: Minor and patch updates can be automatically merged if tests pass
+
+### Dependency Update Categories
+
+1. **Python dependencies** (backend/requirements.txt)
+   - Minor/patch updates: Auto-grouped and auto-merged
+   - Major updates: Separate PRs, manual review required
+
+2. **npm dependencies** (frontend/package.json)
+   - Minor/patch updates: Auto-grouped and auto-merged
+   - Major updates: Separate PRs, manual review required
+
+3. **Docker base images** (Dockerfiles)
+   - Patch updates: Auto-merged
+   - Minor/major updates: Manual review required
+
+4. **GitHub Actions** (workflows)
+   - All updates: Auto-grouped and auto-merged
+
+### Renovate Configuration
+
+The Renovate configuration is located in `renovate.json`. Key features:
+
+- **Dependency Dashboard**: View all pending updates in a single issue
+- **Semantic Commits**: Uses conventional commit messages
+- **Schedule**: Runs during off-peak hours (nights and weekends)
+- **Rate Limiting**: Max 5 concurrent PRs, 2 per hour
+- **Lock File Maintenance**: Monthly updates to lock files
+
+### Manual Dependency Updates
+
+If you need to update dependencies manually:
+
+```bash
+# Backend
+cd backend
+pip install --upgrade <package-name>
+pip freeze > requirements.txt
+
+# Frontend
+cd frontend
+npm update <package-name>
+```
 
 ## Release Workflow
 

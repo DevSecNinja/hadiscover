@@ -92,7 +92,7 @@ For example: `https://devsecninja.github.io/ha-discover/`
 
 ## Base Path Configuration
 
-If deploying to a repository subdirectory (e.g., `username.github.io/repo-name`), uncomment and set the `basePath` in `next.config.ts`:
+The site is configured to deploy to the repository subdirectory at `devsecninja.github.io/ha-discover`. The `basePath` is already set in `next.config.ts`:
 
 ```typescript
 const nextConfig: NextConfig = {
@@ -100,11 +100,11 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  basePath: '/ha-discover',  // Uncomment this line
+  basePath: '/ha-discover',  // Required for GitHub Pages deployment
 };
 ```
 
-**Note**: You'll need to rebuild and redeploy after changing the base path.
+**Important**: The `basePath` must match your repository name for GitHub Pages to work correctly. If you fork this repository or deploy to a different location, update the `basePath` accordingly and rebuild before deploying.
 
 ## Troubleshooting
 

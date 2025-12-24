@@ -117,7 +117,7 @@ async def trigger_indexing(
     db: Session = Depends(get_db)
 ):
     """
-    Trigger indexing of repositories with ha-discover topic.
+    Trigger indexing of repositories with hadiscover or ha-discover topics.
     
     This endpoint starts indexing in the background.
     Rate limited to once every 10 minutes to prevent API abuse.

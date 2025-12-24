@@ -14,6 +14,8 @@ interface Automation {
   alias: string | null;
   description: string | null;
   trigger_types: string[];
+  blueprint_path: string | null;
+  action_calls: string[];
   source_file_path: string;
   github_url: string;
   repository: Repository;
@@ -182,9 +184,16 @@ export default function Home() {
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">
-                      {automation.alias || 'Unnamed Automation'}
-                    </h3>
+                    <a
+                      href={automation.github_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xl font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                    >
+                      <h3 className="mb-1 hover:underline">
+                        {automation.alias || 'Unnamed Automation'}
+                      </h3>
+                    </a>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                       <a
                         href={automation.repository.url}
@@ -214,16 +223,43 @@ export default function Home() {
                   </p>
                 )}
 
+                {automation.blueprint_path && (
+                  <div className="mb-3">
+                    <span className="inline-flex items-center px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-sm font-medium rounded-md">
+                      📘 Blueprint: {automation.blueprint_path}
+                    </span>
+                  </div>
+                )}
+
+                {automation.action_calls && automation.action_calls.length > 0 && (
+                  <div className="mb-3">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Actions:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {automation.action_calls.map((action, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs font-mono rounded"
+                        >
+                          {action}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {automation.trigger_types.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {automation.trigger_types.map((trigger, idx) => (
-                      <span
-                        key={idx}
-                        className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-full"
-                      >
-                        {trigger}
-                      </span>
-                    ))}
+                  <div>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Triggers:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {automation.trigger_types.map((trigger, idx) => (
+                        <span
+                          key={idx}
+                          className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-full"
+                        >
+                          {trigger}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>

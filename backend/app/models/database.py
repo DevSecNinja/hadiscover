@@ -35,6 +35,8 @@ class Automation(Base):
     alias = Column(String(512), nullable=True, index=True)
     description = Column(Text, nullable=True)
     trigger_types = Column(Text, nullable=True)  # Stored as comma-separated values
+    blueprint_path = Column(String(512), nullable=True, index=True)  # Blueprint path if using blueprint
+    action_calls = Column(Text, nullable=True)  # Stored as comma-separated service calls
     source_file_path = Column(String(512), nullable=False)
     github_url = Column(String(1024), nullable=False)
     repository_id = Column(Integer, ForeignKey("repositories.id"), nullable=False)

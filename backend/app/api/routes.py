@@ -34,6 +34,8 @@ class AutomationResponse(BaseModel):
     alias: Optional[str]
     description: Optional[str]
     trigger_types: List[str]
+    blueprint_path: Optional[str]
+    action_calls: List[str]
     source_file_path: str
     github_url: str
     repository: RepositoryResponse

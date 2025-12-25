@@ -33,8 +33,12 @@ jobs:
 
       - name: Test backend container starts
         run: |
-          # Start the container
-          .github/scripts/start-container.sh ha-discover-backend ha-discover-backend:test 8000:8000
+          # Start the container with development environment
+          docker run -d \
+            --name ha-discover-backend \
+            -p 8000:8000 \
+            -e ENVIRONMENT=development \
+            ha-discover-backend:test
           
           # Wait for container to be healthy
           .github/scripts/wait-for-healthy.sh ha-discover-backend 60
@@ -122,8 +126,12 @@ jobs:
 
       - name: Start both containers
         run: |
-          # Start backend
-          .github/scripts/start-container.sh ha-discover-backend ha-discover-backend:test 8000:8000
+          # Start backend with development environment
+          docker run -d \
+            --name ha-discover-backend \
+            -p 8000:8000 \
+            -e ENVIRONMENT=development \
+            ha-discover-backend:test
           
           # Start frontend
           .github/scripts/start-container.sh ha-discover-frontend ha-discover-frontend:test 3000:80

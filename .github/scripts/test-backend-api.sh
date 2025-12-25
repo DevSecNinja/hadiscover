@@ -13,7 +13,7 @@ echo "Testing API endpoints on ${BASE_URL}..."
 echo "Testing root endpoint..."
 root_response=$(curl -s "${BASE_URL}/")
 echo "Root endpoint response: $root_response"
-if ! echo "$root_response" | grep -q "Discover API"; then
+if ! echo "$root_response" | grep -q "hadiscover API"; then
     echo "✗ Root endpoint test failed"
     exit 1
 fi

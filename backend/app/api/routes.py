@@ -1,5 +1,6 @@
 """API routes for HA Discover."""
 import logging
+import os
 from typing import List, Optional
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
@@ -11,6 +12,9 @@ from app.services.search_service import SearchService
 from app.services.indexer import IndexingService
 
 logger = logging.getLogger(__name__)
+
+# Check if running in development mode
+IS_DEVELOPMENT = os.getenv("ENVIRONMENT", "production") == "development"
 
 router = APIRouter()
 
@@ -121,8 +125,8 @@ async def trigger_indexing(
     """
     Trigger indexing of repositories with hadiscover or ha-discover topics.
     
-    This endpoint starts indexing in the background.
-    Rate limited to once every 10 minutes to prevent API abuse.
+    This endpoint is only available in development mode.
+    In production, indexing runs on a daily schedule via GitHub Actions.
     
     Args:
         background_tasks: FastAPI background tasks
@@ -132,8 +136,15 @@ async def trigger_indexing(
         Confirmation that indexing has started
         
     Raises:
-        HTTPException: If called within the cooldown period
+        HTTPException: If called in production or within the cooldown period
     """
+    # Block endpoint in production
+    if not IS_DEVELOPMENT:
+        raise HTTPException(
+            status_code=404,
+            detail="This endpoint is not available in production. Indexing runs on a daily schedule."
+        )
+    
     global last_indexing_time
     
     # Check if indexing was recently triggered

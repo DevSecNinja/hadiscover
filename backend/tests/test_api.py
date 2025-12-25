@@ -60,21 +60,13 @@ def test_statistics_endpoint_structure():
 def test_index_endpoint():
     """Test index trigger endpoint in development mode."""
     import os
-    import app.api.routes as routes_module
     
     # Save original environment and set to development
     original_env = os.environ.get("ENVIRONMENT")
     os.environ["ENVIRONMENT"] = "development"
     
-    # Reload the routes module to pick up the new environment variable
-    import importlib
-    importlib.reload(routes_module)
-    
-    # Import app again to get updated routes
-    from app.main import app as test_app
-    
     try:
-        client = TestClient(test_app)
+        client = TestClient(app)
         response = client.post("/api/v1/index")
         assert response.status_code == 200
         
@@ -88,27 +80,18 @@ def test_index_endpoint():
             os.environ["ENVIRONMENT"] = original_env
         elif "ENVIRONMENT" in os.environ:
             del os.environ["ENVIRONMENT"]
-        importlib.reload(routes_module)
 
 
 def test_index_endpoint_blocked_in_production():
     """Test that index endpoint is blocked in production."""
     import os
-    import app.api.routes as routes_module
     
     # Save original environment and set to production
     original_env = os.environ.get("ENVIRONMENT")
     os.environ["ENVIRONMENT"] = "production"
     
-    # Reload the routes module to pick up the new environment variable
-    import importlib
-    importlib.reload(routes_module)
-    
-    # Import app again to get updated routes
-    from app.main import app as test_app
-    
     try:
-        client = TestClient(test_app)
+        client = TestClient(app)
         response = client.post("/api/v1/index")
         assert response.status_code == 403
         
@@ -121,4 +104,3 @@ def test_index_endpoint_blocked_in_production():
             os.environ["ENVIRONMENT"] = original_env
         elif "ENVIRONMENT" in os.environ:
             del os.environ["ENVIRONMENT"]
-        importlib.reload(routes_module)

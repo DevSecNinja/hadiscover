@@ -13,8 +13,9 @@ from app.services.indexer import IndexingService
 
 logger = logging.getLogger(__name__)
 
-# Check if running in development mode
-IS_DEVELOPMENT = os.getenv("ENVIRONMENT", "production") == "development"
+def is_development() -> bool:
+    """Check if running in development mode."""
+    return os.getenv("ENVIRONMENT", "production") == "development"
 
 router = APIRouter()
 
@@ -139,7 +140,7 @@ async def trigger_indexing(
         HTTPException: If called in production or within the cooldown period
     """
     # Block endpoint in production
-    if not IS_DEVELOPMENT:
+    if not is_development():
         raise HTTPException(
             status_code=403,
             detail="This endpoint is not available in production. Indexing runs on a daily schedule."

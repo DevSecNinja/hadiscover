@@ -141,7 +141,7 @@ async def trigger_indexing(
     # Block endpoint in production
     if not IS_DEVELOPMENT:
         raise HTTPException(
-            status_code=404,
+            status_code=403,
             detail="This endpoint is not available in production. Indexing runs on a daily schedule."
         )
     

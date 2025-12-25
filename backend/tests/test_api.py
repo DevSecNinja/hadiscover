@@ -110,7 +110,7 @@ def test_index_endpoint_blocked_in_production():
     try:
         client = TestClient(test_app)
         response = client.post("/api/v1/index")
-        assert response.status_code == 404
+        assert response.status_code == 403
         
         data = response.json()
         assert "detail" in data

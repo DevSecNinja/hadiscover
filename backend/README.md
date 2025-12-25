@@ -46,6 +46,7 @@ The backend must be deployed to a hosting platform that supports Python applicat
 ### Environment Variables
 
 - `GITHUB_TOKEN` (optional): GitHub Personal Access Token for higher API rate limits
+- `ENVIRONMENT` (optional): Set to `development` to enable the manual `/index` endpoint trigger. Defaults to `production` which disables the endpoint. In production, indexing runs on a daily schedule via GitHub Actions.
 - `ROOT_PATH` (optional): Base path for the API when deployed behind a reverse proxy or on cloud platforms (e.g., Azure Container Apps). Leave empty for default behavior.
 
 Create a `.env` file:
@@ -71,7 +72,7 @@ This configures FastAPI to properly handle requests when the platform's routing 
 
 - `GET /api/v1/search?q={query}` - Search automations
 - `GET /api/v1/statistics` - Get indexing statistics
-- `POST /api/v1/index` - Trigger repository indexing
+- `POST /api/v1/index` - Trigger repository indexing (development only)
 - `GET /api/v1/health` - Health check
 
 ## 🛠️ Project Structure

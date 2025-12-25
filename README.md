@@ -23,7 +23,7 @@ Home Assistant users often create sophisticated automations and share them on Gi
 
 - 🔍 **Full-text Search**: Search automations by name, description, trigger types, and repository information
 - 📊 **Statistics Dashboard**: View total repositories and automations indexed
-- 🔄 **On-demand Indexing**: Trigger re-indexing to discover newly added repositories
+- 🔄 **Automated Indexing**: Daily scheduled indexing to discover newly added repositories (manual trigger available in development mode)
 - 🔗 **Direct GitHub Links**: Every automation links directly to its source on GitHub
 - 🎨 **Modern UI**: Clean, responsive interface built with Next.js and Tailwind CSS
 - ⚡ **Fast API**: RESTful API powered by FastAPI for quick searches
@@ -67,7 +67,7 @@ To have your Home Assistant configuration indexed:
    - Click the ⚙️ icon next to "About"
    - Add `hadiscover` (or `ha-discover` for backwards compatibility) to the topics list
    - Save changes
-3. Trigger indexing on hadiscover (or wait for the next scheduled index)
+3. Wait for the next scheduled indexing (runs daily at 2 AM UTC) or trigger it manually in development mode
 
 ## Develop a new feature
 

@@ -10,6 +10,11 @@ on:
         description: 'Version to release (e.g., 1.0.0)'
         required: true
         type: string
+      prerelease:
+        description: 'Mark as prerelease'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -46,6 +51,7 @@ jobs:
     outputs:
       version: ${{ steps.get_version.outputs.version }}
       version_tag: ${{ steps.get_version.outputs.version_tag }}
+      is_prerelease: ${{ steps.check_prerelease.outputs.is_prerelease }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -61,6 +67,17 @@ jobs:
 
           # Validate version format
           .github/scripts/validate-version.sh "$VERSION"
+
+      - name: Check if prerelease
+        id: check_prerelease
+        run: |
+          VERSION=$(echo "${{ steps.get_version.outputs.version }}" | grep -oP '\d+\.\d+\.\d+.*')
+          # Check if version contains prerelease identifiers or if manually set
+          if [[ "${{ github.event.inputs.prerelease }}" == "true" ]] || [[ "$VERSION" =~ -alpha|-beta|-rc|-pre ]]; then
+            echo "is_prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_prerelease=false" >> $GITHUB_OUTPUT
+          fi
 
   build-and-push-backend:
     needs: [test, determine-version]
@@ -235,7 +252,7 @@ jobs:
           tag_name: ${{ needs.determine-version.outputs.version_tag }}
           name: Release ${{ needs.determine-version.outputs.version }}
           draft: false
-          prerelease: false
+          prerelease: ${{ needs.determine-version.outputs.is_prerelease == 'true' }}
           generate_release_notes: true
           body: |
             ## Release ${{ needs.determine-version.outputs.version }}

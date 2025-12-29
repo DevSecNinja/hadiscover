@@ -19,11 +19,11 @@
 @layer utilities {
   /* Glass morphism effect - Reflect.app inspired */
   .glass {
-    background: rgba(17, 17, 27, 0.6);
+    background: rgba(20, 20, 35, 0.65);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   }
 
   .glass-dark {
@@ -33,14 +33,14 @@
     border: 1px solid rgba(255, 255, 255, 0.05);
   }
 
-  /* Animated gradient background - Dark mode (Reflect.app style - very dark) */
+  /* Animated gradient background - Dark mode (Reflect.app style - breathable dark) */
   .gradient-bg {
-    background: linear-gradient(-45deg, #0a0a0f, #0f0a1a, #120a20, #0d0d1b, #0a0a14);
+    background: linear-gradient(-45deg, #0f0f1a, #141422, #18152a, #121218, #0f0f1a);
     background-size: 400% 400%;
     animation: gradient 20s ease infinite;
     transition: all 0.5s ease;
   }
-  
+
   /* Animated gradient background - Light mode */
   .gradient-bg-light {
     background: linear-gradient(-45deg, #f9fafb, #f3f4f6, #f0f1f5, #f5f3ff, #faf5ff);
@@ -48,12 +48,12 @@
     animation: gradient 20s ease infinite;
     transition: all 0.5s ease;
   }
-  
+
   /* Subtle radial glow effect */
   .glow-purple {
     background: radial-gradient(circle at center, rgba(109, 40, 217, 0.15), transparent 70%);
   }
-  
+
   .glow-blue {
     background: radial-gradient(circle at center, rgba(18, 188, 242, 0.1), transparent 70%);
   }

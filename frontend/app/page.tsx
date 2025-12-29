@@ -141,9 +141,9 @@ export default function Home() {
         onClick={toggleTheme}
         className="fixed top-6 right-6 z-50 p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105"
         style={{
-          background: isDark ? 'rgba(17, 17, 27, 0.8)' : 'rgba(255, 255, 255, 0.9)',
-          border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.06)',
-          boxShadow: isDark ? '0 2px 12px rgba(0, 0, 0, 0.5)' : '0 2px 8px rgba(0, 0, 0, 0.08)'
+          background: isDark ? 'rgba(20, 20, 35, 0.85)' : 'rgba(255, 255, 255, 0.9)',
+          border: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.06)',
+          boxShadow: isDark ? '0 2px 12px rgba(0, 0, 0, 0.4)' : '0 2px 8px rgba(0, 0, 0, 0.08)'
         }}
         title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       >
@@ -175,8 +175,8 @@ export default function Home() {
         {/* Header */}
         <header className="text-center mb-16 pt-8">
           <div className="inline-flex items-center gap-2.5 mb-8 px-4 py-2 rounded-full backdrop-blur-xl" style={{
-            background: isDark ? 'rgba(17, 17, 27, 0.5)' : 'rgba(255, 255, 255, 0.7)',
-            border: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.08)'
+            background: isDark ? 'rgba(25, 25, 40, 0.6)' : 'rgba(255, 255, 255, 0.7)',
+            border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)'
           }}>
             <svg className="w-4 h-4" style={{ color: '#12bcf2' }} fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
@@ -208,9 +208,9 @@ export default function Home() {
           {statistics && (
             <div className="flex items-center justify-center gap-6 mt-10">
               <div className="rounded-2xl px-8 py-5 backdrop-blur-xl" style={{
-                background: isDark ? 'rgba(17, 17, 27, 0.5)' : 'rgba(255, 255, 255, 0.8)',
-                border: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.08)',
-                boxShadow: isDark ? '0 4px 16px rgba(0, 0, 0, 0.3)' : '0 2px 8px rgba(0, 0, 0, 0.05)'
+                background: isDark ? 'rgba(25, 25, 40, 0.6)' : 'rgba(255, 255, 255, 0.8)',
+                border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)',
+                boxShadow: isDark ? '0 4px 16px rgba(0, 0, 0, 0.25)' : '0 2px 8px rgba(0, 0, 0, 0.05)'
               }}>
                 <div className="text-3xl font-bold mb-1" style={{
                   color: isDark ? '#e0e7ff' : '#1f2937'
@@ -222,9 +222,9 @@ export default function Home() {
                 }}>Automations</div>
               </div>
               <div className="rounded-2xl px-8 py-5 backdrop-blur-xl" style={{
-                background: isDark ? 'rgba(17, 17, 27, 0.5)' : 'rgba(255, 255, 255, 0.8)',
-                border: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.08)',
-                boxShadow: isDark ? '0 4px 16px rgba(0, 0, 0, 0.3)' : '0 2px 8px rgba(0, 0, 0, 0.05)'
+                background: isDark ? 'rgba(25, 25, 40, 0.6)' : 'rgba(255, 255, 255, 0.8)',
+                border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)',
+                boxShadow: isDark ? '0 4px 16px rgba(0, 0, 0, 0.25)' : '0 2px 8px rgba(0, 0, 0, 0.05)'
               }}>
                 <div className="text-3xl font-bold mb-1" style={{
                   color: isDark ? '#e0e7ff' : '#1f2937'
@@ -258,18 +258,18 @@ export default function Home() {
                 className="w-full pl-12 pr-6 py-5 text-lg rounded-2xl border focus:outline-none focus:ring-1 focus:border-transparent transition-all duration-200"
                 style={{
                   color: isDark ? '#e0e7ff' : '#1f2937',
-                  background: isDark ? 'rgba(17, 17, 27, 0.7)' : 'rgba(255, 255, 255, 0.9)',
+                  background: isDark ? 'rgba(25, 25, 40, 0.75)' : 'rgba(255, 255, 255, 0.9)',
                   backdropFilter: 'blur(24px)',
-                  borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.1)',
-                  boxShadow: isDark ? '0 4px 16px rgba(0, 0, 0, 0.3)' : '0 2px 8px rgba(0, 0, 0, 0.05)'
+                  borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                  boxShadow: isDark ? '0 4px 16px rgba(0, 0, 0, 0.25)' : '0 2px 8px rgba(0, 0, 0, 0.05)'
                 }}
                 onFocus={(e) => {
                   e.currentTarget.style.borderColor = '#12bcf2';
-                  e.currentTarget.style.boxShadow = isDark ? '0 0 0 3px rgba(18, 188, 242, 0.1), 0 4px 16px rgba(0, 0, 0, 0.4)' : '0 0 0 3px rgba(18, 188, 242, 0.1), 0 2px 8px rgba(0, 0, 0, 0.08)';
+                  e.currentTarget.style.boxShadow = isDark ? '0 0 0 3px rgba(18, 188, 242, 0.1), 0 4px 16px rgba(0, 0, 0, 0.3)' : '0 0 0 3px rgba(18, 188, 242, 0.1), 0 2px 8px rgba(0, 0, 0, 0.08)';
                 }}
                 onBlur={(e) => {
-                  e.currentTarget.style.borderColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.1)';
-                  e.currentTarget.style.boxShadow = isDark ? '0 4px 16px rgba(0, 0, 0, 0.3)' : '0 2px 8px rgba(0, 0, 0, 0.05)';
+                  e.currentTarget.style.borderColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+                  e.currentTarget.style.boxShadow = isDark ? '0 4px 16px rgba(0, 0, 0, 0.25)' : '0 2px 8px rgba(0, 0, 0, 0.05)';
                 }}
               />
             </div>
@@ -335,8 +335,8 @@ export default function Home() {
           {loading ? (
             <div className="text-center py-20">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full backdrop-blur-xl mb-4" style={{
-                background: isDark ? 'rgba(17, 17, 27, 0.5)' : 'rgba(0, 0, 0, 0.04)',
-                border: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.06)'
+                background: isDark ? 'rgba(25, 25, 40, 0.6)' : 'rgba(0, 0, 0, 0.04)',
+                border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.06)'
               }}>
                 <svg className="animate-spin h-8 w-8" style={{ color: '#12bcf2' }} fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -349,8 +349,8 @@ export default function Home() {
             </div>
           ) : results.length === 0 ? (
             <div className="text-center py-20 rounded-3xl backdrop-blur-xl" style={{
-              background: isDark ? 'rgba(17, 17, 27, 0.5)' : 'rgba(255, 255, 255, 0.8)',
-              border: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.08)'
+              background: isDark ? 'rgba(25, 25, 40, 0.6)' : 'rgba(255, 255, 255, 0.8)',
+              border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)'
             }}>
               <div className="text-6xl mb-4">🔍</div>
               <p className="text-xl mb-2" style={{
@@ -370,24 +370,24 @@ export default function Home() {
                 key={automation.id}
                 className="group rounded-3xl backdrop-blur-xl p-8 transition-all duration-200"
                 style={{
-                  background: isDark ? 'rgba(17, 17, 27, 0.6)' : 'rgba(255, 255, 255, 0.8)',
-                  border: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.08)',
-                  boxShadow: isDark ? '0 4px 16px rgba(0, 0, 0, 0.25)' : '0 2px 8px rgba(0, 0, 0, 0.05)'
+                  background: isDark ? 'rgba(25, 25, 40, 0.65)' : 'rgba(255, 255, 255, 0.8)',
+                  border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)',
+                  boxShadow: isDark ? '0 4px 16px rgba(0, 0, 0, 0.2)' : '0 2px 8px rgba(0, 0, 0, 0.05)'
                 }}
                 onMouseEnter={(e) => {
                   if (isDark) {
-                    e.currentTarget.style.background = 'rgba(20, 20, 32, 0.7)';
-                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.4)';
+                    e.currentTarget.style.background = 'rgba(30, 30, 48, 0.75)';
+                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.3)';
                   } else {
                     e.currentTarget.style.background = 'rgba(255, 255, 255, 0.95)';
                     e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.08)';
                   }
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = isDark ? 'rgba(17, 17, 27, 0.6)' : 'rgba(255, 255, 255, 0.8)';
-                  e.currentTarget.style.borderColor = isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.08)';
-                  e.currentTarget.style.boxShadow = isDark ? '0 4px 16px rgba(0, 0, 0, 0.25)' : '0 2px 8px rgba(0, 0, 0, 0.05)';
+                  e.currentTarget.style.background = isDark ? 'rgba(25, 25, 40, 0.65)' : 'rgba(255, 255, 255, 0.8)';
+                  e.currentTarget.style.borderColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)';
+                  e.currentTarget.style.boxShadow = isDark ? '0 4px 16px rgba(0, 0, 0, 0.2)' : '0 2px 8px rgba(0, 0, 0, 0.05)';
                 }}
               >
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
@@ -521,8 +521,8 @@ export default function Home() {
         {/* Footer */}
         <footer className="mt-24 mb-12">
           <div className="rounded-3xl backdrop-blur-xl p-8 text-center" style={{
-            background: isDark ? 'rgba(17, 17, 27, 0.5)' : 'rgba(255, 255, 255, 0.8)',
-            border: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.08)'
+            background: isDark ? 'rgba(25, 25, 40, 0.6)' : 'rgba(255, 255, 255, 0.8)',
+            border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)'
           }}>
             <div className="max-w-2xl mx-auto">
               <h3 className="text-lg font-semibold mb-3" style={{

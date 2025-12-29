@@ -121,10 +121,16 @@ jobs:
           IMAGE_NAME=$(echo "${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
           docker pull ${IMAGE_NAME}@${{ needs.build-and-push-backend.outputs.digest }}
 
+      - name: Generate lowercase image ref
+        id: image_ref
+        run: |
+          IMAGE_REF=$(echo "${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}@${{ needs.build-and-push-backend.outputs.digest }}" | tr '[:upper:]' '[:lower:]')
+          echo "ref=${IMAGE_REF}" >> $GITHUB_OUTPUT
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}@${{ needs.build-and-push-backend.outputs.digest }}
+          image-ref: ${{ steps.image_ref.outputs.ref }}
           format: 'sarif'
           output: 'trivy-backend-results.sarif'
 
@@ -196,10 +202,16 @@ jobs:
           IMAGE_NAME=$(echo "${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
           docker pull ${IMAGE_NAME}@${{ needs.build-and-push-frontend.outputs.digest }}
 
+      - name: Generate lowercase image ref
+        id: image_ref
+        run: |
+          IMAGE_REF=$(echo "${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}@${{ needs.build-and-push-frontend.outputs.digest }}" | tr '[:upper:]' '[:lower:]')
+          echo "ref=${IMAGE_REF}" >> $GITHUB_OUTPUT
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}@${{ needs.build-and-push-frontend.outputs.digest }}
+          image-ref: ${{ steps.image_ref.outputs.ref }}
           format: 'sarif'
           output: 'trivy-frontend-results.sarif'
 

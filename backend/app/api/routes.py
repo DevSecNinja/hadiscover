@@ -82,20 +82,20 @@ async def search_automations(
 ):
     """
     Search for Home Assistant automations.
-    
+
     Args:
         q: Search query string (searches across automation name, description, triggers, and repository)
         limit: Maximum number of results (default: 50, max: 100)
         db: Database session
-        
+
     Returns:
         Search results with matching automations
     """
     if limit > 100:
         limit = 100
-    
+
     results = SearchService.search_automations(db, q, limit)
-    
+
     return {
         "query": q,
         "results": results,
@@ -107,10 +107,10 @@ async def search_automations(
 async def get_statistics(db: Session = Depends(get_db)):
     """
     Get statistics about indexed repositories and automations.
-    
+
     Args:
         db: Database session
-        
+
     Returns:
         Statistics about indexed data
     """
@@ -125,17 +125,17 @@ async def trigger_indexing(
 ):
     """
     Trigger indexing of repositories with hadiscover or ha-discover topics.
-    
+
     This endpoint is only available in development mode.
     In production, indexing runs on a daily schedule via GitHub Actions.
-    
+
     Args:
         background_tasks: FastAPI background tasks
         db: Database session
-        
+
     Returns:
         Confirmation that indexing has started
-        
+
     Raises:
         HTTPException: If called in production or within the cooldown period
     """
@@ -145,27 +145,27 @@ async def trigger_indexing(
             status_code=403,
             detail="This endpoint is not available in production. Indexing runs on a daily schedule."
         )
-    
+
     global last_indexing_time
-    
+
     # Check if indexing was recently triggered
     if last_indexing_time is not None:
         time_since_last = datetime.utcnow() - last_indexing_time
         cooldown = timedelta(minutes=INDEXING_COOLDOWN_MINUTES)
-        
+
         if time_since_last < cooldown:
             remaining_seconds = int((cooldown - time_since_last).total_seconds())
             remaining_minutes = remaining_seconds // 60
             remaining_seconds = remaining_seconds % 60
-            
+
             raise HTTPException(
                 status_code=429,
                 detail=f"Indexing rate limit exceeded. Please wait {remaining_minutes}m {remaining_seconds}s before triggering again."
             )
-    
+
     # Update last indexing time
     last_indexing_time = datetime.utcnow()
-    
+
     async def run_indexing():
         """Background task to run indexing."""
         indexer = IndexingService()
@@ -176,11 +176,11 @@ async def trigger_indexing(
             await indexer.index_repositories(bg_db)
         finally:
             bg_db.close()
-    
+
     background_tasks.add_task(run_indexing)
-    
+
     return {
-        "message": "Indexing started in background",
+        "message": "Indexing started in background. Refresh your browser to see the changes once complete.",
         "started": True
     }
 
@@ -189,7 +189,7 @@ async def trigger_indexing(
 async def health_check():
     """
     Health check endpoint.
-    
+
     Returns:
         Simple health status
     """

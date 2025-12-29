@@ -202,7 +202,7 @@ export default function Home() {
           <p className="text-2xl sm:text-3xl mb-4 font-light max-w-3xl mx-auto leading-relaxed" style={{
             color: isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.7)'
           }}>
-            Discover and explore powerful automations
+            Discover Home Assistant automations from the community
           </p>
 
           {statistics && (

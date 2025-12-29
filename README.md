@@ -53,7 +53,7 @@ docker-compose up -d
 ```
 
 The application will be available at:
-- **Frontend**: http://localhost:3000
+- **Frontend**: http://localhost:8080
 - **Backend API**: http://localhost:8000
 - **API Documentation**: http://localhost:8000/docs
 
@@ -125,11 +125,11 @@ cp .env.local.example .env.local
 npm run dev
 ```
 
-The web UI will be available at `http://localhost:3000`
+The web UI will be available at `http://localhost:8080`
 
 #### 4. Trigger Indexing
 
-1. Open your browser to `http://localhost:3000`
+1. Open your browser to `http://localhost:8080`
 2. Click the "Trigger Re-Index" button to start discovering repositories
 3. Wait a few moments, then refresh to see the results
 

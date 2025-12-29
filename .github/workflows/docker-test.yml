@@ -73,11 +73,11 @@ jobs:
 
       - name: Test frontend container starts
         run: |
-          .github/scripts/start-container.sh ha-discover-frontend ha-discover-frontend:test 3000:80
+          .github/scripts/start-container.sh ha-discover-frontend ha-discover-frontend:test 8080:80
           .github/scripts/wait-for-healthy.sh ha-discover-frontend 60
 
       - name: Test frontend web server
-        run: .github/scripts/test-frontend.sh 3000
+        run: .github/scripts/test-frontend.sh 8080
 
       - name: Show frontend logs on failure
         if: failure()

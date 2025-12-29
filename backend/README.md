@@ -162,8 +162,8 @@ backend/
 ## 🔒 CORS Configuration
 
 The backend is configured to accept requests from:
-- `http://localhost:3000` (local frontend)
-- `http://127.0.0.1:3000` (local frontend)
+- `http://localhost:8080` (local frontend)
+- `http://127.0.0.1:8080` (local frontend)
 - `https://hadiscover.com` (production frontend)
 - `https://www.hadiscover.com` (production frontend)
 - `https://api.hadiscover.com` (production API)

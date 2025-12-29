@@ -150,7 +150,7 @@ npm run build
 npx serve out
 ```
 
-This will serve the static files on `http://localhost:3000`.
+This will serve the static files on `http://localhost:8080`.
 
 ## Backend Deployment
 

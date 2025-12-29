@@ -15,7 +15,7 @@ fi
 echo "✓ Backend accessible"
 
 # Test frontend is accessible
-frontend_status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/)
+frontend_status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/)
 if [ "$frontend_status" != "200" ]; then
   echo "✗ Frontend not accessible (status: $frontend_status)"
   exit 1

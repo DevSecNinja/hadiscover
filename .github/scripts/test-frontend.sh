@@ -4,7 +4,7 @@
 
 set -e
 
-PORT="${1:-3000}"
+PORT="${1:-8080}"
 BASE_URL="http://localhost:${PORT}"
 
 echo "Testing frontend web server on ${BASE_URL}..."

@@ -3,10 +3,10 @@ services:
     # Use the image from GHCR (recommended for production)
     # Uncomment the line below and comment the build line to use pre-built images
     # image: ghcr.io/devsecninja/ha-discover/backend:latest
-    
+
     # Or build locally (for development)
     build: ./backend
-    
+
     container_name: api
     ports:
       - "8000:8000"
@@ -30,16 +30,16 @@ services:
     # Use the image from GHCR (recommended for production)
     # Uncomment the line below and comment the build line to use pre-built images
     # image: ghcr.io/devsecninja/ha-discover/frontend:latest
-    
+
     # Or build locally (for development)
     build:
       context: ./frontend
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000/api/v1}
-    
+
     container_name: web
     ports:
-      - "3000:80"
+      - "8080:80"
     depends_on:
       - api
     restart: unless-stopped

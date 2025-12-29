@@ -20,7 +20,7 @@ docker run -d \
   "${BACKEND_IMAGE}"
 
 echo "Starting frontend container..."
-.github/scripts/start-container.sh ha-discover-frontend "${FRONTEND_IMAGE}" 3000:80
+.github/scripts/start-container.sh ha-discover-frontend "${FRONTEND_IMAGE}" 8080:80
 
 echo "Waiting for both containers to be healthy..."
 sleep 10

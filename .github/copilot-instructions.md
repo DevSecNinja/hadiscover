@@ -24,7 +24,7 @@ pip install --upgrade pip && pip install -r requirements.txt
 
 **Build**: `npm run build` (~5s, creates `out/` directory)
 
-**Dev server**: `npm run dev` at http://localhost:3000
+**Dev server**: `npm run dev` at http://localhost:8080
 
 **Environment** (optional): `NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1` in `.env.local`
 
@@ -34,7 +34,7 @@ pip install --upgrade pip && pip install -r requirements.txt
 # Backend: docker build -t test ./backend && docker run -d -p 8000:8000 -e ENVIRONMENT=development test
 # Wait 5s, then: curl http://localhost:8000/api/v1/health
 # Frontend: docker build --build-arg NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1 -t test ./frontend
-# docker run -d -p 3000:80 test && sleep 3 && curl http://localhost:3000
+# docker run -d -p 8080:80 test && sleep 3 && curl http://localhost:8080
 ```
 
 ## CI Workflows (All on PR/main)
@@ -50,7 +50,7 @@ pip install --upgrade pip && pip install -r requirements.txt
 ## Project Structure
 
 ```
-backend/app/: main.py (FastAPI), cli.py (index-now cmd), version.py, api/routes.py, 
+backend/app/: main.py (FastAPI), cli.py (index-now cmd), version.py, api/routes.py,
   models/ (SQLAlchemy), services/ (github_service.py, parser.py, indexer.py, search_service.py)
 backend/tests/: 40 pytest tests
 backend/: requirements.txt, pytest.ini, Dockerfile, entrypoint.sh, .env.example
@@ -80,7 +80,7 @@ Root: README.md, ARCHITECTURE.md, DEPLOYMENT.md, docker-compose.yml
 
 ## Key Implementation Notes
 
-- **CORS**: Backend allows localhost:3000, hadiscover.com. Update `app/main.py` if forking.
+- **CORS**: Backend allows localhost:8080, hadiscover.com. Update `app/main.py` if forking.
 - **Rate limit**: /api/v1/index limited to once per 10min (in-memory).
 - **Indexing**: Runs in background thread; returns immediately.
 - **Parsing**: Best-effort YAML parser; gracefully handles errors.

@@ -1,11 +1,10 @@
-version: '3.8'
-
 # Production docker-compose configuration using pre-built images from GHCR
 # Usage: docker-compose -f docker-compose.prod.yml up -d
 
 services:
   api:
     image: ghcr.io/devsecninja/ha-discover/backend:latest
+    container_name: api
     ports:
       - "8000:8000"
     environment:
@@ -16,6 +15,7 @@ services:
       - api_data:/app/data
     restart: unless-stopped
     healthcheck:
+      # Curl not installed in base image
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')"]
       interval: 30s
       timeout: 10s
@@ -24,13 +24,14 @@ services:
 
   web:
     image: ghcr.io/devsecninja/ha-discover/frontend:latest
+    container_name: web
     ports:
       - "3000:80"
     depends_on:
       - api
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/"]
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:80/health.html"]
       interval: 30s
       timeout: 10s
       retries: 3

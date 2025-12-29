@@ -578,6 +578,113 @@ export default function Home() {
             </div>
           </div>
 
+          {/* GPT Prompt Section */}
+          <div className="mt-8">
+            <details className="rounded-3xl backdrop-blur-xl overflow-hidden transition-all duration-200" style={{
+              background: isDark ? 'rgba(25, 25, 40, 0.6)' : 'rgba(255, 255, 255, 0.8)',
+              border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)'
+            }}>
+              <summary className="px-8 py-6 cursor-pointer list-none transition-all duration-200 hover:bg-opacity-90" style={{
+                color: isDark ? '#e0e7ff' : '#1f2937'
+              }}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">✨</span>
+                    <div>
+                      <h3 className="text-lg font-semibold">Improve Your Automations with AI</h3>
+                      <p className="text-sm mt-1" style={{
+                        color: isDark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)'
+                      }}>GPT prompt to write better titles & descriptions</p>
+                    </div>
+                  </div>
+                  <svg className="w-5 h-5 transition-transform duration-200" style={{
+                    color: isDark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)'
+                  }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </summary>
+              <div className="px-8 pb-8 pt-4 border-t" style={{
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)'
+              }}>
+                <p className="mb-4 leading-relaxed" style={{
+                  color: isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.7)'
+                }}>
+                  Clear titles and descriptions make your automations more discoverable. Copy this prompt and your automation YAML to ChatGPT, Claude, or any AI assistant:
+                </p>
+                <div className="relative group">
+                  <pre className="rounded-2xl p-6 overflow-x-auto text-sm leading-relaxed" style={{
+                    background: isDark ? 'rgba(17, 17, 27, 0.8)' : 'rgba(248, 248, 248, 0.95)',
+                    color: isDark ? '#e0e7ff' : '#1f2937',
+                    border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)'
+                  }}><code>{`You are reviewing a Home Assistant automations.yaml file.
+
+For each automation, rewrite:
+
+1. alias (title)
+• Max 10 words
+• Clear, simple, no technical jargon
+• Understandable by someone with no Home Assistant knowledge
+
+2. description
+• Max 4 short lines
+• Plain, everyday language
+• Explain what happens, when, and why, from a user’s perspective
+• Avoid technical terms like trigger, entity, service, state, automation
+
+Rules
+• Do not change any logic, triggers, conditions, or actions
+• Only update alias and description fields
+• If a description is missing, add one
+• Keep tone friendly and human, as if explaining it to a partner at home
+• If the automation could be confusing or surprising, explicitly mention that behavior
+
+Here's my automation YAML:
+
+[Paste your automation YAML here]`}</code></pre>
+                  <button
+                    onClick={() => {
+                      const text = `You are reviewing a Home Assistant automations.yaml file.
+
+For each automation, rewrite:
+
+1. alias (title)
+• Max 10 words
+• Clear, simple, no technical jargon
+• Understandable by someone with no Home Assistant knowledge
+
+2. description
+• Max 4 short lines
+• Plain, everyday language
+• Explain what happens, when, and why, from a user’s perspective
+• Avoid technical terms like trigger, entity, service, state, automation
+
+Rules
+• Do not change any logic, triggers, conditions, or actions
+• Only update alias and description fields
+• If a description is missing, add one
+• Keep tone friendly and human, as if explaining it to a partner at home
+• If the automation could be confusing or surprising, explicitly mention that behavior
+
+Here's my automation YAML:
+
+[Paste your automation YAML here]`;
+                      navigator.clipboard.writeText(text);
+                    }}
+                    className="absolute top-4 right-4 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 opacity-0 group-hover:opacity-100"
+                    style={{
+                      background: isDark ? 'rgba(109, 40, 217, 0.8)' : 'rgb(109, 40, 217)',
+                      color: '#ffffff',
+                      border: isDark ? '1px solid rgba(147, 51, 234, 0.3)' : 'none'
+                    }}
+                  >
+                    📋 Copy
+                  </button>
+                </div>
+              </div>
+            </details>
+          </div>
+
           <div className="text-center mt-8 text-sm" style={{
             color: isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.4)'
           }}>

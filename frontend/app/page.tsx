@@ -184,7 +184,7 @@ export default function Home() {
             <span className="text-sm font-medium" style={{
               color: isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)',
               opacity: 0.9
-            }}>Home Assistant Discovery</span>
+            }}>Home Assistant Automation Discovery</span>
           </div>
 
           <h1 className="text-7xl sm:text-8xl font-bold mb-6 tracking-tight">
@@ -276,18 +276,28 @@ export default function Home() {
             <button
               type="submit"
               disabled={loading}
-              className="px-8 py-5 text-white font-semibold rounded-2xl focus:outline-none focus:ring-2 focus:ring-[rgb(var(--ha-blue))] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+              className="px-8 py-5 text-white font-semibold rounded-2xl focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               style={{
-                background: 'linear-gradient(135deg, #12bcf2 0%, #0ea5e9 100%)',
-                boxShadow: '0 8px 20px rgba(18, 188, 242, 0.25)'
+                background: isDark
+                  ? 'linear-gradient(135deg, rgba(109, 40, 217, 0.8), rgba(147, 51, 234, 0.8))'
+                  : 'linear-gradient(135deg, rgb(109, 40, 217), rgb(147, 51, 234))',
+                border: isDark ? '1px solid rgba(147, 51, 234, 0.3)' : 'none',
+                boxShadow: isDark
+                  ? '0 4px 12px rgba(109, 40, 217, 0.25)'
+                  : '0 4px 12px rgba(109, 40, 217, 0.3)',
+                backdropFilter: isDark ? 'blur(12px)' : 'none'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 12px 28px rgba(18, 188, 242, 0.35)';
-                e.currentTarget.style.transform = 'scale(1.02)';
+                e.currentTarget.style.boxShadow = isDark
+                  ? '0 6px 16px rgba(109, 40, 217, 0.35)'
+                  : '0 6px 16px rgba(109, 40, 217, 0.4)';
+                e.currentTarget.style.transform = 'translateY(-1px)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 8px 20px rgba(18, 188, 242, 0.25)';
-                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.boxShadow = isDark
+                  ? '0 4px 12px rgba(109, 40, 217, 0.25)'
+                  : '0 4px 12px rgba(109, 40, 217, 0.3)';
+                e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
               {loading ? (
@@ -311,10 +321,29 @@ export default function Home() {
             <button
               onClick={handleTriggerIndexing}
               disabled={indexing}
-              className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-medium rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-[1.02]"
-              style={{ boxShadow: '0 10px 15px -3px rgba(34, 197, 94, 0.25)' }}
-              onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(34, 197, 94, 0.4)'}
-              onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(34, 197, 94, 0.25)'}
+              className="px-6 py-3 text-white font-medium rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              style={{
+                background: isDark
+                  ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.8), rgba(16, 185, 129, 0.8))'
+                  : 'linear-gradient(135deg, rgb(34, 197, 94), rgb(16, 185, 129))',
+                border: isDark ? '1px solid rgba(34, 197, 94, 0.3)' : 'none',
+                boxShadow: isDark
+                  ? '0 4px 12px rgba(34, 197, 94, 0.2)'
+                  : '0 4px 12px rgba(34, 197, 94, 0.25)',
+                backdropFilter: isDark ? 'blur(12px)' : 'none'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = isDark
+                  ? '0 6px 16px rgba(34, 197, 94, 0.3)'
+                  : '0 6px 16px rgba(34, 197, 94, 0.35)';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = isDark
+                  ? '0 4px 12px rgba(34, 197, 94, 0.2)'
+                  : '0 4px 12px rgba(34, 197, 94, 0.25)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
             >
               {indexing ? 'Starting Indexing...' : '🔄 Trigger Re-Index'}
             </button>

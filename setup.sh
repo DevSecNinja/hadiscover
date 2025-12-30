@@ -3,7 +3,7 @@
 # HA Discover - Setup Script
 # This script sets up all prerequisites for running the application
 
-set -e  # Exit on error
+set -e # Exit on error
 
 echo "======================================"
 echo "HA Discover - Setup"
@@ -18,7 +18,7 @@ NC='\033[0m' # No Color
 
 # Check if Python 3.12+ is available
 echo "Checking Python version..."
-if ! command -v python3 &> /dev/null; then
+if ! command -v python3 &>/dev/null; then
     echo -e "${RED}✗ Python 3 is not installed${NC}"
     exit 1
 fi
@@ -29,7 +29,7 @@ echo ""
 
 # Check if Node.js is available
 echo "Checking Node.js version..."
-if ! command -v node &> /dev/null; then
+if ! command -v node &>/dev/null; then
     echo -e "${RED}✗ Node.js is not installed${NC}"
     exit 1
 fi
@@ -113,11 +113,11 @@ fi
 # Setup .env.local if it doesn't exist
 if [ ! -f ".env.local" ]; then
     echo "Creating .env.local..."
-    echo "NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1" > .env.local
+    echo "NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1" >.env.local
     echo -e "${GREEN}✓ .env.local created${NC}"
 elif ! grep -q "NEXT_PUBLIC_API_URL" .env.local; then
     echo "Adding NEXT_PUBLIC_API_URL to .env.local..."
-    echo "NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1" >> .env.local
+    echo "NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1" >>.env.local
     echo -e "${GREEN}✓ NEXT_PUBLIC_API_URL added to .env.local${NC}"
 else
     echo -e "${YELLOW}.env.local already configured${NC}"

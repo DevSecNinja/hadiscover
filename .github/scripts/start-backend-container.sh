@@ -16,9 +16,9 @@ fi
 echo "Starting backend container ${CONTAINER_NAME} from image ${IMAGE_TAG}..."
 
 docker run -d \
-  --name "${CONTAINER_NAME}" \
-  -p "${PORT}:8000" \
-  -e ENVIRONMENT=development \
-  "${IMAGE_TAG}"
+    --name "${CONTAINER_NAME}" \
+    -p "${PORT}:8000" \
+    -e ENVIRONMENT=development \
+    "${IMAGE_TAG}"
 
 echo "✓ Backend container ${CONTAINER_NAME} started"

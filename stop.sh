@@ -20,7 +20,7 @@ if [ -n "$BACKEND_PIDS" ]; then
     kill $BACKEND_PIDS 2>/dev/null
     sleep 1
     # Force kill if still running
-    if pgrep -f "uvicorn app.main:app" > /dev/null; then
+    if pgrep -f "uvicorn app.main:app" >/dev/null; then
         echo "Force stopping backend..."
         pkill -9 -f "uvicorn app.main:app"
     fi
@@ -39,7 +39,7 @@ if [ -n "$FRONTEND_PIDS" ]; then
     kill $FRONTEND_PIDS 2>/dev/null
     sleep 1
     # Force kill if still running
-    if pgrep -f "next dev" > /dev/null; then
+    if pgrep -f "next dev" >/dev/null; then
         echo "Force stopping frontend..."
         pkill -9 -f "next dev"
     fi

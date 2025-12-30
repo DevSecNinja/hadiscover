@@ -14,10 +14,10 @@ fi
 
 echo "Starting backend container..."
 docker run -d \
-  --name hadiscover-backend \
-  -p 8000:8000 \
-  -e ENVIRONMENT=development \
-  "${BACKEND_IMAGE}"
+    --name hadiscover-backend \
+    -p 8000:8000 \
+    -e ENVIRONMENT=development \
+    "${BACKEND_IMAGE}"
 
 echo "Starting frontend container..."
 .github/scripts/start-container.sh hadiscover-frontend "${FRONTEND_IMAGE}" 8080:80

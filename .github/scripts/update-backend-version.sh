@@ -15,7 +15,7 @@ VERSION_FILE="backend/app/version.py"
 
 echo "Updating backend version to ${VERSION}..."
 
-cat > "$VERSION_FILE" << EOF
+cat >"$VERSION_FILE" <<EOF
 """Version information for hadiscover backend."""
 
 __version__ = "${VERSION}"

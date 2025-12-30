@@ -18,6 +18,8 @@ interface Automation {
   action_calls: string[];
   source_file_path: string;
   github_url: string;
+  start_line: number | null;
+  end_line: number | null;
   repository: Repository;
   indexed_at: string | null;
 }
@@ -658,7 +660,11 @@ export default function Home() {
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
                   <div className="flex-1 min-w-0">
                     <a
-                      href={automation.github_url}
+                      href={
+                        automation.start_line && automation.end_line
+                          ? `${automation.github_url}#L${automation.start_line}-L${automation.end_line}`
+                          : automation.github_url
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="block group/title"

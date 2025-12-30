@@ -145,6 +145,8 @@ class IndexingService:
                         action_calls=",".join(auto_data.get("action_calls", [])),
                         source_file_path=file_path,
                         github_url=f"{url}/blob/{branch}/{file_path}",
+                        start_line=auto_data.get("start_line"),
+                        end_line=auto_data.get("end_line"),
                         repository_id=repository.id,
                     )
                     db.add(automation)

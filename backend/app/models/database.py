@@ -49,6 +49,8 @@ class Automation(Base):
     )  # Stored as comma-separated service calls
     source_file_path = Column(String(512), nullable=False)
     github_url = Column(String(1024), nullable=False)
+    start_line = Column(Integer, nullable=True)  # Starting line number in source file
+    end_line = Column(Integer, nullable=True)  # Ending line number in source file
     repository_id = Column(Integer, ForeignKey("repositories.id"), nullable=False)
     indexed_at = Column(DateTime, default=datetime.utcnow)
 

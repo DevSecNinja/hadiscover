@@ -210,6 +210,8 @@ def test_search_result_format(test_db):
         trigger_types="state,time",
         source_file_path="automations.yaml",
         github_url="https://github.com/testuser/test-repo/blob/main/automations.yaml",
+        start_line=10,
+        end_line=25,
         repository_id=repo.id,
     )
     test_db.add(automation)
@@ -227,8 +229,14 @@ def test_search_result_format(test_db):
     assert "trigger_types" in result
     assert "source_file_path" in result
     assert "github_url" in result
+    assert "start_line" in result
+    assert "end_line" in result
     assert "repository" in result
     assert "indexed_at" in result
+
+    # Check line numbers
+    assert result["start_line"] == 10
+    assert result["end_line"] == 25
 
     # Check repository structure
     assert "name" in result["repository"]

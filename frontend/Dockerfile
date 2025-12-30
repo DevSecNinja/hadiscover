@@ -29,6 +29,9 @@ RUN npm run build
 # Production stage with nginx to serve static files
 FROM nginx:alpine AS runner
 
+# Remove inherited maintainer label from base image
+LABEL maintainer=""
+
 WORKDIR /usr/share/nginx/html
 
 # Remove default nginx static files

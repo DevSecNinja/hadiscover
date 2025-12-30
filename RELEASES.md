@@ -1,10 +1,10 @@
 # Release Process
 
-This document describes the release process for HA Discover, including versioning, Docker image creation, GitHub releases, and dependency management.
+This document describes the release process for hadiscover, including versioning, Docker image creation, GitHub releases, and dependency management.
 
 ## Versioning Strategy
 
-HA Discover follows [Semantic Versioning 2.0.0](https://semver.org/):
+hadiscover follows [Semantic Versioning 2.0.0](https://semver.org/):
 
 - **MAJOR** version (X.0.0): Incompatible API changes
 - **MINOR** version (0.X.0): New functionality in a backwards-compatible manner
@@ -12,7 +12,7 @@ HA Discover follows [Semantic Versioning 2.0.0](https://semver.org/):
 
 ## Dependency Management
 
-HA Discover uses [Renovate Bot](https://docs.renovatebot.com/) to automatically keep dependencies up-to-date.
+hadiscover uses [Renovate Bot](https://docs.renovatebot.com/) to automatically keep dependencies up-to-date.
 
 ### How Renovate Works
 
@@ -176,7 +176,7 @@ docker-compose up -d
 Version information is stored in `/backend/app/version.py`:
 
 ```python
-"""Version information for HA Discover backend."""
+"""Version information for hadiscover backend."""
 
 __version__ = "0.1.0"
 ```

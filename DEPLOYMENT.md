@@ -1,6 +1,6 @@
 # Deployment to GitHub Pages
 
-This document explains how to deploy the HA Discover frontend to GitHub Pages.
+This document explains how to deploy the hadiscover frontend to GitHub Pages.
 
 ## ⚠️ Prerequisites
 

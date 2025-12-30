@@ -1,3 +1,3 @@
-"""Version information for HA Discover backend."""
+"""Version information for hadiscover backend."""
 
 __version__ = "0.1.1"

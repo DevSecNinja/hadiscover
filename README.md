@@ -4,7 +4,7 @@
 
 ## What is hadiscover?
 
-hadiscover indexes Home Assistant automation files from GitHub repositories that opt in by adding the `hadiscover` or `ha-discover` topic to their repository. It provides a simple, searchable interface to find automations by name, description, trigger types, or related repositories.
+hadiscover indexes Home Assistant automation files from GitHub repositories that opt in by adding the `hadiscover` topic to their repository. It provides a simple, searchable interface to find automations by name, description, trigger types, or related repositories.
 
 Think of it as a specialized search engine for Home Assistant configurations—similar to how kubesearch.dev works for Kubernetes resources, but focused specifically on Home Assistant automations.
 
@@ -32,7 +32,7 @@ Home Assistant users often create sophisticated automations and share them on Gi
 
 ## How It Works
 
-1. **Repository Discovery**: hadiscover searches GitHub for repositories with the `hadiscover` or `ha-discover` topic
+1. **Repository Discovery**: hadiscover searches GitHub for repositories with the `hadiscover` topic
 2. **Automation Extraction**: For each repository, it locates automation files (e.g., `automations.yaml`)
 3. **Parsing**: Automations are parsed using best-effort YAML parsing to extract metadata
 4. **Indexing**: Automations are stored in a SQLite database with full-text search capability
@@ -62,10 +62,10 @@ The application will be available at:
 To have your Home Assistant configuration indexed:
 
 1. Ensure your repository contains automation files (e.g., `automations.yaml`)
-2. Add the `hadiscover` or `ha-discover` topic to your GitHub repository:
+2. Add the `hadiscover` topic to your GitHub repository:
    - Go to your repository on GitHub
    - Click the ⚙️ icon next to "About"
-   - Add `hadiscover` (or `ha-discover` for backwards compatibility) to the topics list
+   - Add `hadiscover` to the topics list
    - Save changes
 3. Wait for the next scheduled indexing (runs daily at 2 AM UTC) or trigger it manually in development mode
 

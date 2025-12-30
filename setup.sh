@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# HA Discover - Setup Script
+# hadiscover - Setup Script
 # This script sets up all prerequisites for running the application
 
 set -e # Exit on error
 
 echo "======================================"
-echo "HA Discover - Setup"
+echo "hadiscover - Setup"
 echo "======================================"
 echo ""
 

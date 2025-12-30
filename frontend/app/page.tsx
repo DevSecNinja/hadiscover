@@ -513,7 +513,7 @@ export default function Home() {
                   : "rgba(0, 0, 0, 0.5)",
               }}
             >
-              Discover repositories with{" "}
+              Discover repositories with the{" "}
               <code
                 className="px-2 py-1 rounded-lg text-[rgb(var(--ha-blue))] font-mono text-xs"
                 style={{
@@ -523,17 +523,6 @@ export default function Home() {
                 }}
               >
                 hadiscover
-              </code>{" "}
-              or{" "}
-              <code
-                className="px-2 py-1 rounded-lg text-[rgb(var(--ha-blue))] font-mono text-xs"
-                style={{
-                  background: isDark
-                    ? "rgba(255, 255, 255, 0.1)"
-                    : "rgba(0, 0, 0, 0.05)",
-                }}
-              >
-                ha-discover
               </code>{" "}
               topic
             </p>
@@ -906,18 +895,6 @@ export default function Home() {
                   }}
                 >
                   hadiscover
-                </code>{" "}
-                or{" "}
-                <code
-                  className="px-2 py-1 rounded-lg font-mono text-sm"
-                  style={{
-                    color: "#12bcf2",
-                    background: isDark
-                      ? "rgba(18, 188, 242, 0.12)"
-                      : "rgba(18, 188, 242, 0.08)",
-                  }}
-                >
-                  ha-discover
                 </code>{" "}
                 topic.
               </p>

@@ -1,4 +1,4 @@
-"""API routes for HA Discover."""
+"""API routes for hadiscover."""
 
 import logging
 import os

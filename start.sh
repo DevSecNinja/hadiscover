@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# HA Discover - Application Startup Script
+# hadiscover - Application Startup Script
 
-echo "Starting HA Discover..."
+echo "Starting hadiscover..."
 echo ""
 
 # Colors for output
@@ -41,7 +41,7 @@ cd ..
 
 echo ""
 echo "======================================"
-echo -e "${GREEN}HA Discover is starting!${NC}"
+echo -e "${GREEN}hadiscover is starting!${NC}"
 echo "======================================"
 echo ""
 echo "Backend API:  http://localhost:8000"

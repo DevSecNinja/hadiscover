@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# HA Discover - Stop Script
+# hadiscover - Stop Script
 # This script stops both backend and frontend servers
 
-echo "Stopping HA Discover..."
+echo "Stopping hadiscover..."
 echo ""
 
 # Colors for output
@@ -50,6 +50,6 @@ fi
 
 echo ""
 echo "======================================"
-echo -e "${GREEN}HA Discover stopped${NC}"
+echo -e "${GREEN}hadiscover stopped${NC}"
 echo "======================================"
 echo ""

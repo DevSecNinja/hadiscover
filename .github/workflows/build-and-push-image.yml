@@ -28,6 +28,11 @@ on:
         required: false
         type: string
         default: ''
+      is_prerelease:
+        description: 'Whether this is a pre-release (true/false)'
+        required: false
+        type: string
+        default: 'false'
     outputs:
       digest:
         description: 'Image digest from the build'
@@ -62,7 +67,7 @@ jobs:
             type=semver,pattern={{version}},value=${{ inputs.version }}
             type=semver,pattern={{major}}.{{minor}},value=${{ inputs.version }}
             type=semver,pattern={{major}},value=${{ inputs.version }}
-            type=raw,value=latest
+            type=raw,value=latest,enable=${{ inputs.is_prerelease != 'true' }}
 
       - name: Update version
         run: .github/scripts/${{ inputs.update_version_script }} ${{ inputs.version }}

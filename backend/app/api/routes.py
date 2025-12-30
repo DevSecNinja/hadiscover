@@ -37,6 +37,36 @@ class RepositoryResponse(BaseModel):
     url: str
 
 
+class RepositoryFacet(BaseModel):
+    """Repository facet with count."""
+
+    owner: str
+    name: str
+    count: int
+
+
+class BlueprintFacet(BaseModel):
+    """Blueprint facet with count."""
+
+    path: str
+    count: int
+
+
+class TriggerFacet(BaseModel):
+    """Trigger type facet with count."""
+
+    type: str
+    count: int
+
+
+class Facets(BaseModel):
+    """Facets for filtering."""
+
+    repositories: List[RepositoryFacet]
+    blueprints: List[BlueprintFacet]
+    triggers: List[TriggerFacet]
+
+
 class AutomationResponse(BaseModel):
     """Automation search result."""
 
@@ -58,6 +88,7 @@ class SearchResponse(BaseModel):
     query: str
     results: List[AutomationResponse]
     count: int
+    facets: Facets
 
 
 class StatisticsResponse(BaseModel):
@@ -85,7 +116,12 @@ class IndexStatusResponse(BaseModel):
 
 @router.get("/search", response_model=SearchResponse)
 async def search_automations(
-    q: str = "", limit: int = 50, db: Session = Depends(get_db)
+    q: str = "",
+    limit: int = 50,
+    repo: Optional[str] = None,
+    blueprint: Optional[str] = None,
+    trigger: Optional[str] = None,
+    db: Session = Depends(get_db),
 ):
     """
     Search for Home Assistant automations.
@@ -93,17 +129,31 @@ async def search_automations(
     Args:
         q: Search query string (searches across automation name, description, triggers, and repository)
         limit: Maximum number of results (default: 50, max: 100)
+        repo: Filter by repository (format: "owner/name")
+        blueprint: Filter by blueprint path
+        trigger: Filter by trigger type
         db: Database session
 
     Returns:
-        Search results with matching automations
+        Search results with matching automations and facets for filtering
     """
     if limit > 100:
         limit = 100
 
-    results = SearchService.search_automations(db, q, limit)
+    results = SearchService.search_automations(
+        db,
+        q,
+        limit,
+        repo_filter=repo,
+        blueprint_filter=blueprint,
+        trigger_filter=trigger,
+    )
 
-    return {"query": q, "results": results, "count": len(results)}
+    facets = SearchService.get_facets(
+        db, q, repo_filter=repo, blueprint_filter=blueprint, trigger_filter=trigger
+    )
+
+    return {"query": q, "results": results, "count": len(results), "facets": facets}
 
 
 @router.get("/statistics", response_model=StatisticsResponse)

@@ -67,13 +67,6 @@ export default function Home() {
     }
   }, []);
 
-  useEffect(() => {
-    // Load statistics on mount
-    fetchStatistics();
-    // Load initial results
-    performSearch("");
-  }, []);
-
   const fetchStatistics = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/statistics`);
@@ -99,6 +92,14 @@ export default function Home() {
       setLoading(false);
     }
   };
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Functions are stable and should only run on mount
+  useEffect(() => {
+    // Load statistics on mount
+    fetchStatistics();
+    // Load initial results
+    performSearch("");
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,6 +149,7 @@ export default function Home() {
     >
       {/* Theme Toggle Button */}
       <button
+        type="button"
         onClick={toggleTheme}
         className="fixed top-6 right-6 z-50 p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105"
         style={{
@@ -169,6 +171,8 @@ export default function Home() {
             style={{ color: "#a78bfa" }}
             fill="currentColor"
             viewBox="0 0 24 24"
+            role="img"
+            aria-label="Switch to light mode"
           >
             <path
               d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
@@ -184,6 +188,8 @@ export default function Home() {
             className="w-5 h-5 text-indigo-600"
             fill="currentColor"
             viewBox="0 0 24 24"
+            role="img"
+            aria-label="Switch to dark mode"
           >
             <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
           </svg>
@@ -232,6 +238,8 @@ export default function Home() {
               style={{ color: "#12bcf2" }}
               fill="currentColor"
               viewBox="0 0 24 24"
+              role="img"
+              aria-label="hadiscover logo"
             >
               <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
             </svg>
@@ -359,6 +367,8 @@ export default function Home() {
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  role="img"
+                  aria-label="Search icon"
                 >
                   <path
                     strokeLinecap="round"
@@ -436,6 +446,8 @@ export default function Home() {
                     className="animate-spin h-5 w-5"
                     fill="none"
                     viewBox="0 0 24 24"
+                    role="img"
+                    aria-label="Loading spinner"
                   >
                     <circle
                       className="opacity-25"
@@ -464,6 +476,7 @@ export default function Home() {
         {IS_DEVELOPMENT && (
           <div className="text-center mb-12">
             <button
+              type="button"
               onClick={handleTriggerIndexing}
               disabled={indexing}
               className="px-6 py-3 text-white font-medium rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
@@ -547,6 +560,8 @@ export default function Home() {
                   style={{ color: "#12bcf2" }}
                   fill="none"
                   viewBox="0 0 24 24"
+                  role="img"
+                  aria-label="Loading statistics"
                 >
                   <circle
                     className="opacity-25"
@@ -611,7 +626,7 @@ export default function Home() {
             </div>
           ) : (
             results.map((automation) => (
-              <div
+              <article
                 key={automation.id}
                 className="group rounded-3xl backdrop-blur-xl p-8 transition-all duration-200"
                 style={{
@@ -720,6 +735,8 @@ export default function Home() {
                       className="w-4 h-4"
                       fill="currentColor"
                       viewBox="0 0 24 24"
+                      role="img"
+                      aria-label="GitHub logo"
                     >
                       <path
                         fillRule="evenodd"
@@ -762,6 +779,8 @@ export default function Home() {
                         className="w-4 h-4"
                         fill="currentColor"
                         viewBox="0 0 24 24"
+                        role="img"
+                        aria-label="Blueprint icon"
                       >
                         <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" />
                       </svg>
@@ -784,9 +803,9 @@ export default function Home() {
                         Triggers
                       </p>
                       <div className="flex flex-wrap gap-2">
-                        {automation.trigger_types.map((trigger, idx) => (
+                        {automation.trigger_types.map((trigger) => (
                           <span
-                            key={idx}
+                            key={trigger}
                             className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full backdrop-blur-sm"
                             style={{
                               color: "#12bcf2",
@@ -819,9 +838,9 @@ export default function Home() {
                           Actions
                         </p>
                         <div className="flex flex-wrap gap-2">
-                          {automation.action_calls.map((action, idx) => (
+                          {automation.action_calls.map((action) => (
                             <span
-                              key={idx}
+                              key={action}
                               className="px-3 py-1.5 text-xs font-mono rounded-lg backdrop-blur-sm"
                               style={{
                                 color: isDark ? "#6ee7b7" : "#059669",
@@ -840,7 +859,7 @@ export default function Home() {
                       </div>
                     )}
                 </div>
-              </div>
+              </article>
             ))
           )}
         </div>
@@ -964,6 +983,8 @@ export default function Home() {
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    role="img"
+                    aria-label="Expand section"
                   >
                     <path
                       strokeLinecap="round"
@@ -1034,6 +1055,7 @@ Here's my automation YAML:
 [Paste your automation YAML here]`}</code>
                   </pre>
                   <button
+                    type="button"
                     onClick={() => {
                       const text = `You are reviewing a Home Assistant automations.yaml file.
 

@@ -4,17 +4,6 @@ on:
   push:
     tags:
       - 'v*.*.*'
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to release (e.g., 1.0.0)'
-        required: true
-        type: string
-      prerelease:
-        description: 'Mark as prerelease'
-        required: false
-        type: boolean
-        default: false
 
 permissions:
   contents: write
@@ -59,7 +48,7 @@ jobs:
       - name: Get version
         id: get_version
         run: |
-          OUTPUT=$(.github/scripts/extract-version.sh "${{ github.event_name }}" "${{ github.event.inputs.version }}" "${{ github.ref }}")
+          OUTPUT=$(.github/scripts/extract-version.sh "${{ github.event_name }}" "" "${{ github.ref }}")
           echo "$OUTPUT" >> $GITHUB_OUTPUT
 
           # Extract version for validation
@@ -71,7 +60,7 @@ jobs:
       - name: Check if prerelease
         id: check_prerelease
         run: |
-          OUTPUT=$(.github/scripts/check-if-prerelease.sh "${{ steps.get_version.outputs.version }}" "${{ github.event.inputs.prerelease }}")
+          OUTPUT=$(.github/scripts/check-if-prerelease.sh "${{ steps.get_version.outputs.version }}" "")
           echo "$OUTPUT" >> $GITHUB_OUTPUT
 
   build-and-push-backend:

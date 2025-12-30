@@ -33,6 +33,10 @@ on:
         description: 'Image digest from the build'
         value: ${{ jobs.build.outputs.digest }}
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest

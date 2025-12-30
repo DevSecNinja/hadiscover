@@ -1,9 +1,9 @@
 """Test fixtures and configuration."""
 
 import pytest
+from app.models.database import Base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.models.database import Base
 
 # Sample Home Assistant automation YAML for testing
 SAMPLE_AUTOMATION_YAML = """

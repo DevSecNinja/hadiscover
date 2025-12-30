@@ -1,17 +1,19 @@
 """Tests for rate limiting on the index endpoint."""
 
-import pytest
 import os
-from fastapi.testclient import TestClient
-from app.main import app
-from app.api.routes import last_indexing_time, INDEXING_COOLDOWN_MINUTES
 import time
+
+import pytest
+from app.api.routes import INDEXING_COOLDOWN_MINUTES, last_indexing_time
+from app.main import app
+from fastapi.testclient import TestClient
 
 
 def test_index_rate_limiting():
     """Test that the index endpoint enforces rate limiting in development mode."""
-    import app.api.routes as routes_module
     import importlib
+
+    import app.api.routes as routes_module
 
     # Save original environment and set to development
     original_env = os.environ.get("ENVIRONMENT")
@@ -55,8 +57,9 @@ def test_index_rate_limiting():
 
 def test_index_rate_limit_message():
     """Test that the rate limit message includes time remaining in development mode."""
-    import app.api.routes as routes_module
     import importlib
+
+    import app.api.routes as routes_module
 
     # Save original environment and set to development
     original_env = os.environ.get("ENVIRONMENT")

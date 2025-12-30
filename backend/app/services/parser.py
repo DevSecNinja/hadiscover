@@ -1,7 +1,8 @@
 """Parser for Home Assistant automation YAML files."""
 
 import logging
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
+
 import yaml
 
 logger = logging.getLogger(__name__)

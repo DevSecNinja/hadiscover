@@ -1,9 +1,10 @@
 """Tests for ROOT_PATH environment variable configuration."""
 
-import os
 import importlib
-import pytest
+import os
 import sys
+
+import pytest
 from fastapi.testclient import TestClient
 
 

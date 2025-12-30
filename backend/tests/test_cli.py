@@ -2,13 +2,13 @@
 
 import asyncio
 import os
+from unittest.mock import AsyncMock, Mock, patch
+
 import pytest
-from unittest.mock import Mock, patch, AsyncMock
+from app.cli import get_db_session, main, run_indexing
+from app.models import Base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
-from app.cli import run_indexing, get_db_session, main
-from app.models import Base
 
 
 @pytest.fixture
@@ -34,8 +34,9 @@ async def test_run_indexing_success(test_db):
         "errors": 0,
     }
 
-    with patch("app.cli.IndexingService") as mock_indexer_class, patch(
-        "app.cli.get_db_session", return_value=test_db
+    with (
+        patch("app.cli.IndexingService") as mock_indexer_class,
+        patch("app.cli.get_db_session", return_value=test_db),
     ):
 
         mock_indexer = AsyncMock()
@@ -68,8 +69,9 @@ async def test_run_indexing_with_errors(test_db):
         "errors": 2,
     }
 
-    with patch("app.cli.IndexingService") as mock_indexer_class, patch(
-        "app.cli.get_db_session", return_value=test_db
+    with (
+        patch("app.cli.IndexingService") as mock_indexer_class,
+        patch("app.cli.get_db_session", return_value=test_db),
     ):
 
         mock_indexer = AsyncMock()
@@ -86,8 +88,9 @@ async def test_run_indexing_with_errors(test_db):
 @pytest.mark.asyncio
 async def test_run_indexing_exception(test_db):
     """Test indexing run with exception."""
-    with patch("app.cli.IndexingService") as mock_indexer_class, patch(
-        "app.cli.get_db_session", return_value=test_db
+    with (
+        patch("app.cli.IndexingService") as mock_indexer_class,
+        patch("app.cli.get_db_session", return_value=test_db),
     ):
 
         mock_indexer = AsyncMock()
@@ -110,9 +113,10 @@ def test_main_no_args():
 
 def test_main_unknown_command():
     """Test CLI main with unknown command."""
-    with patch("sys.argv", ["cli.py", "unknown"]), pytest.raises(
-        SystemExit
-    ) as exc_info:
+    with (
+        patch("sys.argv", ["cli.py", "unknown"]),
+        pytest.raises(SystemExit) as exc_info,
+    ):
         main()
 
     assert exc_info.value.code == 1
@@ -127,11 +131,12 @@ def test_main_index_now_command():
         "errors": 0,
     }
 
-    with patch("sys.argv", ["cli.py", "index-now"]), patch(
-        "app.cli.IndexingService"
-    ) as mock_indexer_class, patch("app.cli.get_db_session"), pytest.raises(
-        SystemExit
-    ) as exc_info:
+    with (
+        patch("sys.argv", ["cli.py", "index-now"]),
+        patch("app.cli.IndexingService") as mock_indexer_class,
+        patch("app.cli.get_db_session"),
+        pytest.raises(SystemExit) as exc_info,
+    ):
 
         mock_indexer = AsyncMock()
         mock_indexer.index_repositories.return_value = mock_stats

@@ -2,11 +2,11 @@
 
 import logging
 from typing import List
-from sqlalchemy.orm import Session
 
-from app.models.database import Repository, Automation
+from app.models.database import Automation, Repository
 from app.services.github_service import GitHubService
 from app.services.parser import AutomationParser
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 

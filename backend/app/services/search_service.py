@@ -1,11 +1,11 @@
 """Search service for querying Home Assistant automations."""
 
 import logging
-from typing import List, Dict, Any
-from sqlalchemy.orm import Session
-from sqlalchemy import or_, func
+from typing import Any, Dict, List
 
 from app.models.database import Automation, Repository
+from sqlalchemy import func, or_
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 

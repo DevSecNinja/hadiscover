@@ -4,10 +4,10 @@ import asyncio
 import logging
 import os
 import sys
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
 from app.services.indexer import IndexingService
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 # Configure logging
 logging.basicConfig(

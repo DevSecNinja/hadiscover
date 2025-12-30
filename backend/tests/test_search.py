@@ -1,7 +1,7 @@
 """Tests for search service."""
 
 import pytest
-from app.models.database import Repository, Automation
+from app.models.database import Automation, Repository
 from app.services.search_service import SearchService
 
 

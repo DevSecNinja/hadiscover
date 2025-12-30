@@ -2,13 +2,13 @@
 
 import logging
 import os
+
+from app.api.routes import router
+from app.models import init_db
+from app.version import __version__
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
-
-from app.models import init_db
-from app.api.routes import router
-from app.version import __version__
 
 # Load environment variables
 load_dotenv()

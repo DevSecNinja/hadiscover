@@ -2,7 +2,7 @@
 
 import pytest
 from app.services.parser import AutomationParser
-from tests.conftest import SAMPLE_AUTOMATION_YAML, SAMPLE_AUTOMATION_SINGLE
+from tests.conftest import SAMPLE_AUTOMATION_SINGLE, SAMPLE_AUTOMATION_YAML
 
 
 def test_parse_automation_list():

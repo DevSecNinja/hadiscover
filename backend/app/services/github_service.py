@@ -1,9 +1,10 @@
 """GitHub API integration service for discovering repositories with hadiscover topic."""
 
-import os
-import logging
 import base64
-from typing import List, Dict, Optional
+import logging
+import os
+from typing import Dict, List, Optional
+
 import httpx
 
 logger = logging.getLogger(__name__)

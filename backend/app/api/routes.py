@@ -2,15 +2,15 @@
 
 import logging
 import os
-from typing import List, Optional
 from datetime import datetime, timedelta
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
-from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from typing import List, Optional
 
 from app.models import get_db
-from app.services.search_service import SearchService
 from app.services.indexer import IndexingService
+from app.services.search_service import SearchService
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 

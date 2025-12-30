@@ -9,10 +9,14 @@
   }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', 'Roboto', system-ui, sans-serif;
+    font-family:
+      -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+      "Segoe UI", "Roboto", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
   }
 }
 
@@ -35,7 +39,14 @@
 
   /* Animated gradient background - Dark mode (Reflect.app style - breathable dark) */
   .gradient-bg {
-    background: linear-gradient(-45deg, #0f0f1a, #141422, #18152a, #121218, #0f0f1a);
+    background: linear-gradient(
+      -45deg,
+      #0f0f1a,
+      #141422,
+      #18152a,
+      #121218,
+      #0f0f1a
+    );
     background-size: 400% 400%;
     animation: gradient 20s ease infinite;
     transition: all 0.5s ease;
@@ -43,7 +54,14 @@
 
   /* Animated gradient background - Light mode */
   .gradient-bg-light {
-    background: linear-gradient(-45deg, #f9fafb, #f3f4f6, #f0f1f5, #f5f3ff, #faf5ff);
+    background: linear-gradient(
+      -45deg,
+      #f9fafb,
+      #f3f4f6,
+      #f0f1f5,
+      #f5f3ff,
+      #faf5ff
+    );
     background-size: 400% 400%;
     animation: gradient 20s ease infinite;
     transition: all 0.5s ease;
@@ -51,11 +69,19 @@
 
   /* Subtle radial glow effect */
   .glow-purple {
-    background: radial-gradient(circle at center, rgba(109, 40, 217, 0.15), transparent 70%);
+    background: radial-gradient(
+      circle at center,
+      rgba(109, 40, 217, 0.15),
+      transparent 70%
+    );
   }
 
   .glow-blue {
-    background: radial-gradient(circle at center, rgba(18, 188, 242, 0.1), transparent 70%);
+    background: radial-gradient(
+      circle at center,
+      rgba(18, 188, 242, 0.1),
+      transparent 70%
+    );
   }
 
   @keyframes gradient {
@@ -93,6 +119,7 @@
 }
 
 code {
-  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Courier New', monospace;
+  font-family:
+    "SF Mono", "Monaco", "Inconsolata", "Fira Code", "Courier New", monospace;
   font-size: 0.875rem;
 }

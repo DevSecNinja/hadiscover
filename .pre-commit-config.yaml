@@ -20,3 +20,9 @@ repos:
     rev: v3.12.0-2
     hooks:
       - id: shfmt         # prebuilt upstream executable
+
+  - repo: https://github.com/biomejs/pre-commit
+    rev: "v2.0.6"  # Use the sha / tag you want to point at
+    hooks:
+    - id: biome-format
+      additional_dependencies: ["@biomejs/biome@2.2.2"]

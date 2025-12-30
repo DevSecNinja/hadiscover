@@ -3,7 +3,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "hadiscover - Discover Home Assistant Automations",
-  description: "Search and explore powerful Home Assistant automations from the community. Find triggers, actions, and blueprints shared on GitHub.",
+  description:
+    "Search and explore powerful Home Assistant automations from the community. Find triggers, actions, and blueprints shared on GitHub.",
 };
 
 export default function RootLayout({
@@ -13,9 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
-        {children}
-      </body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from "react";
 
 interface Repository {
   name: string;
@@ -34,18 +34,18 @@ interface Statistics {
 }
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
+const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 
 if (!API_BASE_URL) {
-  console.error('NEXT_PUBLIC_API_URL environment variable is not set');
+  console.error("NEXT_PUBLIC_API_URL environment variable is not set");
 }
 
 if (IS_DEVELOPMENT) {
-  console.info('🚧 Running in development mode');
+  console.info("🚧 Running in development mode");
 }
 
 export default function Home() {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [results, setResults] = useState<Automation[]>([]);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -55,12 +55,14 @@ export default function Home() {
 
   useEffect(() => {
     // Load theme preference from localStorage
-    const savedTheme = localStorage.getItem('theme');
+    const savedTheme = localStorage.getItem("theme");
     if (savedTheme) {
-      setIsDark(savedTheme === 'dark');
+      setIsDark(savedTheme === "dark");
     } else {
       // Check system preference
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+      ).matches;
       setIsDark(prefersDark);
     }
   }, []);
@@ -69,7 +71,7 @@ export default function Home() {
     // Load statistics on mount
     fetchStatistics();
     // Load initial results
-    performSearch('');
+    performSearch("");
   }, []);
 
   const fetchStatistics = async () => {
@@ -78,18 +80,20 @@ export default function Home() {
       const data = await response.json();
       setStatistics(data);
     } catch (error) {
-      console.error('Error fetching statistics:', error);
+      console.error("Error fetching statistics:", error);
     }
   };
 
   const performSearch = async (searchQuery: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/search?q=${encodeURIComponent(searchQuery)}`);
+      const response = await fetch(
+        `${API_BASE_URL}/search?q=${encodeURIComponent(searchQuery)}`,
+      );
       const data: SearchResponse = await response.json();
       setResults(data.results);
     } catch (error) {
-      console.error('Error searching:', error);
+      console.error("Error searching:", error);
       setResults([]);
     } finally {
       setLoading(false);
@@ -105,7 +109,7 @@ export default function Home() {
     setIndexing(true);
     try {
       const response = await fetch(`${API_BASE_URL}/index`, {
-        method: 'POST',
+        method: "POST",
       });
 
       if (response.status === 429) {
@@ -114,14 +118,16 @@ export default function Home() {
       } else if (response.ok) {
         const data = await response.json();
         if (data.started) {
-          alert('Indexing started! This may take a few minutes. Refresh the page to see updated results.');
+          alert(
+            "Indexing started! This may take a few minutes. Refresh the page to see updated results.",
+          );
         }
       } else {
-        alert('Failed to trigger indexing');
+        alert("Failed to trigger indexing");
       }
     } catch (error) {
-      console.error('Error triggering indexing:', error);
-      alert('Failed to trigger indexing');
+      console.error("Error triggering indexing:", error);
+      alert("Failed to trigger indexing");
     } finally {
       setIndexing(false);
     }
@@ -130,111 +136,209 @@ export default function Home() {
   const toggleTheme = () => {
     const newTheme = !isDark;
     setIsDark(newTheme);
-    localStorage.setItem('theme', newTheme ? 'dark' : 'light');
+    localStorage.setItem("theme", newTheme ? "dark" : "light");
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden" style={{
-      backgroundColor: isDark ? 'transparent' : '#ffffff'
-    }}>
+    <div
+      className="min-h-screen relative overflow-hidden"
+      style={{
+        backgroundColor: isDark ? "transparent" : "#ffffff",
+      }}
+    >
       {/* Theme Toggle Button */}
       <button
         onClick={toggleTheme}
         className="fixed top-6 right-6 z-50 p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105"
         style={{
-          background: isDark ? 'rgba(20, 20, 35, 0.85)' : 'rgba(255, 255, 255, 0.9)',
-          border: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.06)',
-          boxShadow: isDark ? '0 2px 12px rgba(0, 0, 0, 0.4)' : '0 2px 8px rgba(0, 0, 0, 0.08)'
+          background: isDark
+            ? "rgba(20, 20, 35, 0.85)"
+            : "rgba(255, 255, 255, 0.9)",
+          border: isDark
+            ? "1px solid rgba(255, 255, 255, 0.1)"
+            : "1px solid rgba(0, 0, 0, 0.06)",
+          boxShadow: isDark
+            ? "0 2px 12px rgba(0, 0, 0, 0.4)"
+            : "0 2px 8px rgba(0, 0, 0, 0.08)",
         }}
-        title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+        title={isDark ? "Switch to light mode" : "Switch to dark mode"}
       >
         {isDark ? (
-          <svg className="w-5 h-5" style={{ color: '#a78bfa' }} fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+          <svg
+            className="w-5 h-5"
+            style={{ color: "#a78bfa" }}
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+            />
           </svg>
         ) : (
-          <svg className="w-5 h-5 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+          <svg
+            className="w-5 h-5 text-indigo-600"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
           </svg>
         )}
       </button>
 
       {/* Animated Background */}
-      <div className={`fixed inset-0 -z-10 ${isDark ? 'gradient-bg' : 'gradient-bg-light'}`}></div>
+      <div
+        className={`fixed inset-0 -z-10 ${isDark ? "gradient-bg" : "gradient-bg-light"}`}
+      ></div>
       {isDark && (
         <>
-          <div className="fixed inset-0 -z-10" style={{
-            background: 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(109, 40, 217, 0.15), transparent)'
-          }}></div>
-          <div className="fixed inset-0 -z-10" style={{
-            background: 'radial-gradient(ellipse 60% 50% at 80% 60%, rgba(18, 188, 242, 0.08), transparent)'
-          }}></div>
+          <div
+            className="fixed inset-0 -z-10"
+            style={{
+              background:
+                "radial-gradient(ellipse 80% 50% at 50% -20%, rgba(109, 40, 217, 0.15), transparent)",
+            }}
+          ></div>
+          <div
+            className="fixed inset-0 -z-10"
+            style={{
+              background:
+                "radial-gradient(ellipse 60% 50% at 80% 60%, rgba(18, 188, 242, 0.08), transparent)",
+            }}
+          ></div>
         </>
       )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <header className="text-center mb-16 pt-8">
-          <div className="inline-flex items-center gap-2.5 mb-8 px-4 py-2 rounded-full backdrop-blur-xl" style={{
-            background: isDark ? 'rgba(25, 25, 40, 0.6)' : 'rgba(255, 255, 255, 0.7)',
-            border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)'
-          }}>
-            <svg className="w-4 h-4" style={{ color: '#12bcf2' }} fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+          <div
+            className="inline-flex items-center gap-2.5 mb-8 px-4 py-2 rounded-full backdrop-blur-xl"
+            style={{
+              background: isDark
+                ? "rgba(25, 25, 40, 0.6)"
+                : "rgba(255, 255, 255, 0.7)",
+              border: isDark
+                ? "1px solid rgba(255, 255, 255, 0.08)"
+                : "1px solid rgba(0, 0, 0, 0.08)",
+            }}
+          >
+            <svg
+              className="w-4 h-4"
+              style={{ color: "#12bcf2" }}
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
             </svg>
-            <span className="text-sm font-medium" style={{
-              color: isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)',
-              opacity: 0.9
-            }}>Home Assistant Automation Discovery</span>
+            <span
+              className="text-sm font-medium"
+              style={{
+                color: isDark
+                  ? "rgba(255, 255, 255, 0.7)"
+                  : "rgba(0, 0, 0, 0.7)",
+                opacity: 0.9,
+              }}
+            >
+              Home Assistant Automation Discovery
+            </span>
           </div>
 
           <h1 className="text-7xl sm:text-8xl font-bold mb-6 tracking-tight">
-            <span className="bg-clip-text text-transparent" style={{
-              backgroundImage: isDark
-                ? 'linear-gradient(to right, #ffffff, #e0e7ff, #c7d2fe)'
-                : 'linear-gradient(to right, #1f2937, #4338ca, #6d28d9)',
-              WebkitBackgroundClip: 'text',
-              backgroundClip: 'text'
-            }}>
+            <span
+              className="bg-clip-text text-transparent"
+              style={{
+                backgroundImage: isDark
+                  ? "linear-gradient(to right, #ffffff, #e0e7ff, #c7d2fe)"
+                  : "linear-gradient(to right, #1f2937, #4338ca, #6d28d9)",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+              }}
+            >
               hadiscover
             </span>
           </h1>
 
-          <p className="text-2xl sm:text-3xl mb-4 font-light max-w-3xl mx-auto leading-relaxed" style={{
-            color: isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.7)'
-          }}>
+          <p
+            className="text-2xl sm:text-3xl mb-4 font-light max-w-3xl mx-auto leading-relaxed"
+            style={{
+              color: isDark ? "rgba(255, 255, 255, 0.6)" : "rgba(0, 0, 0, 0.7)",
+            }}
+          >
             Discover Home Assistant automations from the community
           </p>
 
           {statistics && (
             <div className="flex items-center justify-center gap-6 mt-10">
-              <div className="rounded-2xl px-8 py-5 backdrop-blur-xl" style={{
-                background: isDark ? 'rgba(25, 25, 40, 0.6)' : 'rgba(255, 255, 255, 0.8)',
-                border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)',
-                boxShadow: isDark ? '0 4px 16px rgba(0, 0, 0, 0.25)' : '0 2px 8px rgba(0, 0, 0, 0.05)'
-              }}>
-                <div className="text-3xl font-bold mb-1" style={{
-                  color: isDark ? '#e0e7ff' : '#1f2937'
-                }}>
+              <div
+                className="rounded-2xl px-8 py-5 backdrop-blur-xl"
+                style={{
+                  background: isDark
+                    ? "rgba(25, 25, 40, 0.6)"
+                    : "rgba(255, 255, 255, 0.8)",
+                  border: isDark
+                    ? "1px solid rgba(255, 255, 255, 0.08)"
+                    : "1px solid rgba(0, 0, 0, 0.08)",
+                  boxShadow: isDark
+                    ? "0 4px 16px rgba(0, 0, 0, 0.25)"
+                    : "0 2px 8px rgba(0, 0, 0, 0.05)",
+                }}
+              >
+                <div
+                  className="text-3xl font-bold mb-1"
+                  style={{
+                    color: isDark ? "#e0e7ff" : "#1f2937",
+                  }}
+                >
                   {statistics.total_automations.toLocaleString()}
                 </div>
-                <div className="text-sm" style={{
-                  color: isDark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)'
-                }}>Automations</div>
+                <div
+                  className="text-sm"
+                  style={{
+                    color: isDark
+                      ? "rgba(255, 255, 255, 0.5)"
+                      : "rgba(0, 0, 0, 0.5)",
+                  }}
+                >
+                  Automations
+                </div>
               </div>
-              <div className="rounded-2xl px-8 py-5 backdrop-blur-xl" style={{
-                background: isDark ? 'rgba(25, 25, 40, 0.6)' : 'rgba(255, 255, 255, 0.8)',
-                border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)',
-                boxShadow: isDark ? '0 4px 16px rgba(0, 0, 0, 0.25)' : '0 2px 8px rgba(0, 0, 0, 0.05)'
-              }}>
-                <div className="text-3xl font-bold mb-1" style={{
-                  color: isDark ? '#e0e7ff' : '#1f2937'
-                }}>
+              <div
+                className="rounded-2xl px-8 py-5 backdrop-blur-xl"
+                style={{
+                  background: isDark
+                    ? "rgba(25, 25, 40, 0.6)"
+                    : "rgba(255, 255, 255, 0.8)",
+                  border: isDark
+                    ? "1px solid rgba(255, 255, 255, 0.08)"
+                    : "1px solid rgba(0, 0, 0, 0.08)",
+                  boxShadow: isDark
+                    ? "0 4px 16px rgba(0, 0, 0, 0.25)"
+                    : "0 2px 8px rgba(0, 0, 0, 0.05)",
+                }}
+              >
+                <div
+                  className="text-3xl font-bold mb-1"
+                  style={{
+                    color: isDark ? "#e0e7ff" : "#1f2937",
+                  }}
+                >
                   {statistics.total_repositories.toLocaleString()}
                 </div>
-                <div className="text-sm" style={{
-                  color: isDark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)'
-                }}>Repositories</div>
+                <div
+                  className="text-sm"
+                  style={{
+                    color: isDark
+                      ? "rgba(255, 255, 255, 0.5)"
+                      : "rgba(0, 0, 0, 0.5)",
+                  }}
+                >
+                  Repositories
+                </div>
               </div>
             </div>
           )}
@@ -245,10 +349,23 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-3 max-w-4xl mx-auto">
             <div className="relative flex-1">
               <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                <svg className="w-5 h-5" style={{
-                  color: isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)'
-                }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <svg
+                  className="w-5 h-5"
+                  style={{
+                    color: isDark
+                      ? "rgba(255, 255, 255, 0.4)"
+                      : "rgba(0, 0, 0, 0.4)",
+                  }}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
               </div>
               <input
@@ -258,19 +375,31 @@ export default function Home() {
                 placeholder="Search automations, triggers, actions..."
                 className="w-full pl-12 pr-6 py-5 text-lg rounded-2xl border focus:outline-none focus:ring-1 focus:border-transparent transition-all duration-200"
                 style={{
-                  color: isDark ? '#e0e7ff' : '#1f2937',
-                  background: isDark ? 'rgba(25, 25, 40, 0.75)' : 'rgba(255, 255, 255, 0.9)',
-                  backdropFilter: 'blur(24px)',
-                  borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-                  boxShadow: isDark ? '0 4px 16px rgba(0, 0, 0, 0.25)' : '0 2px 8px rgba(0, 0, 0, 0.05)'
+                  color: isDark ? "#e0e7ff" : "#1f2937",
+                  background: isDark
+                    ? "rgba(25, 25, 40, 0.75)"
+                    : "rgba(255, 255, 255, 0.9)",
+                  backdropFilter: "blur(24px)",
+                  borderColor: isDark
+                    ? "rgba(255, 255, 255, 0.1)"
+                    : "rgba(0, 0, 0, 0.1)",
+                  boxShadow: isDark
+                    ? "0 4px 16px rgba(0, 0, 0, 0.25)"
+                    : "0 2px 8px rgba(0, 0, 0, 0.05)",
                 }}
                 onFocus={(e) => {
-                  e.currentTarget.style.borderColor = '#12bcf2';
-                  e.currentTarget.style.boxShadow = isDark ? '0 0 0 3px rgba(18, 188, 242, 0.1), 0 4px 16px rgba(0, 0, 0, 0.3)' : '0 0 0 3px rgba(18, 188, 242, 0.1), 0 2px 8px rgba(0, 0, 0, 0.08)';
+                  e.currentTarget.style.borderColor = "#12bcf2";
+                  e.currentTarget.style.boxShadow = isDark
+                    ? "0 0 0 3px rgba(18, 188, 242, 0.1), 0 4px 16px rgba(0, 0, 0, 0.3)"
+                    : "0 0 0 3px rgba(18, 188, 242, 0.1), 0 2px 8px rgba(0, 0, 0, 0.08)";
                 }}
                 onBlur={(e) => {
-                  e.currentTarget.style.borderColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-                  e.currentTarget.style.boxShadow = isDark ? '0 4px 16px rgba(0, 0, 0, 0.25)' : '0 2px 8px rgba(0, 0, 0, 0.05)';
+                  e.currentTarget.style.borderColor = isDark
+                    ? "rgba(255, 255, 255, 0.1)"
+                    : "rgba(0, 0, 0, 0.1)";
+                  e.currentTarget.style.boxShadow = isDark
+                    ? "0 4px 16px rgba(0, 0, 0, 0.25)"
+                    : "0 2px 8px rgba(0, 0, 0, 0.05)";
                 }}
               />
             </div>
@@ -280,37 +409,52 @@ export default function Home() {
               className="px-8 py-5 text-white font-semibold rounded-2xl focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               style={{
                 background: isDark
-                  ? 'linear-gradient(135deg, rgba(109, 40, 217, 0.8), rgba(147, 51, 234, 0.8))'
-                  : 'linear-gradient(135deg, rgb(109, 40, 217), rgb(147, 51, 234))',
-                border: isDark ? '1px solid rgba(147, 51, 234, 0.3)' : 'none',
+                  ? "linear-gradient(135deg, rgba(109, 40, 217, 0.8), rgba(147, 51, 234, 0.8))"
+                  : "linear-gradient(135deg, rgb(109, 40, 217), rgb(147, 51, 234))",
+                border: isDark ? "1px solid rgba(147, 51, 234, 0.3)" : "none",
                 boxShadow: isDark
-                  ? '0 4px 12px rgba(109, 40, 217, 0.25)'
-                  : '0 4px 12px rgba(109, 40, 217, 0.3)',
-                backdropFilter: isDark ? 'blur(12px)' : 'none'
+                  ? "0 4px 12px rgba(109, 40, 217, 0.25)"
+                  : "0 4px 12px rgba(109, 40, 217, 0.3)",
+                backdropFilter: isDark ? "blur(12px)" : "none",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.boxShadow = isDark
-                  ? '0 6px 16px rgba(109, 40, 217, 0.35)'
-                  : '0 6px 16px rgba(109, 40, 217, 0.4)';
-                e.currentTarget.style.transform = 'translateY(-1px)';
+                  ? "0 6px 16px rgba(109, 40, 217, 0.35)"
+                  : "0 6px 16px rgba(109, 40, 217, 0.4)";
+                e.currentTarget.style.transform = "translateY(-1px)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.boxShadow = isDark
-                  ? '0 4px 12px rgba(109, 40, 217, 0.25)'
-                  : '0 4px 12px rgba(109, 40, 217, 0.3)';
-                e.currentTarget.style.transform = 'translateY(0)';
+                  ? "0 4px 12px rgba(109, 40, 217, 0.25)"
+                  : "0 4px 12px rgba(109, 40, 217, 0.3)";
+                e.currentTarget.style.transform = "translateY(0)";
               }}
             >
               {loading ? (
                 <span className="flex items-center gap-2">
-                  <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    className="animate-spin h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   Searching
                 </span>
               ) : (
-                'Search'
+                "Search"
               )}
             </button>
           </div>
@@ -325,37 +469,60 @@ export default function Home() {
               className="px-6 py-3 text-white font-medium rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               style={{
                 background: isDark
-                  ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.8), rgba(16, 185, 129, 0.8))'
-                  : 'linear-gradient(135deg, rgb(34, 197, 94), rgb(16, 185, 129))',
-                border: isDark ? '1px solid rgba(34, 197, 94, 0.3)' : 'none',
+                  ? "linear-gradient(135deg, rgba(34, 197, 94, 0.8), rgba(16, 185, 129, 0.8))"
+                  : "linear-gradient(135deg, rgb(34, 197, 94), rgb(16, 185, 129))",
+                border: isDark ? "1px solid rgba(34, 197, 94, 0.3)" : "none",
                 boxShadow: isDark
-                  ? '0 4px 12px rgba(34, 197, 94, 0.2)'
-                  : '0 4px 12px rgba(34, 197, 94, 0.25)',
-                backdropFilter: isDark ? 'blur(12px)' : 'none'
+                  ? "0 4px 12px rgba(34, 197, 94, 0.2)"
+                  : "0 4px 12px rgba(34, 197, 94, 0.25)",
+                backdropFilter: isDark ? "blur(12px)" : "none",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.boxShadow = isDark
-                  ? '0 6px 16px rgba(34, 197, 94, 0.3)'
-                  : '0 6px 16px rgba(34, 197, 94, 0.35)';
-                e.currentTarget.style.transform = 'translateY(-1px)';
+                  ? "0 6px 16px rgba(34, 197, 94, 0.3)"
+                  : "0 6px 16px rgba(34, 197, 94, 0.35)";
+                e.currentTarget.style.transform = "translateY(-1px)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.boxShadow = isDark
-                  ? '0 4px 12px rgba(34, 197, 94, 0.2)'
-                  : '0 4px 12px rgba(34, 197, 94, 0.25)';
-                e.currentTarget.style.transform = 'translateY(0)';
+                  ? "0 4px 12px rgba(34, 197, 94, 0.2)"
+                  : "0 4px 12px rgba(34, 197, 94, 0.25)";
+                e.currentTarget.style.transform = "translateY(0)";
               }}
             >
-              {indexing ? 'Starting Indexing...' : '🔄 Trigger Re-Index'}
+              {indexing ? "Starting Indexing..." : "🔄 Trigger Re-Index"}
             </button>
-            <p className="text-sm mt-3" style={{
-              color: isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.5)'
-            }}>
-              Discover repositories with <code className="px-2 py-1 rounded-lg text-[rgb(var(--ha-blue))] font-mono text-xs" style={{
-                background: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'
-              }}>hadiscover</code> or <code className="px-2 py-1 rounded-lg text-[rgb(var(--ha-blue))] font-mono text-xs" style={{
-                background: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'
-              }}>ha-discover</code> topic
+            <p
+              className="text-sm mt-3"
+              style={{
+                color: isDark
+                  ? "rgba(255, 255, 255, 0.6)"
+                  : "rgba(0, 0, 0, 0.5)",
+              }}
+            >
+              Discover repositories with{" "}
+              <code
+                className="px-2 py-1 rounded-lg text-[rgb(var(--ha-blue))] font-mono text-xs"
+                style={{
+                  background: isDark
+                    ? "rgba(255, 255, 255, 0.1)"
+                    : "rgba(0, 0, 0, 0.05)",
+                }}
+              >
+                hadiscover
+              </code>{" "}
+              or{" "}
+              <code
+                className="px-2 py-1 rounded-lg text-[rgb(var(--ha-blue))] font-mono text-xs"
+                style={{
+                  background: isDark
+                    ? "rgba(255, 255, 255, 0.1)"
+                    : "rgba(0, 0, 0, 0.05)",
+                }}
+              >
+                ha-discover
+              </code>{" "}
+              topic
             </p>
           </div>
         )}
@@ -364,34 +531,82 @@ export default function Home() {
         <div className="space-y-4">
           {loading ? (
             <div className="text-center py-20">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full backdrop-blur-xl mb-4" style={{
-                background: isDark ? 'rgba(25, 25, 40, 0.6)' : 'rgba(0, 0, 0, 0.04)',
-                border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.06)'
-              }}>
-                <svg className="animate-spin h-8 w-8" style={{ color: '#12bcf2' }} fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <div
+                className="inline-flex items-center justify-center w-16 h-16 rounded-full backdrop-blur-xl mb-4"
+                style={{
+                  background: isDark
+                    ? "rgba(25, 25, 40, 0.6)"
+                    : "rgba(0, 0, 0, 0.04)",
+                  border: isDark
+                    ? "1px solid rgba(255, 255, 255, 0.08)"
+                    : "1px solid rgba(0, 0, 0, 0.06)",
+                }}
+              >
+                <svg
+                  className="animate-spin h-8 w-8"
+                  style={{ color: "#12bcf2" }}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
               </div>
-              <p className="text-lg" style={{
-                color: isDark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.6)'
-              }}>Searching automations...</p>
+              <p
+                className="text-lg"
+                style={{
+                  color: isDark
+                    ? "rgba(255, 255, 255, 0.5)"
+                    : "rgba(0, 0, 0, 0.6)",
+                }}
+              >
+                Searching automations...
+              </p>
             </div>
           ) : results.length === 0 ? (
-            <div className="text-center py-20 rounded-3xl backdrop-blur-xl" style={{
-              background: isDark ? 'rgba(25, 25, 40, 0.6)' : 'rgba(255, 255, 255, 0.8)',
-              border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)'
-            }}>
+            <div
+              className="text-center py-20 rounded-3xl backdrop-blur-xl"
+              style={{
+                background: isDark
+                  ? "rgba(25, 25, 40, 0.6)"
+                  : "rgba(255, 255, 255, 0.8)",
+                border: isDark
+                  ? "1px solid rgba(255, 255, 255, 0.08)"
+                  : "1px solid rgba(0, 0, 0, 0.08)",
+              }}
+            >
               <div className="text-6xl mb-4">🔍</div>
-              <p className="text-xl mb-2" style={{
-                color: isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.8)'
-              }}>
-                {query ? 'No automations found' : 'Start your search'}
+              <p
+                className="text-xl mb-2"
+                style={{
+                  color: isDark
+                    ? "rgba(255, 255, 255, 0.7)"
+                    : "rgba(0, 0, 0, 0.8)",
+                }}
+              >
+                {query ? "No automations found" : "Start your search"}
               </p>
-              <p style={{
-                color: isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.5)'
-              }}>
-                {query ? 'Try a different search term or browse all results' : 'Search for automations by name, trigger, or action'}
+              <p
+                style={{
+                  color: isDark
+                    ? "rgba(255, 255, 255, 0.4)"
+                    : "rgba(0, 0, 0, 0.5)",
+                }}
+              >
+                {query
+                  ? "Try a different search term or browse all results"
+                  : "Search for automations by name, trigger, or action"}
               </p>
             </div>
           ) : (
@@ -400,24 +615,40 @@ export default function Home() {
                 key={automation.id}
                 className="group rounded-3xl backdrop-blur-xl p-8 transition-all duration-200"
                 style={{
-                  background: isDark ? 'rgba(25, 25, 40, 0.65)' : 'rgba(255, 255, 255, 0.8)',
-                  border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)',
-                  boxShadow: isDark ? '0 4px 16px rgba(0, 0, 0, 0.2)' : '0 2px 8px rgba(0, 0, 0, 0.05)'
+                  background: isDark
+                    ? "rgba(25, 25, 40, 0.65)"
+                    : "rgba(255, 255, 255, 0.8)",
+                  border: isDark
+                    ? "1px solid rgba(255, 255, 255, 0.08)"
+                    : "1px solid rgba(0, 0, 0, 0.08)",
+                  boxShadow: isDark
+                    ? "0 4px 16px rgba(0, 0, 0, 0.2)"
+                    : "0 2px 8px rgba(0, 0, 0, 0.05)",
                 }}
                 onMouseEnter={(e) => {
                   if (isDark) {
-                    e.currentTarget.style.background = 'rgba(30, 30, 48, 0.75)';
-                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
-                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.3)';
+                    e.currentTarget.style.background = "rgba(30, 30, 48, 0.75)";
+                    e.currentTarget.style.borderColor =
+                      "rgba(255, 255, 255, 0.12)";
+                    e.currentTarget.style.boxShadow =
+                      "0 8px 24px rgba(0, 0, 0, 0.3)";
                   } else {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.95)';
-                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.08)';
+                    e.currentTarget.style.background =
+                      "rgba(255, 255, 255, 0.95)";
+                    e.currentTarget.style.boxShadow =
+                      "0 4px 16px rgba(0, 0, 0, 0.08)";
                   }
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = isDark ? 'rgba(25, 25, 40, 0.65)' : 'rgba(255, 255, 255, 0.8)';
-                  e.currentTarget.style.borderColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)';
-                  e.currentTarget.style.boxShadow = isDark ? '0 4px 16px rgba(0, 0, 0, 0.2)' : '0 2px 8px rgba(0, 0, 0, 0.05)';
+                  e.currentTarget.style.background = isDark
+                    ? "rgba(25, 25, 40, 0.65)"
+                    : "rgba(255, 255, 255, 0.8)";
+                  e.currentTarget.style.borderColor = isDark
+                    ? "rgba(255, 255, 255, 0.08)"
+                    : "rgba(0, 0, 0, 0.08)";
+                  e.currentTarget.style.boxShadow = isDark
+                    ? "0 4px 16px rgba(0, 0, 0, 0.2)"
+                    : "0 2px 8px rgba(0, 0, 0, 0.05)";
                 }}
               >
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
@@ -428,25 +659,36 @@ export default function Home() {
                       rel="noopener noreferrer"
                       className="block group/title"
                     >
-                      <h3 className="text-2xl font-semibold mb-2 group-hover/title:text-[rgb(var(--ha-blue))] transition-colors truncate" style={{
-                        color: isDark ? '#e0e7ff' : '#1f2937'
-                      }}>
-                        {automation.alias || 'Unnamed Automation'}
+                      <h3
+                        className="text-2xl font-semibold mb-2 group-hover/title:text-[rgb(var(--ha-blue))] transition-colors truncate"
+                        style={{
+                          color: isDark ? "#e0e7ff" : "#1f2937",
+                        }}
+                      >
+                        {automation.alias || "Unnamed Automation"}
                       </h3>
                     </a>
-                    <div className="flex flex-wrap items-center gap-2 text-sm" style={{
-                      color: isDark ? 'rgba(255, 255, 255, 0.45)' : 'rgba(0, 0, 0, 0.5)'
-                    }}>
+                    <div
+                      className="flex flex-wrap items-center gap-2 text-sm"
+                      style={{
+                        color: isDark
+                          ? "rgba(255, 255, 255, 0.45)"
+                          : "rgba(0, 0, 0, 0.5)",
+                      }}
+                    >
                       <a
                         href={automation.repository.url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="hover:text-[rgb(var(--ha-blue))] transition-colors font-medium"
                       >
-                        {automation.repository.owner}/{automation.repository.name}
+                        {automation.repository.owner}/
+                        {automation.repository.name}
                       </a>
                       <span style={{ opacity: 0.5 }}>•</span>
-                      <span className="font-mono text-xs truncate">{automation.source_file_path}</span>
+                      <span className="font-mono text-xs truncate">
+                        {automation.source_file_path}
+                      </span>
                     </div>
                   </div>
                   <a
@@ -455,41 +697,73 @@ export default function Home() {
                     rel="noopener noreferrer"
                     className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 font-medium rounded-xl transition-all duration-200"
                     style={{
-                      color: isDark ? 'rgba(255, 255, 255, 0.7)' : '#1f2937',
-                      background: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
-                      border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)'
+                      color: isDark ? "rgba(255, 255, 255, 0.7)" : "#1f2937",
+                      background: isDark
+                        ? "rgba(255, 255, 255, 0.05)"
+                        : "rgba(0, 0, 0, 0.04)",
+                      border: isDark
+                        ? "1px solid rgba(255, 255, 255, 0.08)"
+                        : "1px solid rgba(0, 0, 0, 0.08)",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)';
+                      e.currentTarget.style.background = isDark
+                        ? "rgba(255, 255, 255, 0.08)"
+                        : "rgba(0, 0, 0, 0.06)";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)';
+                      e.currentTarget.style.background = isDark
+                        ? "rgba(255, 255, 255, 0.05)"
+                        : "rgba(0, 0, 0, 0.04)";
                     }}
                   >
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                      <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                     GitHub
                   </a>
                 </div>
 
                 {automation.description && (
-                  <p className="text-base leading-relaxed mb-5" style={{
-                    color: isDark ? 'rgba(255, 255, 255, 0.55)' : 'rgba(0, 0, 0, 0.6)'
-                  }}>
+                  <p
+                    className="text-base leading-relaxed mb-5"
+                    style={{
+                      color: isDark
+                        ? "rgba(255, 255, 255, 0.55)"
+                        : "rgba(0, 0, 0, 0.6)",
+                    }}
+                  >
                     {automation.description}
                   </p>
                 )}
 
                 {automation.blueprint_path && (
                   <div className="mb-5">
-                    <span className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl" style={{
-                      color: isDark ? '#c4b5fd' : '#6d28d9',
-                      background: isDark ? 'rgba(109, 40, 217, 0.15)' : 'rgba(109, 40, 217, 0.08)',
-                      border: isDark ? '1px solid rgba(109, 40, 217, 0.25)' : '1px solid rgba(109, 40, 217, 0.15)'
-                    }}>
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                    <span
+                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl"
+                      style={{
+                        color: isDark ? "#c4b5fd" : "#6d28d9",
+                        background: isDark
+                          ? "rgba(109, 40, 217, 0.15)"
+                          : "rgba(109, 40, 217, 0.08)",
+                        border: isDark
+                          ? "1px solid rgba(109, 40, 217, 0.25)"
+                          : "1px solid rgba(109, 40, 217, 0.15)",
+                      }}
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" />
                       </svg>
                       Blueprint: {automation.blueprint_path}
                     </span>
@@ -499,18 +773,29 @@ export default function Home() {
                 <div className="space-y-4">
                   {automation.trigger_types.length > 0 && (
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{
-                        color: isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)'
-                      }}>Triggers</p>
+                      <p
+                        className="text-xs font-semibold uppercase tracking-wider mb-2"
+                        style={{
+                          color: isDark
+                            ? "rgba(255, 255, 255, 0.4)"
+                            : "rgba(0, 0, 0, 0.4)",
+                        }}
+                      >
+                        Triggers
+                      </p>
                       <div className="flex flex-wrap gap-2">
                         {automation.trigger_types.map((trigger, idx) => (
                           <span
                             key={idx}
                             className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full backdrop-blur-sm"
                             style={{
-                              color: '#12bcf2',
-                              background: isDark ? 'rgba(18, 188, 242, 0.12)' : 'rgba(18, 188, 242, 0.1)',
-                              border: isDark ? '1px solid rgba(18, 188, 242, 0.2)' : '1px solid rgba(18, 188, 242, 0.15)'
+                              color: "#12bcf2",
+                              background: isDark
+                                ? "rgba(18, 188, 242, 0.12)"
+                                : "rgba(18, 188, 242, 0.1)",
+                              border: isDark
+                                ? "1px solid rgba(18, 188, 242, 0.2)"
+                                : "1px solid rgba(18, 188, 242, 0.15)",
                             }}
                           >
                             {trigger}
@@ -520,28 +805,40 @@ export default function Home() {
                     </div>
                   )}
 
-                  {automation.action_calls && automation.action_calls.length > 0 && (
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{
-                        color: isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)'
-                      }}>Actions</p>
-                      <div className="flex flex-wrap gap-2">
-                        {automation.action_calls.map((action, idx) => (
-                          <span
-                            key={idx}
-                            className="px-3 py-1.5 text-xs font-mono rounded-lg backdrop-blur-sm"
-                            style={{
-                              color: isDark ? '#6ee7b7' : '#059669',
-                              background: isDark ? 'rgba(16, 185, 129, 0.12)' : 'rgba(16, 185, 129, 0.08)',
-                              border: isDark ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(16, 185, 129, 0.15)'
-                            }}
-                          >
-                            {action}
-                          </span>
-                        ))}
+                  {automation.action_calls &&
+                    automation.action_calls.length > 0 && (
+                      <div>
+                        <p
+                          className="text-xs font-semibold uppercase tracking-wider mb-2"
+                          style={{
+                            color: isDark
+                              ? "rgba(255, 255, 255, 0.4)"
+                              : "rgba(0, 0, 0, 0.4)",
+                          }}
+                        >
+                          Actions
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {automation.action_calls.map((action, idx) => (
+                            <span
+                              key={idx}
+                              className="px-3 py-1.5 text-xs font-mono rounded-lg backdrop-blur-sm"
+                              style={{
+                                color: isDark ? "#6ee7b7" : "#059669",
+                                background: isDark
+                                  ? "rgba(16, 185, 129, 0.12)"
+                                  : "rgba(16, 185, 129, 0.08)",
+                                border: isDark
+                                  ? "1px solid rgba(16, 185, 129, 0.2)"
+                                  : "1px solid rgba(16, 185, 129, 0.15)",
+                              }}
+                            >
+                              {action}
+                            </span>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
               </div>
             ))
@@ -550,75 +847,167 @@ export default function Home() {
 
         {/* Footer */}
         <footer className="mt-24 mb-12">
-          <div className="rounded-3xl backdrop-blur-xl p-8 text-center" style={{
-            background: isDark ? 'rgba(25, 25, 40, 0.6)' : 'rgba(255, 255, 255, 0.8)',
-            border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)'
-          }}>
+          <div
+            className="rounded-3xl backdrop-blur-xl p-8 text-center"
+            style={{
+              background: isDark
+                ? "rgba(25, 25, 40, 0.6)"
+                : "rgba(255, 255, 255, 0.8)",
+              border: isDark
+                ? "1px solid rgba(255, 255, 255, 0.08)"
+                : "1px solid rgba(0, 0, 0, 0.08)",
+            }}
+          >
             <div className="max-w-2xl mx-auto">
-              <h3 className="text-lg font-semibold mb-3" style={{
-                color: isDark ? '#e0e7ff' : '#1f2937'
-              }}>Want to be discovered?</h3>
-              <p className="mb-4 leading-relaxed" style={{
-                color: isDark ? 'rgba(255, 255, 255, 0.55)' : 'rgba(0, 0, 0, 0.6)'
-              }}>
-                hadiscover indexes Home Assistant automations from GitHub repositories with the{' '}
-                <code className="px-2 py-1 rounded-lg font-mono text-sm" style={{
-                  color: '#12bcf2',
-                  background: isDark ? 'rgba(18, 188, 242, 0.12)' : 'rgba(18, 188, 242, 0.08)'
-                }}>hadiscover</code> or{' '}
-                <code className="px-2 py-1 rounded-lg font-mono text-sm" style={{
-                  color: '#12bcf2',
-                  background: isDark ? 'rgba(18, 188, 242, 0.12)' : 'rgba(18, 188, 242, 0.08)'
-                }}>ha-discover</code> topic.
+              <h3
+                className="text-lg font-semibold mb-3"
+                style={{
+                  color: isDark ? "#e0e7ff" : "#1f2937",
+                }}
+              >
+                Want to be discovered?
+              </h3>
+              <p
+                className="mb-4 leading-relaxed"
+                style={{
+                  color: isDark
+                    ? "rgba(255, 255, 255, 0.55)"
+                    : "rgba(0, 0, 0, 0.6)",
+                }}
+              >
+                hadiscover indexes Home Assistant automations from GitHub
+                repositories with the{" "}
+                <code
+                  className="px-2 py-1 rounded-lg font-mono text-sm"
+                  style={{
+                    color: "#12bcf2",
+                    background: isDark
+                      ? "rgba(18, 188, 242, 0.12)"
+                      : "rgba(18, 188, 242, 0.08)",
+                  }}
+                >
+                  hadiscover
+                </code>{" "}
+                or{" "}
+                <code
+                  className="px-2 py-1 rounded-lg font-mono text-sm"
+                  style={{
+                    color: "#12bcf2",
+                    background: isDark
+                      ? "rgba(18, 188, 242, 0.12)"
+                      : "rgba(18, 188, 242, 0.08)",
+                  }}
+                >
+                  ha-discover
+                </code>{" "}
+                topic.
               </p>
-              <p className="text-sm" style={{
-                color: isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.5)'
-              }}>
-                Add the topic to your repository to share your automations with the community!
+              <p
+                className="text-sm"
+                style={{
+                  color: isDark
+                    ? "rgba(255, 255, 255, 0.4)"
+                    : "rgba(0, 0, 0, 0.5)",
+                }}
+              >
+                Add the topic to your repository to share your automations with
+                the community!
               </p>
             </div>
           </div>
 
           {/* GPT Prompt Section */}
           <div className="mt-8">
-            <details className="rounded-3xl backdrop-blur-xl overflow-hidden transition-all duration-200" style={{
-              background: isDark ? 'rgba(25, 25, 40, 0.6)' : 'rgba(255, 255, 255, 0.8)',
-              border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)'
-            }}>
-              <summary className="px-8 py-6 cursor-pointer list-none transition-all duration-200 hover:bg-opacity-90" style={{
-                color: isDark ? '#e0e7ff' : '#1f2937'
-              }}>
+            <details
+              className="rounded-3xl backdrop-blur-xl overflow-hidden transition-all duration-200"
+              style={{
+                background: isDark
+                  ? "rgba(25, 25, 40, 0.6)"
+                  : "rgba(255, 255, 255, 0.8)",
+                border: isDark
+                  ? "1px solid rgba(255, 255, 255, 0.08)"
+                  : "1px solid rgba(0, 0, 0, 0.08)",
+              }}
+            >
+              <summary
+                className="px-8 py-6 cursor-pointer list-none transition-all duration-200 hover:bg-opacity-90"
+                style={{
+                  color: isDark ? "#e0e7ff" : "#1f2937",
+                }}
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">✨</span>
                     <div>
-                      <h3 className="text-lg font-semibold">Improve Your Automations with AI</h3>
-                      <p className="text-sm mt-1" style={{
-                        color: isDark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)'
-                      }}>GPT prompt to write better titles & descriptions</p>
+                      <h3 className="text-lg font-semibold">
+                        Improve Your Automations with AI
+                      </h3>
+                      <p
+                        className="text-sm mt-1"
+                        style={{
+                          color: isDark
+                            ? "rgba(255, 255, 255, 0.5)"
+                            : "rgba(0, 0, 0, 0.5)",
+                        }}
+                      >
+                        GPT prompt to write better titles & descriptions
+                      </p>
                     </div>
                   </div>
-                  <svg className="w-5 h-5 transition-transform duration-200" style={{
-                    color: isDark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)'
-                  }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <svg
+                    className="w-5 h-5 transition-transform duration-200"
+                    style={{
+                      color: isDark
+                        ? "rgba(255, 255, 255, 0.5)"
+                        : "rgba(0, 0, 0, 0.5)",
+                    }}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </div>
               </summary>
-              <div className="px-8 pb-8 pt-4 border-t" style={{
-                borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)'
-              }}>
-                <p className="mb-4 leading-relaxed" style={{
-                  color: isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.7)'
-                }}>
-                  Clear titles and descriptions make your automations more discoverable. Copy this prompt and your automation YAML to ChatGPT, Claude, or any AI assistant:
+              <div
+                className="px-8 pb-8 pt-4 border-t"
+                style={{
+                  borderColor: isDark
+                    ? "rgba(255, 255, 255, 0.08)"
+                    : "rgba(0, 0, 0, 0.08)",
+                }}
+              >
+                <p
+                  className="mb-4 leading-relaxed"
+                  style={{
+                    color: isDark
+                      ? "rgba(255, 255, 255, 0.6)"
+                      : "rgba(0, 0, 0, 0.7)",
+                  }}
+                >
+                  Clear titles and descriptions make your automations more
+                  discoverable. Copy this prompt and your automation YAML to
+                  ChatGPT, Claude, or any AI assistant:
                 </p>
                 <div className="relative group">
-                  <pre className="rounded-2xl p-6 overflow-x-auto text-sm leading-relaxed" style={{
-                    background: isDark ? 'rgba(17, 17, 27, 0.8)' : 'rgba(248, 248, 248, 0.95)',
-                    color: isDark ? '#e0e7ff' : '#1f2937',
-                    border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.08)'
-                  }}><code>{`You are reviewing a Home Assistant automations.yaml file.
+                  <pre
+                    className="rounded-2xl p-6 overflow-x-auto text-sm leading-relaxed"
+                    style={{
+                      background: isDark
+                        ? "rgba(17, 17, 27, 0.8)"
+                        : "rgba(248, 248, 248, 0.95)",
+                      color: isDark ? "#e0e7ff" : "#1f2937",
+                      border: isDark
+                        ? "1px solid rgba(255, 255, 255, 0.08)"
+                        : "1px solid rgba(0, 0, 0, 0.08)",
+                    }}
+                  >
+                    <code>{`You are reviewing a Home Assistant automations.yaml file.
 
 For each automation, rewrite:
 
@@ -642,7 +1031,8 @@ Rules
 
 Here's my automation YAML:
 
-[Paste your automation YAML here]`}</code></pre>
+[Paste your automation YAML here]`}</code>
+                  </pre>
                   <button
                     onClick={() => {
                       const text = `You are reviewing a Home Assistant automations.yaml file.
@@ -677,24 +1067,35 @@ Here's my automation YAML:
                     className="absolute top-4 right-4 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 opacity-0 group-hover:opacity-100"
                     style={{
                       background: copied
-                        ? (isDark ? 'rgba(34, 197, 94, 0.8)' : 'rgb(34, 197, 94)')
-                        : (isDark ? 'rgba(109, 40, 217, 0.8)' : 'rgb(109, 40, 217)'),
-                      color: '#ffffff',
+                        ? isDark
+                          ? "rgba(34, 197, 94, 0.8)"
+                          : "rgb(34, 197, 94)"
+                        : isDark
+                          ? "rgba(109, 40, 217, 0.8)"
+                          : "rgb(109, 40, 217)",
+                      color: "#ffffff",
                       border: copied
-                        ? (isDark ? '1px solid rgba(34, 197, 94, 0.3)' : 'none')
-                        : (isDark ? '1px solid rgba(147, 51, 234, 0.3)' : 'none')
+                        ? isDark
+                          ? "1px solid rgba(34, 197, 94, 0.3)"
+                          : "none"
+                        : isDark
+                          ? "1px solid rgba(147, 51, 234, 0.3)"
+                          : "none",
                     }}
                   >
-                    {copied ? '✓ Copied!' : '📋 Copy'}
+                    {copied ? "✓ Copied!" : "📋 Copy"}
                   </button>
                 </div>
               </div>
             </details>
           </div>
 
-          <div className="text-center mt-8 text-sm" style={{
-            color: isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.4)'
-          }}>
+          <div
+            className="text-center mt-8 text-sm"
+            style={{
+              color: isDark ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.4)",
+            }}
+          >
             <p>Built with 💙 for the Home Assistant community</p>
           </div>
         </footer>

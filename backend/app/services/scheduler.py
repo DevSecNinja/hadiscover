@@ -7,7 +7,7 @@ from datetime import datetime
 
 from app.services.indexer import IndexingService
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.triggers.interval import IntervalTrigger
+from apscheduler.triggers.cron import CronTrigger
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -65,11 +65,11 @@ class SchedulerService:
             db.close()
 
     def start(self):
-        """Start the scheduler with hourly indexing."""
-        # Add hourly indexing job
+        """Start the scheduler with hourly indexing at top of the hour."""
+        # Add hourly indexing job - runs at minute 0 of every hour
         self.scheduler.add_job(
             self.run_indexing_task,
-            trigger=IntervalTrigger(hours=1),
+            trigger=CronTrigger(minute=0),
             id="hourly_indexing",
             name="Index Home Assistant automations from GitHub",
             replace_existing=True,
@@ -78,10 +78,7 @@ class SchedulerService:
 
         # Start the scheduler
         self.scheduler.start()
-        logger.info("Scheduler started - indexing will run every hour")
-
-        # Run indexing immediately on startup (optional, but recommended)
-        asyncio.create_task(self.run_indexing_task())
+        logger.info("Scheduler started - indexing will run at the top of every hour")
 
     def shutdown(self):
         """Shutdown the scheduler gracefully."""

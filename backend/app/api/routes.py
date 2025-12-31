@@ -99,6 +99,7 @@ class StatisticsResponse(BaseModel):
     total_repositories: int
     total_automations: int
     last_indexed_at: Optional[str] = None
+    repo_star_count: int
 
 
 class IndexResponse(BaseModel):

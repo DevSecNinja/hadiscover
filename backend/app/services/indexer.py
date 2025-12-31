@@ -4,6 +4,7 @@ import logging
 from datetime import datetime
 from typing import List
 
+import httpx
 from app.models.database import Automation, IndexingMetadata, Repository
 from app.services.github_service import GitHubRateLimitError, GitHubService
 from app.services.parser import AutomationParser
@@ -69,6 +70,8 @@ class IndexingService:
             # Only store completion timestamp if indexing was not rate limited
             if not stats["rate_limited"]:
                 self._store_completion_timestamp(db)
+                # Also fetch and store hadiscover repo star count
+                await self._store_repo_star_count(db)
                 logger.info("Indexing completed successfully")
             else:
                 logger.warning(
@@ -121,6 +124,56 @@ class IndexingService:
             )
         except Exception as e:
             logger.error(f"Error storing completion timestamp: {e}")
+            db.rollback()
+
+    async def _store_repo_star_count(self, db: Session) -> None:
+        """
+        Fetch and store the hadiscover repository star count.
+
+        Args:
+            db: Database session
+        """
+        try:
+            async with httpx.AsyncClient() as client:
+                url = f"{self.github_service.BASE_URL}/repos/DevSecNinja/hadiscover"
+                response = await client.get(
+                    url, headers=self.github_service.headers, timeout=10.0
+                )
+
+                if response.status_code == 200:
+                    data = response.json()
+                    star_count = data.get("stargazers_count", 0)
+
+                    # Check if metadata record exists
+                    metadata = (
+                        db.query(IndexingMetadata)
+                        .filter_by(key="repo_star_count")
+                        .first()
+                    )
+
+                    current_time = datetime.utcnow()
+
+                    if metadata:
+                        # Update existing record
+                        metadata.value = str(star_count)
+                        metadata.updated_at = current_time
+                    else:
+                        # Create new record
+                        metadata = IndexingMetadata(
+                            key="repo_star_count",
+                            value=str(star_count),
+                            updated_at=current_time,
+                        )
+                        db.add(metadata)
+
+                    db.commit()
+                    logger.info(f"Stored repository star count: {star_count}")
+                else:
+                    logger.warning(
+                        f"Failed to fetch repo star count. Status: {response.status_code}"
+                    )
+        except Exception as e:
+            logger.error(f"Error storing repo star count: {e}")
             db.rollback()
 
     async def _index_repository(self, db: Session, repo_data: dict) -> dict:

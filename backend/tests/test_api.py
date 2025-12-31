@@ -105,3 +105,17 @@ def test_index_endpoint_blocked_in_production():
             os.environ["ENVIRONMENT"] = original_env
         elif "ENVIRONMENT" in os.environ:
             del os.environ["ENVIRONMENT"]
+
+
+def test_statistics_includes_star_count():
+    """Test statistics endpoint includes repo star count."""
+    client = TestClient(app)
+    response = client.get("/api/v1/statistics")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert "total_repositories" in data
+    assert "total_automations" in data
+    assert "last_indexed_at" in data
+    assert "repo_star_count" in data
+    assert isinstance(data["repo_star_count"], int)

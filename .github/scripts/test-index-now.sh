@@ -7,8 +7,8 @@ set -e
 CONTAINER_NAME="${1}"
 
 if [ -z "$CONTAINER_NAME" ]; then
-    echo "Usage: $0 <container-name>"
-    exit 1
+	echo "Usage: $0 <container-name>"
+	exit 1
 fi
 
 echo "Testing index-now command in container..."
@@ -22,8 +22,8 @@ docker exec "${CONTAINER_NAME}" timeout 10 index-now 2>&1 | head -20 || true
 
 # Verify the command started the indexing process
 if docker exec "${CONTAINER_NAME}" timeout 10 index-now 2>&1 | grep -q "Starting indexing job"; then
-    echo "✓ index-now command executed successfully"
+	echo "✓ index-now command executed successfully"
 else
-    echo "✗ index-now command failed to start"
-    exit 1
+	echo "✗ index-now command failed to start"
+	exit 1
 fi

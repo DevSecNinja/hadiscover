@@ -19,8 +19,8 @@ NC='\033[0m' # No Color
 # Check if Python 3.12+ is available
 echo "Checking Python version..."
 if ! command -v python3 &>/dev/null; then
-    echo -e "${RED}✗ Python 3 is not installed${NC}"
-    exit 1
+	echo -e "${RED}✗ Python 3 is not installed${NC}"
+	exit 1
 fi
 
 PYTHON_VERSION=$(python3 --version | cut -d' ' -f2)
@@ -30,8 +30,8 @@ echo ""
 # Check if Node.js is available
 echo "Checking Node.js version..."
 if ! command -v node &>/dev/null; then
-    echo -e "${RED}✗ Node.js is not installed${NC}"
-    exit 1
+	echo -e "${RED}✗ Node.js is not installed${NC}"
+	exit 1
 fi
 
 NODE_VERSION=$(node --version)
@@ -48,11 +48,11 @@ cd backend
 
 # Create virtual environment if it doesn't exist
 if [ ! -d "venv" ]; then
-    echo "Creating Python virtual environment..."
-    python3 -m venv venv
-    echo -e "${GREEN}✓ Virtual environment created${NC}"
+	echo "Creating Python virtual environment..."
+	python3 -m venv venv
+	echo -e "${GREEN}✓ Virtual environment created${NC}"
 else
-    echo -e "${YELLOW}Virtual environment already exists${NC}"
+	echo -e "${YELLOW}Virtual environment already exists${NC}"
 fi
 
 # Activate virtual environment
@@ -66,17 +66,17 @@ pip install --upgrade pip --quiet
 # Install dependencies
 echo "Installing backend dependencies..."
 if [ -f "requirements.txt" ]; then
-    pip install -r requirements.txt --quiet
-    echo -e "${GREEN}✓ Backend dependencies installed${NC}"
+	pip install -r requirements.txt --quiet
+	echo -e "${GREEN}✓ Backend dependencies installed${NC}"
 else
-    echo -e "${RED}✗ requirements.txt not found${NC}"
-    exit 1
+	echo -e "${RED}✗ requirements.txt not found${NC}"
+	exit 1
 fi
 
 # Create data directory if it doesn't exist
 if [ ! -d "data" ]; then
-    mkdir data
-    echo -e "${GREEN}✓ Data directory created${NC}"
+	mkdir data
+	echo -e "${GREEN}✓ Data directory created${NC}"
 fi
 
 # Deactivate virtual environment
@@ -95,32 +95,32 @@ cd frontend
 
 # Check if package.json exists
 if [ ! -f "package.json" ]; then
-    echo -e "${RED}✗ package.json not found${NC}"
-    exit 1
+	echo -e "${RED}✗ package.json not found${NC}"
+	exit 1
 fi
 
 # Install dependencies
 if [ ! -d "node_modules" ]; then
-    echo "Installing frontend dependencies..."
-    npm install
-    echo -e "${GREEN}✓ Frontend dependencies installed${NC}"
+	echo "Installing frontend dependencies..."
+	npm install
+	echo -e "${GREEN}✓ Frontend dependencies installed${NC}"
 else
-    echo -e "${YELLOW}node_modules already exists, checking for updates...${NC}"
-    npm install
-    echo -e "${GREEN}✓ Frontend dependencies up to date${NC}"
+	echo -e "${YELLOW}node_modules already exists, checking for updates...${NC}"
+	npm install
+	echo -e "${GREEN}✓ Frontend dependencies up to date${NC}"
 fi
 
 # Setup .env.local if it doesn't exist
 if [ ! -f ".env.local" ]; then
-    echo "Creating .env.local..."
-    echo "NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1" >.env.local
-    echo -e "${GREEN}✓ .env.local created${NC}"
+	echo "Creating .env.local..."
+	echo "NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1" >.env.local
+	echo -e "${GREEN}✓ .env.local created${NC}"
 elif ! grep -q "NEXT_PUBLIC_API_URL" .env.local; then
-    echo "Adding NEXT_PUBLIC_API_URL to .env.local..."
-    echo "NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1" >>.env.local
-    echo -e "${GREEN}✓ NEXT_PUBLIC_API_URL added to .env.local${NC}"
+	echo "Adding NEXT_PUBLIC_API_URL to .env.local..."
+	echo "NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1" >>.env.local
+	echo -e "${GREEN}✓ NEXT_PUBLIC_API_URL added to .env.local${NC}"
 else
-    echo -e "${YELLOW}.env.local already configured${NC}"
+	echo -e "${YELLOW}.env.local already configured${NC}"
 fi
 
 cd ..

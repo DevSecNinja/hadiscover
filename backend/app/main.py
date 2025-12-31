@@ -2,6 +2,7 @@
 
 import logging
 import os
+from contextlib import asynccontextmanager
 
 from app.api.routes import router
 from app.models import init_db
@@ -24,16 +25,34 @@ logging.basicConfig(
 # to cloud platforms with different base paths (e.g., Azure Container Apps)
 root_path = os.getenv("ROOT_PATH", "")
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Manage application lifespan events."""
+    # Startup
+    init_db()
+    logging.info("Database initialized")
+
+    # Start the scheduler for hourly indexing
+    scheduler_service = SchedulerService()
+    scheduler_service.start()
+    logging.info("Scheduler initialized - hourly indexing enabled")
+
+    yield
+
+    # Shutdown
+    scheduler_service.shutdown()
+    logging.info("Scheduler shut down")
+
+
 # Create FastAPI app
 app = FastAPI(
     title="hadiscover API",
     description="Search engine for Home Assistant automations from GitHub",
     version=__version__,
     root_path=root_path,
+    lifespan=lifespan,
 )
-
-# Initialize scheduler service (will be started in startup event)
-scheduler_service = None
 
 # Configure CORS for frontend
 app.add_middleware(
@@ -59,30 +78,6 @@ api_prefix = "" if root_path else "/api/v1"
 
 # Include API routes
 app.include_router(router, prefix=api_prefix)
-
-
-@app.on_event("startup")
-async def startup_event():
-    """Initialize database and scheduler on startup."""
-    global scheduler_service
-
-    init_db()
-    logging.info("Database initialized")
-
-    # Start the scheduler for hourly indexing
-    scheduler_service = SchedulerService()
-    scheduler_service.start()
-    logging.info("Scheduler initialized - hourly indexing enabled")
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Shutdown scheduler gracefully."""
-    global scheduler_service
-
-    if scheduler_service:
-        scheduler_service.shutdown()
-        logging.info("Scheduler shut down")
 
 
 @app.get("/")

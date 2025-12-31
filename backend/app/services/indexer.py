@@ -1,7 +1,7 @@
 """Indexing service for discovering and storing Home Assistant automations."""
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 import httpx
 from app.models.database import Automation, IndexingMetadata, Repository
@@ -102,17 +102,17 @@ class IndexingService:
                 db.query(IndexingMetadata).filter_by(key="last_completed_at").first()
             )
 
-            current_time = datetime.utcnow()
+            current_time = datetime.now(timezone.utc)
 
             if metadata:
                 # Update existing record
-                metadata.value = current_time.isoformat() + "Z"
+                metadata.value = current_time.isoformat().replace("+00:00", "Z")
                 metadata.updated_at = current_time
             else:
                 # Create new record
                 metadata = IndexingMetadata(
                     key="last_completed_at",
-                    value=current_time.isoformat() + "Z",
+                    value=current_time.isoformat().replace("+00:00", "Z"),
                     updated_at=current_time,
                 )
                 db.add(metadata)
@@ -150,7 +150,7 @@ class IndexingService:
                         .first()
                     )
 
-                    current_time = datetime.utcnow()
+                    current_time = datetime.now(timezone.utc)
 
                     if metadata:
                         # Update existing record

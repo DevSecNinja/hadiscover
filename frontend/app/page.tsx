@@ -102,6 +102,7 @@ export default function Home() {
   );
   const [selectedTrigger, setSelectedTrigger] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     // Load theme preference from localStorage
@@ -115,6 +116,20 @@ export default function Home() {
       ).matches;
       setIsDark(prefersDark);
     }
+
+    // Check if mobile viewport
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      // Hide filters by default on mobile
+      if (mobile) {
+        setShowFilters(false);
+      }
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const fetchStatistics = async () => {
@@ -614,67 +629,37 @@ export default function Home() {
         )}
 
         {/* Filters and Results */}
-        <div className="flex gap-6">
+        <div className="flex gap-6 relative">
           {/* Filter Sidebar */}
           {(facets.repositories.length > 0 ||
             facets.blueprints.length > 0 ||
             facets.triggers.length > 0) && (
-            <aside
-              className={`${showFilters ? "w-80" : "w-12"} flex-shrink-0 transition-all duration-300`}
-            >
-              {/* Toggle Button */}
-              <button
-                type="button"
-                onClick={() => setShowFilters(!showFilters)}
-                className="mb-4 p-3 rounded-2xl backdrop-blur-xl transition-all duration-200 hover:scale-105 w-full"
-                style={{
-                  background: isDark
-                    ? "rgba(25, 25, 40, 0.6)"
-                    : "rgba(255, 255, 255, 0.8)",
-                  border: isDark
-                    ? "1px solid rgba(255, 255, 255, 0.08)"
-                    : "1px solid rgba(0, 0, 0, 0.08)",
-                }}
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <svg
-                    className="w-5 h-5"
-                    style={{
-                      color: isDark ? "#a78bfa" : "#7c3aed",
-                      transform: showFilters
-                        ? "rotate(0deg)"
-                        : "rotate(180deg)",
-                      transition: "transform 0.3s",
-                    }}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    role="img"
-                    aria-label={showFilters ? "Hide filters" : "Show filters"}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-                    />
-                  </svg>
-                  {showFilters && (
-                    <span
-                      className="font-semibold"
-                      style={{
-                        color: isDark ? "#e0e7ff" : "#1f2937",
-                      }}
-                    >
-                      Filters
-                    </span>
-                  )}
-                </div>
-              </button>
-
-              {showFilters && (
+            <>
+              {/* Mobile Filter Overlay */}
+              {isMobile && showFilters && (
                 <div
-                  className="rounded-3xl backdrop-blur-xl p-6 space-y-6 sticky top-6"
+                  className="fixed inset-0 bg-black bg-opacity-50 z-40"
+                  onClick={() => setShowFilters(false)}
+                  style={{
+                    backdropFilter: "blur(4px)",
+                  }}
+                />
+              )}
+              
+              <aside
+                className={`
+                  ${isMobile ? (showFilters ? "fixed inset-0 z-50 p-4" : "hidden") : (showFilters ? "w-80" : "w-12")}
+                  flex-shrink-0 transition-all duration-300
+                `}
+              >
+                {/* Toggle Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={`
+                    mb-4 p-3 rounded-2xl backdrop-blur-xl transition-all duration-200 hover:scale-105
+                    ${isMobile ? (showFilters ? "fixed top-4 right-4 z-50" : "fixed bottom-6 right-6 z-40 shadow-2xl") : "w-full"}
+                  `}
                   style={{
                     background: isDark
                       ? "rgba(25, 25, 40, 0.6)"
@@ -682,10 +667,61 @@ export default function Home() {
                     border: isDark
                       ? "1px solid rgba(255, 255, 255, 0.08)"
                       : "1px solid rgba(0, 0, 0, 0.08)",
-                    maxHeight: "calc(100vh - 200px)",
-                    overflowY: "auto",
                   }}
                 >
+                  <div className={`flex items-center ${isMobile && !showFilters ? "justify-center" : "justify-center"} gap-2`}>
+                    <svg
+                      className="w-5 h-5"
+                      style={{
+                        color: isDark ? "#a78bfa" : "#7c3aed",
+                        transform: showFilters && !isMobile
+                          ? "rotate(0deg)"
+                          : "rotate(180deg)",
+                        transition: "transform 0.3s",
+                      }}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      role="img"
+                      aria-label={showFilters ? "Hide filters" : "Show filters"}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                      />
+                    </svg>
+                    {(showFilters || !isMobile) && (
+                      <span
+                        className="font-semibold"
+                        style={{
+                          color: isDark ? "#e0e7ff" : "#1f2937",
+                        }}
+                      >
+                        Filters
+                      </span>
+                    )}
+                  </div>
+                </button>
+
+                {showFilters && (
+                  <div
+                    className={`
+                      rounded-3xl backdrop-blur-xl p-6 space-y-6
+                      ${isMobile ? "h-[calc(100vh-100px)] overflow-y-auto" : "sticky top-6"}
+                    `}
+                    style={{
+                      background: isDark
+                        ? "rgba(25, 25, 40, 0.6)"
+                        : "rgba(255, 255, 255, 0.8)",
+                      border: isDark
+                        ? "1px solid rgba(255, 255, 255, 0.08)"
+                        : "1px solid rgba(0, 0, 0, 0.08)",
+                      maxHeight: isMobile ? "calc(100vh - 100px)" : "calc(100vh - 200px)",
+                      overflowY: "auto",
+                    }}
+                  >
                   {/* Active Filters */}
                   {(selectedRepo || selectedBlueprint || selectedTrigger) && (
                     <div
@@ -1135,6 +1171,7 @@ export default function Home() {
                 </div>
               )}
             </aside>
+            </>
           )}
 
           {/* Results */}

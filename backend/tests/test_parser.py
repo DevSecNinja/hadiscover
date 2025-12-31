@@ -196,3 +196,23 @@ action:
     assert "light.turn_on" in automations[0]["action_calls"]
     assert "light.turn_off" in automations[0]["action_calls"]
     assert "notify.notify" in automations[0]["action_calls"]
+
+
+def test_parse_automation_with_line_numbers():
+    """Test that line numbers are extracted from automations."""
+    parser = AutomationParser()
+    automations = parser.parse_automation_file(SAMPLE_AUTOMATION_YAML)
+
+    assert len(automations) == 3
+
+    # Check that line numbers are present for the first automation
+    # The exact values depend on the YAML structure, but they should be set
+    assert automations[0]["start_line"] is not None
+    assert automations[0]["end_line"] is not None
+    assert automations[0]["start_line"] > 0
+    assert automations[0]["end_line"] >= automations[0]["start_line"]
+
+    # All three automations should have line numbers
+    for auto in automations:
+        assert auto["start_line"] is not None
+        assert auto["end_line"] is not None

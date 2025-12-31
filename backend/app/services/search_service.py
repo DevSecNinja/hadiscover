@@ -3,7 +3,7 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-from app.models.database import Automation, Repository
+from app.models.database import Automation, IndexingMetadata, Repository
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
@@ -116,6 +116,8 @@ class SearchService:
                         ),
                         "source_file_path": automation.source_file_path,
                         "github_url": automation.github_url,
+                        "start_line": automation.start_line,
+                        "end_line": automation.end_line,
                         "repository": {
                             "name": repository.name,
                             "owner": repository.owner,
@@ -180,6 +182,8 @@ class SearchService:
                         ),
                         "source_file_path": automation.source_file_path,
                         "github_url": automation.github_url,
+                        "start_line": automation.start_line,
+                        "end_line": automation.end_line,
                         "repository": {
                             "name": repository.name,
                             "owner": repository.owner,
@@ -201,7 +205,7 @@ class SearchService:
             return []
 
     @staticmethod
-    def get_statistics(db: Session) -> Dict[str, int]:
+    def get_statistics(db: Session) -> Dict[str, Any]:
         """
         Get statistics about indexed data.
 
@@ -215,13 +219,23 @@ class SearchService:
             repo_count = db.query(func.count(Repository.id)).scalar()
             automation_count = db.query(func.count(Automation.id)).scalar()
 
+            # Get last indexed timestamp
+            last_indexed = (
+                db.query(IndexingMetadata).filter_by(key="last_completed_at").first()
+            )
+
             return {
                 "total_repositories": repo_count or 0,
                 "total_automations": automation_count or 0,
+                "last_indexed_at": last_indexed.value if last_indexed else None,
             }
         except Exception as e:
             logger.error(f"Error getting statistics: {e}")
-            return {"total_repositories": 0, "total_automations": 0}
+            return {
+                "total_repositories": 0,
+                "total_automations": 0,
+                "last_indexed_at": None,
+            }
 
     @staticmethod
     def get_facets(

@@ -105,3 +105,20 @@ def test_index_endpoint_blocked_in_production():
             os.environ["ENVIRONMENT"] = original_env
         elif "ENVIRONMENT" in os.environ:
             del os.environ["ENVIRONMENT"]
+
+
+def test_repo_info_endpoint_structure():
+    """Test repo-info endpoint response structure."""
+    client = TestClient(app)
+    response = client.get("/api/v1/repo-info")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert "name" in data
+    assert "full_name" in data
+    assert "description" in data
+    assert "html_url" in data
+    assert "stargazers_count" in data
+    assert isinstance(data["stargazers_count"], int)
+    assert data["name"] == "hadiscover"
+    assert data["full_name"] == "DevSecNinja/hadiscover"

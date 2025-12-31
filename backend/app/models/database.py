@@ -1,6 +1,6 @@
 """Database models for hadiscover."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import declarative_base, relationship
@@ -18,7 +18,7 @@ class Repository(Base):
     owner = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     url = Column(String(512), nullable=False, unique=True)
-    indexed_at = Column(DateTime, default=datetime.utcnow)
+    indexed_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     # Relationship to automations
     automations = relationship(
@@ -51,7 +51,7 @@ class Automation(Base):
     start_line = Column(Integer, nullable=True)  # Starting line number in source file
     end_line = Column(Integer, nullable=True)  # Ending line number in source file
     repository_id = Column(Integer, ForeignKey("repositories.id"), nullable=False)
-    indexed_at = Column(DateTime, default=datetime.utcnow)
+    indexed_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     # Relationship to repository
     repository = relationship("Repository", back_populates="automations")
@@ -68,7 +68,11 @@ class IndexingMetadata(Base):
     id = Column(Integer, primary_key=True, index=True)
     key = Column(String(255), nullable=False, unique=True)
     value = Column(Text, nullable=True)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = Column(
+        DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
 
     def __repr__(self):
         return f"<IndexingMetadata(key='{self.key}', value='{self.value}')>"

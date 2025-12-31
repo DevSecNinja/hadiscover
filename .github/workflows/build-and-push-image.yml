@@ -64,7 +64,7 @@ jobs:
         with:
           images: ${{ inputs.registry }}/${{ inputs.image_name }}
           flavor: |
-            latest=${{ inputs.is_prerelease != 'true' }}
+            latest=${{ inputs.is_prerelease != 'true' && 'true' || 'false' }}
           tags: |
             type=semver,pattern={{version}},value=${{ inputs.version }},enable=${{ !startsWith(inputs.version, '0.0.0-pr') }}
             type=semver,pattern={{major}}.{{minor}},value=${{ inputs.version }},enable=${{ !startsWith(inputs.version, '0.0.0-pr') }}

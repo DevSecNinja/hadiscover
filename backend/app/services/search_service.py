@@ -224,10 +224,17 @@ class SearchService:
                 db.query(IndexingMetadata).filter_by(key="last_completed_at").first()
             )
 
+            # Get repository star count
+            star_count_metadata = (
+                db.query(IndexingMetadata).filter_by(key="repo_star_count").first()
+            )
+            star_count = int(star_count_metadata.value) if star_count_metadata else 0
+
             return {
                 "total_repositories": repo_count or 0,
                 "total_automations": automation_count or 0,
                 "last_indexed_at": last_indexed.value if last_indexed else None,
+                "repo_star_count": star_count,
             }
         except Exception as e:
             logger.error(f"Error getting statistics: {e}")
@@ -235,6 +242,7 @@ class SearchService:
                 "total_repositories": 0,
                 "total_automations": 0,
                 "last_indexed_at": None,
+                "repo_star_count": 0,
             }
 
     @staticmethod

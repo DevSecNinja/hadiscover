@@ -57,14 +57,7 @@ interface Statistics {
   total_repositories: number;
   total_automations: number;
   last_indexed_at: string | null;
-}
-
-interface RepoInfo {
-  name: string;
-  full_name: string;
-  description: string | null;
-  html_url: string;
-  stargazers_count: number;
+  repo_star_count: number;
 }
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -84,7 +77,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [statistics, setStatistics] = useState<Statistics | null>(null);
-  const [repoInfo, setRepoInfo] = useState<RepoInfo | null>(null);
   const [indexing, setIndexing] = useState(false);
   const [isDark, setIsDark] = useState(true);
   const [facets, setFacets] = useState<Facets>({
@@ -123,16 +115,6 @@ export default function Home() {
     }
   };
 
-  const fetchRepoInfo = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/repo-info`);
-      const data = await response.json();
-      setRepoInfo(data);
-    } catch (error) {
-      console.error("Error fetching repo info:", error);
-    }
-  };
-
   const performSearch = async (searchQuery: string) => {
     setLoading(true);
     try {
@@ -160,8 +142,6 @@ export default function Home() {
   useEffect(() => {
     // Load statistics on mount
     fetchStatistics();
-    // Load repo info on mount
-    fetchRepoInfo();
     // Load initial results
     performSearch("");
   }, []);
@@ -1721,10 +1701,10 @@ Here's my automation YAML:
           )}
 
           {/* Repository Info */}
-          {repoInfo && (
+          {statistics && (
             <div className="text-center mt-6">
               <a
-                href={repoInfo.html_url}
+                href="https://github.com/DevSecNinja/hadiscover"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-5 py-3 rounded-xl transition-all duration-200"
@@ -1764,7 +1744,7 @@ Here's my automation YAML:
                   />
                 </svg>
                 <span className="font-medium">
-                  {repoInfo.full_name}
+                  DevSecNinja/hadiscover
                 </span>
                 <span className="flex items-center gap-1">
                   <svg
@@ -1777,7 +1757,7 @@ Here's my automation YAML:
                   >
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                   </svg>
-                  {repoInfo.stargazers_count}
+                  {statistics.repo_star_count}
                 </span>
               </a>
               <p

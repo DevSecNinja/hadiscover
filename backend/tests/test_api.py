@@ -107,18 +107,15 @@ def test_index_endpoint_blocked_in_production():
             del os.environ["ENVIRONMENT"]
 
 
-def test_repo_info_endpoint_structure():
-    """Test repo-info endpoint response structure."""
+def test_statistics_includes_star_count():
+    """Test statistics endpoint includes repo star count."""
     client = TestClient(app)
-    response = client.get("/api/v1/repo-info")
+    response = client.get("/api/v1/statistics")
     assert response.status_code == 200
 
     data = response.json()
-    assert "name" in data
-    assert "full_name" in data
-    assert "description" in data
-    assert "html_url" in data
-    assert "stargazers_count" in data
-    assert isinstance(data["stargazers_count"], int)
-    assert data["name"] == "hadiscover"
-    assert data["full_name"] == "DevSecNinja/hadiscover"
+    assert "total_repositories" in data
+    assert "total_automations" in data
+    assert "last_indexed_at" in data
+    assert "repo_star_count" in data
+    assert isinstance(data["repo_star_count"], int)

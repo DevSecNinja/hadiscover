@@ -5,9 +5,7 @@ import os
 from datetime import datetime, timedelta
 from typing import List, Optional
 
-import httpx
 from app.models import get_db
-from app.services.github_service import GitHubService
 from app.services.indexer import IndexingService
 from app.services.search_service import SearchService
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
@@ -101,6 +99,7 @@ class StatisticsResponse(BaseModel):
     total_repositories: int
     total_automations: int
     last_indexed_at: Optional[str] = None
+    repo_star_count: int
 
 
 class IndexResponse(BaseModel):
@@ -117,16 +116,6 @@ class IndexStatusResponse(BaseModel):
     repositories_indexed: int
     automations_indexed: int
     errors: int
-
-
-class RepoInfoResponse(BaseModel):
-    """Repository information response."""
-
-    name: str
-    full_name: str
-    description: Optional[str]
-    html_url: str
-    stargazers_count: int
 
 
 @router.get("/search", response_model=SearchResponse)
@@ -264,49 +253,3 @@ async def health_check():
     return {"status": "healthy"}
 
 
-@router.get("/repo-info", response_model=RepoInfoResponse)
-async def get_repo_info():
-    """
-    Get information about the hadiscover GitHub repository.
-
-    Returns:
-        Repository information including star count
-    """
-    github = GitHubService()
-
-    try:
-        async with httpx.AsyncClient() as client:
-            url = f"{github.BASE_URL}/repos/DevSecNinja/hadiscover"
-            response = await client.get(url, headers=github.headers, timeout=10.0)
-
-            if response.status_code == 200:
-                data = response.json()
-                return {
-                    "name": data["name"],
-                    "full_name": data["full_name"],
-                    "description": data.get("description"),
-                    "html_url": data["html_url"],
-                    "stargazers_count": data["stargazers_count"],
-                }
-            else:
-                logger.warning(
-                    f"Failed to fetch repo info. Status: {response.status_code}"
-                )
-                # Return fallback data
-                return {
-                    "name": "hadiscover",
-                    "full_name": "DevSecNinja/hadiscover",
-                    "description": "Home Assistant automation search engine",
-                    "html_url": "https://github.com/DevSecNinja/hadiscover",
-                    "stargazers_count": 0,
-                }
-    except Exception as e:
-        logger.error(f"Error fetching repo info: {e}")
-        # Return fallback data on error
-        return {
-            "name": "hadiscover",
-            "full_name": "DevSecNinja/hadiscover",
-            "description": "Home Assistant automation search engine",
-            "html_url": "https://github.com/DevSecNinja/hadiscover",
-            "stargazers_count": 0,
-        }

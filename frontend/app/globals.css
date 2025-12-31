@@ -123,3 +123,31 @@ code {
     "SF Mono", "Monaco", "Inconsolata", "Fira Code", "Courier New", monospace;
   font-size: 0.875rem;
 }
+
+/* Custom scrollbar styles for better visibility in dark mode */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(167, 139, 250, 0.7);
+  border-radius: 5px;
+  border: 2px solid rgba(25, 25, 40, 0.6);
+  transition: background 0.2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(167, 139, 250, 0.9);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(167, 139, 250, 0.7) rgba(255, 255, 255, 0.08);
+}

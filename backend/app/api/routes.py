@@ -2,7 +2,7 @@
 
 import logging
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 from app.models import get_db
@@ -206,7 +206,7 @@ async def trigger_indexing(
 
     # Check if indexing was recently triggered
     if last_indexing_time is not None:
-        time_since_last = datetime.utcnow() - last_indexing_time
+        time_since_last = datetime.now(timezone.utc) - last_indexing_time
         cooldown = timedelta(minutes=INDEXING_COOLDOWN_MINUTES)
 
         if time_since_last < cooldown:
@@ -220,7 +220,7 @@ async def trigger_indexing(
             )
 
     # Update last indexing time
-    last_indexing_time = datetime.utcnow()
+    last_indexing_time = datetime.now(timezone.utc)
 
     async def run_indexing():
         """Background task to run indexing."""

@@ -136,11 +136,11 @@ async def test_completion_timestamp_updates_on_subsequent_runs(test_db):
 def test_statistics_includes_last_indexed_timestamp(test_db):
     """Test that statistics endpoint includes last indexed timestamp."""
     # Create a metadata entry
-    from datetime import datetime
+    from datetime import datetime, timezone
 
-    timestamp = datetime.utcnow().isoformat() + "Z"
+    timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     metadata = IndexingMetadata(
-        key="last_completed_at", value=timestamp, updated_at=datetime.utcnow()
+        key="last_completed_at", value=timestamp, updated_at=datetime.now(timezone.utc)
     )
     test_db.add(metadata)
     test_db.commit()

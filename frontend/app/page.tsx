@@ -70,6 +70,18 @@ if (IS_DEVELOPMENT) {
   console.info("🚧 Running in development mode");
 }
 
+// Helper function to construct GitHub URL with line numbers
+function getGitHubUrlWithLines(automation: Automation): string {
+  const { github_url, start_line, end_line } = automation;
+  if (start_line && end_line) {
+    return `${github_url}#L${start_line}-L${end_line}`;
+  }
+  if (start_line) {
+    return `${github_url}#L${start_line}`;
+  }
+  return github_url;
+}
+
 export default function Home() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Automation[]>([]);
@@ -1252,7 +1264,7 @@ export default function Home() {
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
                     <div className="flex-1 min-w-0">
                       <a
-                        href={automation.github_url}
+                        href={getGitHubUrlWithLines(automation)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="block group/title"
@@ -1290,7 +1302,7 @@ export default function Home() {
                       </div>
                     </div>
                     <a
-                      href={automation.github_url}
+                      href={getGitHubUrlWithLines(automation)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 font-medium rounded-xl transition-all duration-200"

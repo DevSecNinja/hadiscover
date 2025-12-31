@@ -5,7 +5,9 @@ import os
 from datetime import datetime, timedelta
 from typing import List, Optional
 
+import httpx
 from app.models import get_db
+from app.services.github_service import GitHubService
 from app.services.indexer import IndexingService
 from app.services.search_service import SearchService
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
@@ -220,13 +222,9 @@ async def get_repo_info():
     Returns:
         Repository information including star count
     """
-    from app.services.github_service import GitHubService
-
     github = GitHubService()
 
     try:
-        import httpx
-
         async with httpx.AsyncClient() as client:
             url = f"{github.BASE_URL}/repos/DevSecNinja/hadiscover"
             response = await client.get(url, headers=github.headers, timeout=10.0)

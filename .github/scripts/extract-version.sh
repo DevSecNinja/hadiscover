@@ -18,6 +18,10 @@ if [ "$EVENT_NAME" = "pull_request" ]; then
     VERSION="0.0.0-pr.${PR_NUMBER}.${SHORT_SHA}"
     VERSION_TAG="pr-${PR_NUMBER}"
 elif [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+    if [ -z "$INPUT_VERSION" ]; then
+        echo "Error: version input required for workflow_dispatch event"
+        exit 1
+    fi
     VERSION="${PR_NUMBER}" # PR_NUMBER is actually INPUT_VERSION for workflow_dispatch
     VERSION_TAG="v${VERSION}"
 elif [ -n "$GIT_REF" ]; then

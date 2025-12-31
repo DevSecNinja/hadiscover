@@ -48,6 +48,8 @@ class AutomationResponse(BaseModel):
     action_calls: List[str]
     source_file_path: str
     github_url: str
+    start_line: Optional[int]
+    end_line: Optional[int]
     repository: RepositoryResponse
     indexed_at: Optional[str]
 

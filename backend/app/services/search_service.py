@@ -80,6 +80,8 @@ class SearchService:
                         ),
                         "source_file_path": automation.source_file_path,
                         "github_url": automation.github_url,
+                        "start_line": automation.start_line,
+                        "end_line": automation.end_line,
                         "repository": {
                             "name": repository.name,
                             "owner": repository.owner,
@@ -144,6 +146,8 @@ class SearchService:
                         ),
                         "source_file_path": automation.source_file_path,
                         "github_url": automation.github_url,
+                        "start_line": automation.start_line,
+                        "end_line": automation.end_line,
                         "repository": {
                             "name": repository.name,
                             "owner": repository.owner,
@@ -181,9 +185,7 @@ class SearchService:
 
             # Get last indexed timestamp
             last_indexed = (
-                db.query(IndexingMetadata)
-                .filter_by(key="last_completed_at")
-                .first()
+                db.query(IndexingMetadata).filter_by(key="last_completed_at").first()
             )
 
             return {

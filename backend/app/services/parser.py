@@ -23,12 +23,20 @@ class AutomationParser:
             content: YAML file content as string
 
         Returns:
-            List of automation dictionaries with extracted metadata
+            List of automation dictionaries with extracted metadata including line numbers
         """
         automations = []
 
         try:
-            # Parse YAML content
+            # Parse YAML content with line numbers
+            # First, use compose to get the document tree with line info
+            try:
+                root_node = yaml.compose(content)
+            except Exception as e:
+                logger.warning(f"Could not compose YAML for line tracking: {e}")
+                root_node = None
+
+            # Parse YAML content normally for data extraction
             data = yaml.safe_load(content)
 
             if data is None:
@@ -36,18 +44,47 @@ class AutomationParser:
                 return automations
 
             # Handle different YAML structures
+            automations_list = []
+            automation_nodes = []
+
             if isinstance(data, list):
                 # Direct list of automations
                 automations_list = data
+                if root_node and isinstance(root_node, yaml.SequenceNode):
+                    automation_nodes = root_node.value
             elif isinstance(data, dict):
                 # Could be wrapped in a key, or a single automation
                 if "automation" in data:
                     automations_list = data["automation"]
                     if not isinstance(automations_list, list):
                         automations_list = [automations_list]
+                        if root_node and isinstance(root_node, yaml.MappingNode):
+                            for key_node, value_node in root_node.value:
+                                if (
+                                    hasattr(key_node, "value")
+                                    and key_node.value == "automation"
+                                ):
+                                    automation_nodes = (
+                                        [value_node]
+                                        if not isinstance(value_node, yaml.SequenceNode)
+                                        else value_node.value
+                                    )
+                                    break
+                    else:
+                        if root_node and isinstance(root_node, yaml.MappingNode):
+                            for key_node, value_node in root_node.value:
+                                if (
+                                    hasattr(key_node, "value")
+                                    and key_node.value == "automation"
+                                ):
+                                    if isinstance(value_node, yaml.SequenceNode):
+                                        automation_nodes = value_node.value
+                                    break
                 else:
                     # Treat the whole dict as a single automation
                     automations_list = [data]
+                    if root_node:
+                        automation_nodes = [root_node]
             else:
                 logger.warning(f"Unexpected YAML structure: {type(data)}")
                 return automations
@@ -58,7 +95,19 @@ class AutomationParser:
                     logger.warning(f"Skipping non-dict automation at index {idx}")
                     continue
 
-                parsed = AutomationParser._parse_single_automation(auto)
+                # Get line numbers from corresponding node
+                start_line = None
+                end_line = None
+                if idx < len(automation_nodes):
+                    node = automation_nodes[idx]
+                    if hasattr(node, "start_mark") and hasattr(node, "end_mark"):
+                        # Line numbers are 0-indexed in yaml, add 1 for 1-indexed
+                        start_line = node.start_mark.line + 1
+                        end_line = node.end_mark.line + 1
+
+                parsed = AutomationParser._parse_single_automation(
+                    auto, start_line, end_line
+                )
                 if parsed:
                     automations.append(parsed)
 
@@ -74,12 +123,16 @@ class AutomationParser:
     @staticmethod
     def _parse_single_automation(
         automation: Dict[str, Any],
+        start_line: Optional[int] = None,
+        end_line: Optional[int] = None,
     ) -> Optional[Dict[str, Any]]:
         """
         Extract metadata from a single automation dictionary.
 
         Args:
             automation: Dictionary representing one automation
+            start_line: Starting line number in source file (1-indexed)
+            end_line: Ending line number in source file (1-indexed)
 
         Returns:
             Parsed automation metadata, or None if invalid
@@ -119,6 +172,8 @@ class AutomationParser:
                     blueprint_info.get("input") if blueprint_info else None
                 ),
                 "action_calls": action_calls,
+                "start_line": start_line,
+                "end_line": end_line,
             }
 
         except Exception as e:

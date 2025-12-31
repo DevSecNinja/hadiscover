@@ -97,9 +97,7 @@ class IndexingService:
         try:
             # Check if metadata record exists
             metadata = (
-                db.query(IndexingMetadata)
-                .filter_by(key="last_completed_at")
-                .first()
+                db.query(IndexingMetadata).filter_by(key="last_completed_at").first()
             )
 
             current_time = datetime.utcnow()
@@ -118,7 +116,9 @@ class IndexingService:
                 db.add(metadata)
 
             db.commit()
-            logger.info(f"Stored indexing completion timestamp: {current_time.isoformat()}")
+            logger.info(
+                f"Stored indexing completion timestamp: {current_time.isoformat()}"
+            )
         except Exception as e:
             logger.error(f"Error storing completion timestamp: {e}")
             db.rollback()
@@ -206,6 +206,8 @@ class IndexingService:
                         action_calls=",".join(auto_data.get("action_calls", [])),
                         source_file_path=file_path,
                         github_url=f"{url}/blob/{branch}/{file_path}",
+                        start_line=auto_data.get("start_line"),
+                        end_line=auto_data.get("end_line"),
                         repository_id=repository.id,
                     )
                     db.add(automation)

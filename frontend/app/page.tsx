@@ -131,9 +131,25 @@ export default function Home() {
       setShowFilters(false);
     }
 
-    // Track resize to update isMobile state
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    // Debounced resize handler to update isMobile state
+    let resizeTimeout: number | undefined;
+
+    const handleResize = () => {
+      if (resizeTimeout !== undefined) {
+        window.clearTimeout(resizeTimeout);
+      }
+      resizeTimeout = window.setTimeout(() => {
+        checkMobile();
+      }, 200);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      if (resizeTimeout !== undefined) {
+        window.clearTimeout(resizeTimeout);
+      }
+    };
   }, []);
 
   const fetchStatistics = async () => {

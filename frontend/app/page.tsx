@@ -24,10 +24,33 @@ interface Automation {
   indexed_at: string | null;
 }
 
+interface RepositoryFacet {
+  owner: string;
+  name: string;
+  count: number;
+}
+
+interface BlueprintFacet {
+  path: string;
+  count: number;
+}
+
+interface TriggerFacet {
+  type: string;
+  count: number;
+}
+
+interface Facets {
+  repositories: RepositoryFacet[];
+  blueprints: BlueprintFacet[];
+  triggers: TriggerFacet[];
+}
+
 interface SearchResponse {
   query: string;
   results: Automation[];
   count: number;
+  facets: Facets;
 }
 
 interface Statistics {
@@ -55,6 +78,17 @@ export default function Home() {
   const [statistics, setStatistics] = useState<Statistics | null>(null);
   const [indexing, setIndexing] = useState(false);
   const [isDark, setIsDark] = useState(true);
+  const [facets, setFacets] = useState<Facets>({
+    repositories: [],
+    blueprints: [],
+    triggers: [],
+  });
+  const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
+  const [selectedBlueprint, setSelectedBlueprint] = useState<string | null>(
+    null,
+  );
+  const [selectedTrigger, setSelectedTrigger] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(true);
 
   useEffect(() => {
     // Load theme preference from localStorage
@@ -83,11 +117,18 @@ export default function Home() {
   const performSearch = async (searchQuery: string) => {
     setLoading(true);
     try {
+      const params = new URLSearchParams();
+      params.append("q", searchQuery);
+      if (selectedRepo) params.append("repo", selectedRepo);
+      if (selectedBlueprint) params.append("blueprint", selectedBlueprint);
+      if (selectedTrigger) params.append("trigger", selectedTrigger);
+
       const response = await fetch(
-        `${API_BASE_URL}/search?q=${encodeURIComponent(searchQuery)}`,
+        `${API_BASE_URL}/search?${params.toString()}`,
       );
       const data: SearchResponse = await response.json();
       setResults(data.results);
+      setFacets(data.facets);
     } catch (error) {
       console.error("Error searching:", error);
       setResults([]);
@@ -103,6 +144,12 @@ export default function Home() {
     // Load initial results
     performSearch("");
   }, []);
+
+  // Re-run search when filters change
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Filter changes should trigger search
+  useEffect(() => {
+    performSearch(query);
+  }, [selectedRepo, selectedBlueprint, selectedTrigger]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -551,243 +598,720 @@ export default function Home() {
           </div>
         )}
 
-        {/* Results */}
-        <div className="space-y-4">
-          {loading ? (
-            <div className="text-center py-20">
-              <div
-                className="inline-flex items-center justify-center w-16 h-16 rounded-full backdrop-blur-xl mb-4"
+        {/* Filters and Results */}
+        <div className="flex gap-6">
+          {/* Filter Sidebar */}
+          {(facets.repositories.length > 0 ||
+            facets.blueprints.length > 0 ||
+            facets.triggers.length > 0) && (
+            <aside
+              className={`${showFilters ? "w-80" : "w-12"} flex-shrink-0 transition-all duration-300`}
+            >
+              {/* Toggle Button */}
+              <button
+                type="button"
+                onClick={() => setShowFilters(!showFilters)}
+                className="mb-4 p-3 rounded-2xl backdrop-blur-xl transition-all duration-200 hover:scale-105 w-full"
                 style={{
                   background: isDark
                     ? "rgba(25, 25, 40, 0.6)"
-                    : "rgba(0, 0, 0, 0.04)",
-                  border: isDark
-                    ? "1px solid rgba(255, 255, 255, 0.08)"
-                    : "1px solid rgba(0, 0, 0, 0.06)",
-                }}
-              >
-                <svg
-                  className="animate-spin h-8 w-8"
-                  style={{ color: "#12bcf2" }}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  role="img"
-                  aria-label="Loading statistics"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-              </div>
-              <p
-                className="text-lg"
-                style={{
-                  color: isDark
-                    ? "rgba(255, 255, 255, 0.5)"
-                    : "rgba(0, 0, 0, 0.6)",
-                }}
-              >
-                Searching automations...
-              </p>
-            </div>
-          ) : results.length === 0 ? (
-            <div
-              className="text-center py-20 rounded-3xl backdrop-blur-xl"
-              style={{
-                background: isDark
-                  ? "rgba(25, 25, 40, 0.6)"
-                  : "rgba(255, 255, 255, 0.8)",
-                border: isDark
-                  ? "1px solid rgba(255, 255, 255, 0.08)"
-                  : "1px solid rgba(0, 0, 0, 0.08)",
-              }}
-            >
-              <div className="text-6xl mb-4">🔍</div>
-              <p
-                className="text-xl mb-2"
-                style={{
-                  color: isDark
-                    ? "rgba(255, 255, 255, 0.7)"
-                    : "rgba(0, 0, 0, 0.8)",
-                }}
-              >
-                {query ? "No automations found" : "Start your search"}
-              </p>
-              <p
-                style={{
-                  color: isDark
-                    ? "rgba(255, 255, 255, 0.4)"
-                    : "rgba(0, 0, 0, 0.5)",
-                }}
-              >
-                {query
-                  ? "Try a different search term or browse all results"
-                  : "Search for automations by name, trigger, or action"}
-              </p>
-            </div>
-          ) : (
-            results.map((automation) => (
-              <article
-                key={automation.id}
-                className="group rounded-3xl backdrop-blur-xl p-8 transition-all duration-200"
-                style={{
-                  background: isDark
-                    ? "rgba(25, 25, 40, 0.65)"
                     : "rgba(255, 255, 255, 0.8)",
                   border: isDark
                     ? "1px solid rgba(255, 255, 255, 0.08)"
                     : "1px solid rgba(0, 0, 0, 0.08)",
-                  boxShadow: isDark
-                    ? "0 4px 16px rgba(0, 0, 0, 0.2)"
-                    : "0 2px 8px rgba(0, 0, 0, 0.05)",
-                }}
-                onMouseEnter={(e) => {
-                  if (isDark) {
-                    e.currentTarget.style.background = "rgba(30, 30, 48, 0.75)";
-                    e.currentTarget.style.borderColor =
-                      "rgba(255, 255, 255, 0.12)";
-                    e.currentTarget.style.boxShadow =
-                      "0 8px 24px rgba(0, 0, 0, 0.3)";
-                  } else {
-                    e.currentTarget.style.background =
-                      "rgba(255, 255, 255, 0.95)";
-                    e.currentTarget.style.boxShadow =
-                      "0 4px 16px rgba(0, 0, 0, 0.08)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = isDark
-                    ? "rgba(25, 25, 40, 0.65)"
-                    : "rgba(255, 255, 255, 0.8)";
-                  e.currentTarget.style.borderColor = isDark
-                    ? "rgba(255, 255, 255, 0.08)"
-                    : "rgba(0, 0, 0, 0.08)";
-                  e.currentTarget.style.boxShadow = isDark
-                    ? "0 4px 16px rgba(0, 0, 0, 0.2)"
-                    : "0 2px 8px rgba(0, 0, 0, 0.05)";
                 }}
               >
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
-                  <div className="flex-1 min-w-0">
-                    <a
-                      href={
-                        automation.start_line && automation.end_line
-                          ? `${automation.github_url}#L${automation.start_line}-L${automation.end_line}`
-                          : automation.github_url
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block group/title"
+                <div className="flex items-center justify-center gap-2">
+                  <svg
+                    className="w-5 h-5"
+                    style={{
+                      color: isDark ? "#a78bfa" : "#7c3aed",
+                      transform: showFilters
+                        ? "rotate(0deg)"
+                        : "rotate(180deg)",
+                      transition: "transform 0.3s",
+                    }}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    role="img"
+                    aria-label={showFilters ? "Hide filters" : "Show filters"}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                    />
+                  </svg>
+                  {showFilters && (
+                    <span
+                      className="font-semibold"
+                      style={{
+                        color: isDark ? "#e0e7ff" : "#1f2937",
+                      }}
                     >
+                      Filters
+                    </span>
+                  )}
+                </div>
+              </button>
+
+              {showFilters && (
+                <div
+                  className="rounded-3xl backdrop-blur-xl p-6 space-y-6 sticky top-6"
+                  style={{
+                    background: isDark
+                      ? "rgba(25, 25, 40, 0.6)"
+                      : "rgba(255, 255, 255, 0.8)",
+                    border: isDark
+                      ? "1px solid rgba(255, 255, 255, 0.08)"
+                      : "1px solid rgba(0, 0, 0, 0.08)",
+                    maxHeight: "calc(100vh - 200px)",
+                    overflowY: "auto",
+                  }}
+                >
+                  {/* Active Filters */}
+                  {(selectedRepo || selectedBlueprint || selectedTrigger) && (
+                    <div
+                      className="pb-4 border-b"
+                      style={{
+                        borderColor: isDark
+                          ? "rgba(255, 255, 255, 0.1)"
+                          : "rgba(0, 0, 0, 0.1)",
+                      }}
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <h3
+                          className="text-sm font-semibold"
+                          style={{
+                            color: isDark ? "#e0e7ff" : "#1f2937",
+                          }}
+                        >
+                          Active Filters
+                        </h3>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedRepo(null);
+                            setSelectedBlueprint(null);
+                            setSelectedTrigger(null);
+                          }}
+                          className="text-xs px-2 py-1 rounded-lg transition-colors"
+                          style={{
+                            color: isDark ? "#f87171" : "#dc2626",
+                            background: isDark
+                              ? "rgba(248, 113, 113, 0.1)"
+                              : "rgba(220, 38, 38, 0.1)",
+                          }}
+                        >
+                          Clear All
+                        </button>
+                      </div>
+                      <div className="space-y-2">
+                        {selectedRepo && (
+                          <div
+                            className="flex items-center justify-between text-sm px-3 py-2 rounded-lg"
+                            style={{
+                              background: isDark
+                                ? "rgba(167, 139, 250, 0.15)"
+                                : "rgba(124, 58, 237, 0.1)",
+                              color: isDark ? "#c4b5fd" : "#7c3aed",
+                            }}
+                          >
+                            <span className="truncate">{selectedRepo}</span>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedRepo(null)}
+                              className="ml-2 hover:opacity-70"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                        {selectedBlueprint && (
+                          <div
+                            className="flex items-center justify-between text-sm px-3 py-2 rounded-lg"
+                            style={{
+                              background: isDark
+                                ? "rgba(96, 165, 250, 0.15)"
+                                : "rgba(37, 99, 235, 0.1)",
+                              color: isDark ? "#93c5fd" : "#2563eb",
+                            }}
+                          >
+                            <span className="truncate">
+                              {selectedBlueprint.split("/").pop()}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedBlueprint(null)}
+                              className="ml-2 hover:opacity-70"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                        {selectedTrigger && (
+                          <div
+                            className="flex items-center justify-between text-sm px-3 py-2 rounded-lg"
+                            style={{
+                              background: isDark
+                                ? "rgba(52, 211, 153, 0.15)"
+                                : "rgba(16, 185, 129, 0.1)",
+                              color: isDark ? "#6ee7b7" : "#10b981",
+                            }}
+                          >
+                            <span className="truncate">{selectedTrigger}</span>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedTrigger(null)}
+                              className="ml-2 hover:opacity-70"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Repository Filter */}
+                  {facets.repositories.length > 0 && (
+                    <div>
                       <h3
-                        className="text-2xl font-semibold mb-2 group-hover/title:text-[rgb(var(--ha-blue))] transition-colors line-clamp-2"
+                        className="text-sm font-semibold mb-3"
                         style={{
                           color: isDark ? "#e0e7ff" : "#1f2937",
                         }}
                       >
-                        {automation.alias || "Unnamed Automation"}
+                        📦 Repositories
                       </h3>
-                    </a>
-                    <div
-                      className="flex flex-wrap items-center gap-2 text-sm"
-                      style={{
-                        color: isDark
-                          ? "rgba(255, 255, 255, 0.45)"
-                          : "rgba(0, 0, 0, 0.5)",
-                      }}
-                    >
+                      <div className="space-y-2 max-h-64 overflow-y-auto pb-1">
+                        {facets.repositories.map((repo) => {
+                          const repoKey = `${repo.owner}/${repo.name}`;
+                          const isSelected = selectedRepo === repoKey;
+                          return (
+                            <button
+                              key={repoKey}
+                              type="button"
+                              onClick={() =>
+                                setSelectedRepo(isSelected ? null : repoKey)
+                              }
+                              className="w-full text-left px-3 py-2 rounded-lg transition-all duration-150"
+                              style={{
+                                background: isSelected
+                                  ? isDark
+                                    ? "rgba(167, 139, 250, 0.2)"
+                                    : "rgba(124, 58, 237, 0.15)"
+                                  : isDark
+                                    ? "rgba(255, 255, 255, 0.05)"
+                                    : "rgba(0, 0, 0, 0.03)",
+                                border: isSelected
+                                  ? isDark
+                                    ? "1px solid rgba(167, 139, 250, 0.4)"
+                                    : "1px solid rgba(124, 58, 237, 0.3)"
+                                  : isDark
+                                    ? "1px solid rgba(255, 255, 255, 0.05)"
+                                    : "1px solid rgba(0, 0, 0, 0.05)",
+                              }}
+                              onMouseEnter={(e) => {
+                                if (isDark) {
+                                  e.currentTarget.style.background = isSelected
+                                    ? "rgba(167, 139, 250, 0.3)"
+                                    : "rgba(255, 255, 255, 0.1)";
+                                  e.currentTarget.style.boxShadow =
+                                    "0 4px 12px rgba(0, 0, 0, 0.2)";
+                                } else {
+                                  e.currentTarget.style.background = isSelected
+                                    ? "rgba(124, 58, 237, 0.2)"
+                                    : "rgba(0, 0, 0, 0.05)";
+                                  e.currentTarget.style.boxShadow =
+                                    "0 2px 8px rgba(0, 0, 0, 0.08)";
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = isSelected
+                                  ? isDark
+                                    ? "rgba(167, 139, 250, 0.2)"
+                                    : "rgba(124, 58, 237, 0.15)"
+                                  : isDark
+                                    ? "rgba(255, 255, 255, 0.05)"
+                                    : "rgba(0, 0, 0, 0.03)";
+                                e.currentTarget.style.boxShadow = "none";
+                              }}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span
+                                  className="text-sm truncate"
+                                  style={{
+                                    color: isSelected
+                                      ? isDark
+                                        ? "#c4b5fd"
+                                        : "#7c3aed"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.8)"
+                                        : "rgba(0, 0, 0, 0.8)",
+                                  }}
+                                >
+                                  {repo.name}
+                                </span>
+                                <span
+                                  className="text-xs font-medium px-2 py-0.5 rounded-full ml-2"
+                                  style={{
+                                    background: isSelected
+                                      ? isDark
+                                        ? "rgba(167, 139, 250, 0.3)"
+                                        : "rgba(124, 58, 237, 0.2)"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.1)"
+                                        : "rgba(0, 0, 0, 0.08)",
+                                    color: isSelected
+                                      ? isDark
+                                        ? "#c4b5fd"
+                                        : "#7c3aed"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.6)"
+                                        : "rgba(0, 0, 0, 0.6)",
+                                  }}
+                                >
+                                  {repo.count}
+                                </span>
+                              </div>
+                              <div
+                                className="text-xs truncate mt-0.5"
+                                style={{
+                                  color: isDark
+                                    ? "rgba(255, 255, 255, 0.4)"
+                                    : "rgba(0, 0, 0, 0.4)",
+                                }}
+                              >
+                                {repo.owner}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Blueprint Filter */}
+                  {facets.blueprints.length > 0 && (
+                    <div>
+                      <h3
+                        className="text-sm font-semibold mb-3"
+                        style={{
+                          color: isDark ? "#e0e7ff" : "#1f2937",
+                        }}
+                      >
+                        🎨 Blueprints
+                      </h3>
+                      <div className="space-y-2 max-h-64 overflow-y-auto pb-1">
+                        {facets.blueprints.map((blueprint) => {
+                          const isSelected =
+                            selectedBlueprint === blueprint.path;
+                          const displayName =
+                            blueprint.path.split("/").pop() || blueprint.path;
+                          return (
+                            <button
+                              key={blueprint.path}
+                              type="button"
+                              onClick={() =>
+                                setSelectedBlueprint(
+                                  isSelected ? null : blueprint.path,
+                                )
+                              }
+                              className="w-full text-left px-3 py-2 rounded-lg transition-all duration-150"
+                              style={{
+                                background: isSelected
+                                  ? isDark
+                                    ? "rgba(96, 165, 250, 0.2)"
+                                    : "rgba(37, 99, 235, 0.15)"
+                                  : isDark
+                                    ? "rgba(255, 255, 255, 0.05)"
+                                    : "rgba(0, 0, 0, 0.03)",
+                                border: isSelected
+                                  ? isDark
+                                    ? "1px solid rgba(96, 165, 250, 0.4)"
+                                    : "1px solid rgba(37, 99, 235, 0.3)"
+                                  : isDark
+                                    ? "1px solid rgba(255, 255, 255, 0.05)"
+                                    : "1px solid rgba(0, 0, 0, 0.05)",
+                              }}
+                              onMouseEnter={(e) => {
+                                if (isDark) {
+                                  e.currentTarget.style.background = isSelected
+                                    ? "rgba(96, 165, 250, 0.3)"
+                                    : "rgba(255, 255, 255, 0.1)";
+                                  e.currentTarget.style.boxShadow =
+                                    "0 4px 12px rgba(0, 0, 0, 0.2)";
+                                } else {
+                                  e.currentTarget.style.background = isSelected
+                                    ? "rgba(37, 99, 235, 0.2)"
+                                    : "rgba(0, 0, 0, 0.05)";
+                                  e.currentTarget.style.boxShadow =
+                                    "0 2px 8px rgba(0, 0, 0, 0.08)";
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = isSelected
+                                  ? isDark
+                                    ? "rgba(96, 165, 250, 0.2)"
+                                    : "rgba(37, 99, 235, 0.15)"
+                                  : isDark
+                                    ? "rgba(255, 255, 255, 0.05)"
+                                    : "rgba(0, 0, 0, 0.03)";
+                                e.currentTarget.style.boxShadow = "none";
+                              }}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span
+                                  className="text-sm truncate"
+                                  style={{
+                                    color: isSelected
+                                      ? isDark
+                                        ? "#93c5fd"
+                                        : "#2563eb"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.8)"
+                                        : "rgba(0, 0, 0, 0.8)",
+                                  }}
+                                  title={blueprint.path}
+                                >
+                                  {displayName}
+                                </span>
+                                <span
+                                  className="text-xs font-medium px-2 py-0.5 rounded-full ml-2"
+                                  style={{
+                                    background: isSelected
+                                      ? isDark
+                                        ? "rgba(96, 165, 250, 0.3)"
+                                        : "rgba(37, 99, 235, 0.2)"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.1)"
+                                        : "rgba(0, 0, 0, 0.08)",
+                                    color: isSelected
+                                      ? isDark
+                                        ? "#93c5fd"
+                                        : "#2563eb"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.6)"
+                                        : "rgba(0, 0, 0, 0.6)",
+                                  }}
+                                >
+                                  {blueprint.count}
+                                </span>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Trigger Filter */}
+                  {facets.triggers.length > 0 && (
+                    <div>
+                      <h3
+                        className="text-sm font-semibold mb-3"
+                        style={{
+                          color: isDark ? "#e0e7ff" : "#1f2937",
+                        }}
+                      >
+                        ⚡ Triggers
+                      </h3>
+                      <div className="space-y-2 max-h-64 overflow-y-auto pb-1">
+                        {facets.triggers.map((trigger) => {
+                          const isSelected = selectedTrigger === trigger.type;
+                          return (
+                            <button
+                              key={trigger.type}
+                              type="button"
+                              onClick={() =>
+                                setSelectedTrigger(
+                                  isSelected ? null : trigger.type,
+                                )
+                              }
+                              className="w-full text-left px-3 py-2 rounded-lg transition-all duration-150"
+                              style={{
+                                background: isSelected
+                                  ? isDark
+                                    ? "rgba(52, 211, 153, 0.2)"
+                                    : "rgba(16, 185, 129, 0.15)"
+                                  : isDark
+                                    ? "rgba(255, 255, 255, 0.05)"
+                                    : "rgba(0, 0, 0, 0.03)",
+                                border: isSelected
+                                  ? isDark
+                                    ? "1px solid rgba(52, 211, 153, 0.4)"
+                                    : "1px solid rgba(16, 185, 129, 0.3)"
+                                  : isDark
+                                    ? "1px solid rgba(255, 255, 255, 0.05)"
+                                    : "1px solid rgba(0, 0, 0, 0.05)",
+                              }}
+                              onMouseEnter={(e) => {
+                                if (isDark) {
+                                  e.currentTarget.style.background = isSelected
+                                    ? "rgba(52, 211, 153, 0.3)"
+                                    : "rgba(255, 255, 255, 0.1)";
+                                  e.currentTarget.style.boxShadow =
+                                    "0 4px 12px rgba(0, 0, 0, 0.2)";
+                                } else {
+                                  e.currentTarget.style.background = isSelected
+                                    ? "rgba(16, 185, 129, 0.2)"
+                                    : "rgba(0, 0, 0, 0.05)";
+                                  e.currentTarget.style.boxShadow =
+                                    "0 2px 8px rgba(0, 0, 0, 0.08)";
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = isSelected
+                                  ? isDark
+                                    ? "rgba(52, 211, 153, 0.2)"
+                                    : "rgba(16, 185, 129, 0.15)"
+                                  : isDark
+                                    ? "rgba(255, 255, 255, 0.05)"
+                                    : "rgba(0, 0, 0, 0.03)";
+                                e.currentTarget.style.boxShadow = "none";
+                              }}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span
+                                  className="text-sm truncate"
+                                  style={{
+                                    color: isSelected
+                                      ? isDark
+                                        ? "#6ee7b7"
+                                        : "#10b981"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.8)"
+                                        : "rgba(0, 0, 0, 0.8)",
+                                  }}
+                                >
+                                  {trigger.type}
+                                </span>
+                                <span
+                                  className="text-xs font-medium px-2 py-0.5 rounded-full ml-2"
+                                  style={{
+                                    background: isSelected
+                                      ? isDark
+                                        ? "rgba(52, 211, 153, 0.3)"
+                                        : "rgba(16, 185, 129, 0.2)"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.1)"
+                                        : "rgba(0, 0, 0, 0.08)",
+                                    color: isSelected
+                                      ? isDark
+                                        ? "#6ee7b7"
+                                        : "#10b981"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.6)"
+                                        : "rgba(0, 0, 0, 0.6)",
+                                  }}
+                                >
+                                  {trigger.count}
+                                </span>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </aside>
+          )}
+
+          {/* Results */}
+          <div className="space-y-4 flex-1">
+            {loading ? (
+              <div className="text-center py-20">
+                <div
+                  className="inline-flex items-center justify-center w-16 h-16 rounded-full backdrop-blur-xl mb-4"
+                  style={{
+                    background: isDark
+                      ? "rgba(25, 25, 40, 0.6)"
+                      : "rgba(0, 0, 0, 0.04)",
+                    border: isDark
+                      ? "1px solid rgba(255, 255, 255, 0.08)"
+                      : "1px solid rgba(0, 0, 0, 0.06)",
+                  }}
+                >
+                  <svg
+                    className="animate-spin h-8 w-8"
+                    style={{ color: "#12bcf2" }}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    role="img"
+                    aria-label="Loading statistics"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                </div>
+                <p
+                  className="text-lg"
+                  style={{
+                    color: isDark
+                      ? "rgba(255, 255, 255, 0.5)"
+                      : "rgba(0, 0, 0, 0.6)",
+                  }}
+                >
+                  Searching automations...
+                </p>
+              </div>
+            ) : results.length === 0 ? (
+              <div
+                className="text-center py-20 rounded-3xl backdrop-blur-xl"
+                style={{
+                  background: isDark
+                    ? "rgba(25, 25, 40, 0.6)"
+                    : "rgba(255, 255, 255, 0.8)",
+                  border: isDark
+                    ? "1px solid rgba(255, 255, 255, 0.08)"
+                    : "1px solid rgba(0, 0, 0, 0.08)",
+                }}
+              >
+                <div className="text-6xl mb-4">🔍</div>
+                <p
+                  className="text-xl mb-2"
+                  style={{
+                    color: isDark
+                      ? "rgba(255, 255, 255, 0.7)"
+                      : "rgba(0, 0, 0, 0.8)",
+                  }}
+                >
+                  {query ? "No automations found" : "Start your search"}
+                </p>
+                <p
+                  style={{
+                    color: isDark
+                      ? "rgba(255, 255, 255, 0.4)"
+                      : "rgba(0, 0, 0, 0.5)",
+                  }}
+                >
+                  {query
+                    ? "Try a different search term or browse all results"
+                    : "Search for automations by name, trigger, or action"}
+                </p>
+              </div>
+            ) : (
+              results.map((automation) => (
+                <article
+                  key={automation.id}
+                  className="group rounded-3xl backdrop-blur-xl p-8 transition-all duration-200"
+                  style={{
+                    background: isDark
+                      ? "rgba(25, 25, 40, 0.65)"
+                      : "rgba(255, 255, 255, 0.8)",
+                    border: isDark
+                      ? "1px solid rgba(255, 255, 255, 0.08)"
+                      : "1px solid rgba(0, 0, 0, 0.08)",
+                    boxShadow: isDark
+                      ? "0 4px 16px rgba(0, 0, 0, 0.2)"
+                      : "0 2px 8px rgba(0, 0, 0, 0.05)",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (isDark) {
+                      e.currentTarget.style.background =
+                        "rgba(30, 30, 48, 0.75)";
+                      e.currentTarget.style.borderColor =
+                        "rgba(255, 255, 255, 0.12)";
+                      e.currentTarget.style.boxShadow =
+                        "0 8px 24px rgba(0, 0, 0, 0.3)";
+                    } else {
+                      e.currentTarget.style.background =
+                        "rgba(255, 255, 255, 0.95)";
+                      e.currentTarget.style.boxShadow =
+                        "0 4px 16px rgba(0, 0, 0, 0.08)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = isDark
+                      ? "rgba(25, 25, 40, 0.65)"
+                      : "rgba(255, 255, 255, 0.8)";
+                    e.currentTarget.style.borderColor = isDark
+                      ? "rgba(255, 255, 255, 0.08)"
+                      : "rgba(0, 0, 0, 0.08)";
+                    e.currentTarget.style.boxShadow = isDark
+                      ? "0 4px 16px rgba(0, 0, 0, 0.2)"
+                      : "0 2px 8px rgba(0, 0, 0, 0.05)";
+                  }}
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+                    <div className="flex-1 min-w-0">
                       <a
-                        href={automation.repository.url}
+                        href={automation.github_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:text-[rgb(var(--ha-blue))] transition-colors font-medium"
+                        className="block group/title"
                       >
-                        {automation.repository.owner}/
-                        {automation.repository.name}
+                        <h3
+                          className="text-2xl font-semibold mb-2 group-hover/title:text-[rgb(var(--ha-blue))] transition-colors line-clamp-2"
+                          style={{
+                            color: isDark ? "#e0e7ff" : "#1f2937",
+                          }}
+                        >
+                          {automation.alias || "Unnamed Automation"}
+                        </h3>
                       </a>
-                      <span style={{ opacity: 0.5 }}>•</span>
-                      <span className="font-mono text-xs truncate">
-                        {automation.source_file_path}
-                      </span>
+                      <div
+                        className="flex flex-wrap items-center gap-2 text-sm"
+                        style={{
+                          color: isDark
+                            ? "rgba(255, 255, 255, 0.45)"
+                            : "rgba(0, 0, 0, 0.5)",
+                        }}
+                      >
+                        <a
+                          href={automation.repository.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:text-[rgb(var(--ha-blue))] transition-colors font-medium"
+                        >
+                          {automation.repository.owner}/
+                          {automation.repository.name}
+                        </a>
+                        <span style={{ opacity: 0.5 }}>•</span>
+                        <span className="font-mono text-xs truncate">
+                          {automation.source_file_path}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <a
-                    href={automation.github_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 font-medium rounded-xl transition-all duration-200"
-                    style={{
-                      color: isDark ? "rgba(255, 255, 255, 0.7)" : "#1f2937",
-                      background: isDark
-                        ? "rgba(255, 255, 255, 0.05)"
-                        : "rgba(0, 0, 0, 0.04)",
-                      border: isDark
-                        ? "1px solid rgba(255, 255, 255, 0.08)"
-                        : "1px solid rgba(0, 0, 0, 0.08)",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = isDark
-                        ? "rgba(255, 255, 255, 0.08)"
-                        : "rgba(0, 0, 0, 0.06)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = isDark
-                        ? "rgba(255, 255, 255, 0.05)"
-                        : "rgba(0, 0, 0, 0.04)";
-                    }}
-                  >
-                    <svg
-                      className="w-4 h-4"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                      role="img"
-                      aria-label="GitHub logo"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    GitHub
-                  </a>
-                </div>
-
-                {automation.description && (
-                  <p
-                    className="text-base leading-relaxed mb-5"
-                    style={{
-                      color: isDark
-                        ? "rgba(255, 255, 255, 0.55)"
-                        : "rgba(0, 0, 0, 0.6)",
-                    }}
-                  >
-                    {automation.description}
-                  </p>
-                )}
-
-                {automation.blueprint_path && (
-                  <div className="mb-5">
-                    <span
-                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl"
+                    <a
+                      href={automation.github_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 font-medium rounded-xl transition-all duration-200"
                       style={{
-                        color: isDark ? "#c4b5fd" : "#6d28d9",
+                        color: isDark ? "rgba(255, 255, 255, 0.7)" : "#1f2937",
                         background: isDark
-                          ? "rgba(109, 40, 217, 0.15)"
-                          : "rgba(109, 40, 217, 0.08)",
+                          ? "rgba(255, 255, 255, 0.05)"
+                          : "rgba(0, 0, 0, 0.04)",
                         border: isDark
-                          ? "1px solid rgba(109, 40, 217, 0.25)"
-                          : "1px solid rgba(109, 40, 217, 0.15)",
+                          ? "1px solid rgba(255, 255, 255, 0.08)"
+                          : "1px solid rgba(0, 0, 0, 0.08)",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = isDark
+                          ? "rgba(255, 255, 255, 0.08)"
+                          : "rgba(0, 0, 0, 0.06)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = isDark
+                          ? "rgba(255, 255, 255, 0.05)"
+                          : "rgba(0, 0, 0, 0.04)";
                       }}
                     >
                       <svg
@@ -795,52 +1319,61 @@ export default function Home() {
                         fill="currentColor"
                         viewBox="0 0 24 24"
                         role="img"
-                        aria-label="Blueprint icon"
+                        aria-label="GitHub logo"
                       >
-                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" />
+                        <path
+                          fillRule="evenodd"
+                          d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                          clipRule="evenodd"
+                        />
                       </svg>
-                      Blueprint: {automation.blueprint_path}
-                    </span>
+                      GitHub
+                    </a>
                   </div>
-                )}
 
-                <div className="space-y-4">
-                  {automation.trigger_types.length > 0 && (
-                    <div>
-                      <p
-                        className="text-xs font-semibold uppercase tracking-wider mb-2"
+                  {automation.description && (
+                    <p
+                      className="text-base leading-relaxed mb-5"
+                      style={{
+                        color: isDark
+                          ? "rgba(255, 255, 255, 0.55)"
+                          : "rgba(0, 0, 0, 0.6)",
+                      }}
+                    >
+                      {automation.description}
+                    </p>
+                  )}
+
+                  {automation.blueprint_path && (
+                    <div className="mb-5">
+                      <span
+                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl"
                         style={{
-                          color: isDark
-                            ? "rgba(255, 255, 255, 0.4)"
-                            : "rgba(0, 0, 0, 0.4)",
+                          color: isDark ? "#c4b5fd" : "#6d28d9",
+                          background: isDark
+                            ? "rgba(109, 40, 217, 0.15)"
+                            : "rgba(109, 40, 217, 0.08)",
+                          border: isDark
+                            ? "1px solid rgba(109, 40, 217, 0.25)"
+                            : "1px solid rgba(109, 40, 217, 0.15)",
                         }}
                       >
-                        Triggers
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {automation.trigger_types.map((trigger) => (
-                          <span
-                            key={trigger}
-                            className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full backdrop-blur-sm"
-                            style={{
-                              color: "#12bcf2",
-                              background: isDark
-                                ? "rgba(18, 188, 242, 0.12)"
-                                : "rgba(18, 188, 242, 0.1)",
-                              border: isDark
-                                ? "1px solid rgba(18, 188, 242, 0.2)"
-                                : "1px solid rgba(18, 188, 242, 0.15)",
-                            }}
-                          >
-                            {trigger}
-                          </span>
-                        ))}
-                      </div>
+                        <svg
+                          className="w-4 h-4"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                          role="img"
+                          aria-label="Blueprint icon"
+                        >
+                          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" />
+                        </svg>
+                        Blueprint: {automation.blueprint_path}
+                      </span>
                     </div>
                   )}
 
-                  {automation.action_calls &&
-                    automation.action_calls.length > 0 && (
+                  <div className="space-y-4">
+                    {automation.trigger_types.length > 0 && (
                       <div>
                         <p
                           className="text-xs font-semibold uppercase tracking-wider mb-2"
@@ -850,33 +1383,69 @@ export default function Home() {
                               : "rgba(0, 0, 0, 0.4)",
                           }}
                         >
-                          Actions
+                          Triggers
                         </p>
                         <div className="flex flex-wrap gap-2">
-                          {automation.action_calls.map((action) => (
+                          {automation.trigger_types.map((trigger) => (
                             <span
-                              key={action}
-                              className="px-3 py-1.5 text-xs font-mono rounded-lg backdrop-blur-sm"
+                              key={trigger}
+                              className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full backdrop-blur-sm"
                               style={{
-                                color: isDark ? "#6ee7b7" : "#059669",
+                                color: "#12bcf2",
                                 background: isDark
-                                  ? "rgba(16, 185, 129, 0.12)"
-                                  : "rgba(16, 185, 129, 0.08)",
+                                  ? "rgba(18, 188, 242, 0.12)"
+                                  : "rgba(18, 188, 242, 0.1)",
                                 border: isDark
-                                  ? "1px solid rgba(16, 185, 129, 0.2)"
-                                  : "1px solid rgba(16, 185, 129, 0.15)",
+                                  ? "1px solid rgba(18, 188, 242, 0.2)"
+                                  : "1px solid rgba(18, 188, 242, 0.15)",
                               }}
                             >
-                              {action}
+                              {trigger}
                             </span>
                           ))}
                         </div>
                       </div>
                     )}
-                </div>
-              </article>
-            ))
-          )}
+
+                    {automation.action_calls &&
+                      automation.action_calls.length > 0 && (
+                        <div>
+                          <p
+                            className="text-xs font-semibold uppercase tracking-wider mb-2"
+                            style={{
+                              color: isDark
+                                ? "rgba(255, 255, 255, 0.4)"
+                                : "rgba(0, 0, 0, 0.4)",
+                            }}
+                          >
+                            Actions
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {automation.action_calls.map((action) => (
+                              <span
+                                key={action}
+                                className="px-3 py-1.5 text-xs font-mono rounded-lg backdrop-blur-sm"
+                                style={{
+                                  color: isDark ? "#6ee7b7" : "#059669",
+                                  background: isDark
+                                    ? "rgba(16, 185, 129, 0.12)"
+                                    : "rgba(16, 185, 129, 0.08)",
+                                  border: isDark
+                                    ? "1px solid rgba(16, 185, 129, 0.2)"
+                                    : "1px solid rgba(16, 185, 129, 0.15)",
+                                }}
+                              >
+                                {action}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                  </div>
+                </article>
+              ))
+            )}
+          </div>
         </div>
 
         {/* Footer */}

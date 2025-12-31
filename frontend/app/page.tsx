@@ -370,21 +370,6 @@ export default function Home() {
               </div>
             </div>
           )}
-
-          {statistics?.last_indexed_at && (
-            <div className="text-center mt-4">
-              <p
-                className="text-sm"
-                style={{
-                  color: isDark
-                    ? "rgba(255, 255, 255, 0.4)"
-                    : "rgba(0, 0, 0, 0.5)",
-                }}
-              >
-                Last indexed: {formatLastIndexed(statistics.last_indexed_at)}
-              </p>
-            </div>
-          )}
         </header>
 
         {/* Search Bar */}
@@ -1123,6 +1108,21 @@ Here's my automation YAML:
               </div>
             </details>
           </div>
+
+          {statistics?.last_indexed_at && (
+            <div className="text-center mt-6">
+              <p
+                className="text-sm"
+                style={{
+                  color: isDark
+                    ? "rgba(255, 255, 255, 0.3)"
+                    : "rgba(0, 0, 0, 0.4)",
+                }}
+              >
+                Last indexed: {formatLastIndexed(statistics.last_indexed_at)}
+              </p>
+            </div>
+          )}
 
           <div
             className="text-center mt-8 text-sm"

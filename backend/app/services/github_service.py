@@ -43,6 +43,28 @@ class GitHubService:
         if self.token:
             self.headers["Authorization"] = f"token {self.token}"
 
+    def _check_rate_limit(self, response: httpx.Response, operation: str) -> None:
+        """
+        Check if response indicates a rate limit and raise appropriate error.
+
+        Args:
+            response: HTTP response from GitHub API
+            operation: Name of the operation being performed (for error message)
+
+        Raises:
+            GitHubRateLimitError: If rate limit is detected
+        """
+        if response.status_code == 429 or (
+            response.status_code == 403 and "rate limit" in response.text.lower()
+        ):
+            retry_after = response.headers.get("Retry-After")
+            retry_seconds = int(retry_after) if retry_after else None
+            message = f"GitHub API rate limit exceeded for {operation}"
+            if retry_seconds:
+                message += f". Retry after {retry_seconds} seconds"
+            logger.warning(message)
+            raise GitHubRateLimitError(message, retry_after=retry_seconds)
+
     async def search_repositories(self, per_page: int = 100) -> List[Dict]:
         """
         Search for repositories with the hadiscover or ha-discover topics.
@@ -74,17 +96,7 @@ class GitHubService:
                         )
 
                         # Check for rate limiting (status 429 or 403 with rate limit message)
-                        if response.status_code == 429 or (
-                            response.status_code == 403
-                            and "rate limit" in response.text.lower()
-                        ):
-                            retry_after = response.headers.get("Retry-After")
-                            retry_seconds = int(retry_after) if retry_after else None
-                            message = f"GitHub API rate limit exceeded for search_repositories"
-                            if retry_seconds:
-                                message += f". Retry after {retry_seconds} seconds"
-                            logger.warning(message)
-                            raise GitHubRateLimitError(message, retry_after=retry_seconds)
+                        self._check_rate_limit(response, "search_repositories")
 
                         response.raise_for_status()
 
@@ -159,16 +171,7 @@ class GitHubService:
                     return None
 
                 # Check for rate limiting
-                if response.status_code == 429 or (
-                    response.status_code == 403 and "rate limit" in response.text.lower()
-                ):
-                    retry_after = response.headers.get("Retry-After")
-                    retry_seconds = int(retry_after) if retry_after else None
-                    message = f"GitHub API rate limit exceeded for get_file_content"
-                    if retry_seconds:
-                        message += f". Retry after {retry_seconds} seconds"
-                    logger.warning(message)
-                    raise GitHubRateLimitError(message, retry_after=retry_seconds)
+                self._check_rate_limit(response, "get_file_content")
 
                 response.raise_for_status()
                 data = response.json()
@@ -220,17 +223,7 @@ class GitHubService:
                     )
 
                     # Check for rate limiting
-                    if response.status_code == 429 or (
-                        response.status_code == 403
-                        and "rate limit" in response.text.lower()
-                    ):
-                        retry_after = response.headers.get("Retry-After")
-                        retry_seconds = int(retry_after) if retry_after else None
-                        message = f"GitHub API rate limit exceeded for find_automation_files"
-                        if retry_seconds:
-                            message += f". Retry after {retry_seconds} seconds"
-                        logger.warning(message)
-                        raise GitHubRateLimitError(message, retry_after=retry_seconds)
+                    self._check_rate_limit(response, "find_automation_files")
 
                     if response.status_code == 200:
                         found_files.append(path)

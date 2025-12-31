@@ -117,17 +117,21 @@ export default function Home() {
       setIsDark(prefersDark);
     }
 
-    // Check if mobile viewport
+    // Check if mobile viewport and set initial state
     const checkMobile = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
-      // Hide filters by default on mobile
-      if (mobile) {
-        setShowFilters(false);
-      }
     };
 
-    checkMobile();
+    // Set initial mobile state
+    const initialMobile = window.innerWidth < 768;
+    setIsMobile(initialMobile);
+    // Hide filters by default on mobile on initial load
+    if (initialMobile) {
+      setShowFilters(false);
+    }
+
+    // Only track resize to update isMobile state, don't change showFilters
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
@@ -669,7 +673,7 @@ export default function Home() {
                       : "1px solid rgba(0, 0, 0, 0.08)",
                   }}
                 >
-                  <div className={`flex items-center ${isMobile && !showFilters ? "justify-center" : "justify-center"} gap-2`}>
+                  <div className="flex items-center justify-center gap-2">
                     <svg
                       className="w-5 h-5"
                       style={{

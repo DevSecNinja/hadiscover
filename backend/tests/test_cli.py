@@ -1,8 +1,7 @@
 """Tests for CLI commands."""
 
-import asyncio
 import os
-from unittest.mock import AsyncMock, Mock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from app.cli import get_db_session, main, run_indexing
@@ -38,7 +37,6 @@ async def test_run_indexing_success(test_db):
         patch("app.cli.IndexingService") as mock_indexer_class,
         patch("app.cli.get_db_session", return_value=test_db),
     ):
-
         mock_indexer = AsyncMock()
         mock_indexer.index_repositories.return_value = mock_stats
         mock_indexer_class.return_value = mock_indexer
@@ -73,7 +71,6 @@ async def test_run_indexing_with_errors(test_db):
         patch("app.cli.IndexingService") as mock_indexer_class,
         patch("app.cli.get_db_session", return_value=test_db),
     ):
-
         mock_indexer = AsyncMock()
         mock_indexer.index_repositories.return_value = mock_stats
         mock_indexer_class.return_value = mock_indexer
@@ -92,7 +89,6 @@ async def test_run_indexing_exception(test_db):
         patch("app.cli.IndexingService") as mock_indexer_class,
         patch("app.cli.get_db_session", return_value=test_db),
     ):
-
         mock_indexer = AsyncMock()
         mock_indexer.index_repositories.side_effect = Exception("Test error")
         mock_indexer_class.return_value = mock_indexer
@@ -137,7 +133,6 @@ def test_main_index_now_command():
         patch("app.cli.get_db_session"),
         pytest.raises(SystemExit) as exc_info,
     ):
-
         mock_indexer = AsyncMock()
         mock_indexer.index_repositories.return_value = mock_stats
         mock_indexer_class.return_value = mock_indexer
@@ -171,8 +166,6 @@ def test_get_db_session_custom_url():
 
 def test_standalone_index_now_script():
     """Test that the standalone index-now script exists and is executable."""
-    import subprocess
-    import sys
     from pathlib import Path
 
     # Get the path to the backend directory

@@ -126,18 +126,25 @@ The system follows a traditional three-tier architecture with clear separation b
 - Parse Home Assistant YAML automation files
 - Extract metadata from automations
 - Handle various YAML structures
+- Track line numbers for precise GitHub linking
 
 **Key Methods:**
 
-- `parse_automation_file()`: Parse complete YAML file
+- `parse_automation_file()`: Parse complete YAML file with line number tracking
 - `_parse_single_automation()`: Extract metadata from one automation
-- `_extract_trigger_types()`: Identify trigger platforms
+- `_extract_trigger_types()`: Identify trigger platforms (supports both old `platform` and new `trigger` keys)
+- `_extract_blueprint_info()`: Extract blueprint path and input configuration
+- `_extract_action_calls()`: Recursively extract service calls from actions (supports both old `service` and new `action` keys)
 
 **Design Notes:**
 
 - Best-effort parsing (doesn't require perfect YAML)
 - Handles list-of-automations and single-automation formats
-- Extracts trigger types for filtering
+- Extracts trigger types, blueprints, and action calls for filtering and discovery
+- Tracks start and end line numbers using YAML node marks
+- Supports both old and new Home Assistant YAML formats
+- Recursively processes nested action structures (if/then/else, choose, repeat)
+- Automatically deduplicates trigger types and action calls
 - Logs warnings for malformed content but continues
 
 #### 3. Indexing Service (`app/services/indexer.py`)
@@ -166,19 +173,44 @@ The system follows a traditional three-tier architecture with clear separation b
 
 - Query database for automations
 - Format search results
-- Provide statistics
+- Provide statistics and facets
 
 **Key Methods:**
 
-- `search_automations()`: Full-text search with filtering
-- `get_statistics()`: Count repositories and automations
+- `search_automations()`: Full-text search with filtering by repository, blueprint, and trigger
+- `get_statistics()`: Count repositories and automations, retrieve last indexed time and star count
+- `get_facets()`: Generate aggregated counts for repositories, blueprints, and triggers
 
 **Design Notes:**
 
 - Case-insensitive searching
 - Searches across multiple fields simultaneously
-- Returns recent automations if query is empty
+- Returns random automations if no query or filters provided
 - Includes repository information in results
+- Supports faceted search for filtering
+- Includes line numbers for precise GitHub linking
+
+#### 5. Scheduler Service (`app/services/scheduler.py`)
+
+**Responsibilities:**
+
+- Manage scheduled background tasks
+- Run automated hourly indexing
+- Coordinate with IndexingService
+
+**Key Methods:**
+
+- `start()`: Initialize scheduler with hourly cron job
+- `run_indexing_task()`: Execute indexing in background
+- `shutdown()`: Gracefully stop scheduler
+
+**Design Notes:**
+
+- Uses APScheduler with AsyncIO scheduler
+- Runs indexing at the top of every hour (minute 0)
+- Single instance protection (max_instances=1)
+- Separate database session for background tasks
+- Starts automatically on application startup via lifespan handler
 
 ### Frontend Components
 
@@ -235,19 +267,43 @@ CREATE TABLE automations (
     alias VARCHAR(512) NULL,
     description TEXT NULL,
     trigger_types TEXT NULL,  -- Comma-separated list
+    blueprint_path VARCHAR(512) NULL,  -- Path to blueprint if using one
+    action_calls TEXT NULL,  -- Comma-separated list of service calls
     source_file_path VARCHAR(512) NOT NULL,
     github_url VARCHAR(1024) NOT NULL,
+    start_line INTEGER NULL,  -- Starting line number in source file
+    end_line INTEGER NULL,  -- Ending line number in source file
     repository_id INTEGER NOT NULL,
     indexed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (repository_id) REFERENCES repositories(id)
 );
 ```
 
+#### `indexing_metadata`
+
+Tracks metadata about indexing operations.
+
+```sql
+CREATE TABLE indexing_metadata (
+    id INTEGER PRIMARY KEY,
+    key VARCHAR(255) NOT NULL UNIQUE,
+    value TEXT NULL,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+**Common keys**:
+
+- `last_completed_at`: ISO timestamp of last successful indexing
+- `repo_star_count`: Total star count across all indexed repositories
+
 ### Indexes
 
 - `repositories.url`: Unique index for repository identification
 - `automations.alias`: Index for faster name searches
+- `automations.blueprint_path`: Index for blueprint filtering
 - `automations.repository_id`: Foreign key index for joins
+- `indexing_metadata.key`: Unique index for metadata keys
 
 ### Relationships
 
@@ -273,14 +329,37 @@ The API follows REST conventions:
 
 - `q` (string, optional): Search query
 - `limit` (integer, optional, default=50, max=100): Results per page
+- `repo` (string, optional): Filter by repository (format: "owner/name")
+- `blueprint` (string, optional): Filter by blueprint path
+- `trigger` (string, optional): Filter by trigger type
 
 **Response:**
 
 ```json
 {
   "query": "string",
-  "results": [...],
-  "count": 0
+  "results": [
+    {
+      "id": 1,
+      "alias": "string",
+      "description": "string",
+      "trigger_types": ["string"],
+      "blueprint_path": "string",
+      "action_calls": ["string"],
+      "source_file_path": "string",
+      "github_url": "string",
+      "start_line": 1,
+      "end_line": 10,
+      "repository": {...},
+      "indexed_at": "2024-01-01T00:00:00"
+    }
+  ],
+  "count": 0,
+  "facets": {
+    "repositories": [{"owner": "string", "name": "string", "count": 0}],
+    "blueprints": [{"path": "string", "count": 0}],
+    "triggers": [{"type": "string", "count": 0}]
+  }
 }
 ```
 
@@ -291,11 +370,15 @@ The API follows REST conventions:
 ```json
 {
   "total_repositories": 0,
-  "total_automations": 0
+  "total_automations": 0,
+  "last_indexed_at": "2024-01-01T00:00:00",
+  "repo_star_count": 0
 }
 ```
 
 #### `POST /api/v1/index`
+
+**Availability:** Development mode only (controlled by `ENVIRONMENT=development`)
 
 **Rate Limiting:** Once every 10 minutes
 
@@ -303,7 +386,7 @@ The API follows REST conventions:
 
 ```json
 {
-  "message": "Indexing started in background",
+  "message": "Indexing started in background. Refresh your browser to see the changes once complete.",
   "started": true
 }
 ```
@@ -316,12 +399,30 @@ The API follows REST conventions:
 }
 ```
 
+**Production Response (403):**
+
+```json
+{
+  "detail": "This endpoint is not available in production. Indexing runs on a daily schedule."
+}
+```
+
+#### `GET /api/v1/health`
+
+**Response:**
+
+```json
+{
+  "status": "healthy"
+}
+```
+
 ### CORS Configuration
 
 Backend allows requests from:
 
-- `http://localhost:8080`
-- `http://127.0.0.1:8080`
+- `http://localhost:3000` (Next.js default dev port)
+- `http://localhost:8080` (production frontend port)
 - `https://hadiscover.com`
 - `https://www.hadiscover.com`
 - `https://api.hadiscover.com`
@@ -364,16 +465,20 @@ This enables local development with separate backend/frontend servers.
 - Easy for users to opt in/out
 - Reduces noise from unrelated repositories
 
-### 4. Background Indexing
+### 4. Background Indexing and Scheduling
 
-**Decision:** Run indexing as a background task
+**Decision:** Run indexing as both scheduled background task and on-demand (development only)
 
 **Rationale:**
 
+- Hourly scheduled indexing ensures fresh data automatically
+- Manual trigger available in development for testing
 - Indexing can take minutes for many repositories
 - Prevents API timeout issues
 - Better user experience (immediate response)
 - Allows concurrent indexing and searching
+- APScheduler provides reliable cron-like scheduling
+- Single instance protection prevents overlapping indexing runs
 
 ### 5. Direct GitHub Links
 
@@ -432,20 +537,75 @@ This enables local development with separate backend/frontend servers.
 - In-memory tracking sufficient for MVP (single server)
 - Returns HTTP 429 with clear error message including wait time
 
+### 10. Faceted Search
+
+**Decision:** Provide facets for repositories, blueprints, and trigger types
+
+**Rationale:**
+
+- Enables users to discover patterns in automations
+- Helps users filter large result sets
+- Shows popularity of blueprints and trigger types
+- Improves user experience by making search more interactive
+- Facets update dynamically based on current search and filters
+
+### 11. Line Number Tracking
+
+**Decision:** Store start and end line numbers for each automation
+
+**Rationale:**
+
+- Enables precise GitHub links directly to automation in file
+- Better user experience (no scrolling to find automation)
+- Works with GitHub's line number URL format (#L10-L20)
+- Uses YAML parser's built-in node marks for accuracy
+- Minimal overhead during parsing
+
+### 12. Blueprint and Action Call Extraction
+
+**Decision:** Extract blueprint paths and service calls from automations
+
+**Rationale:**
+
+- Blueprints are increasingly popular in Home Assistant community
+- Users want to find automations using specific blueprints
+- Action calls show which integrations/services are being used
+- Enables filtering by blueprint or action type
+- Helps users discover integration usage patterns
+- Supports both old (`service`) and new (`action`) YAML formats for future compatibility
+
+### 13. Hourly Scheduled Indexing
+
+**Decision:** Run automatic indexing every hour
+
+**Rationale:**
+
+- Ensures index stays fresh without manual intervention
+- Hourly frequency balances freshness with GitHub API rate limits
+- Runs at top of hour for predictable timing
+- Manual trigger restricted to development to prevent production load
+- Single instance protection prevents overlapping runs
+- APScheduler provides robust scheduling without external dependencies
+
 ## Future Enhancements
 
-Potential improvements beyond MVP scope:
+Potential improvements beyond current implementation:
 
-1. **Advanced Search**: Fuzzy matching, filters by trigger type
-2. **Pagination**: Handle large result sets efficiently
-3. **Scheduled Indexing**: Cron job for automatic re-indexing
-4. **Caching**: Redis for frequently accessed data
-5. **Analytics**: Track popular automations
-6. **User Contributions**: Allow annotations or ratings
-7. **API Authentication**: Rate limiting and API keys
-8. **Deployment Guide**: Docker, Kubernetes configs
-9. **Testing**: Frontend tests, integration tests
-10. **Monitoring**: Application metrics and logging
+1. **Advanced Search**: Fuzzy matching, boolean operators, phrase matching
+2. **Pagination**: Handle large result sets efficiently (currently limited to 100)
+3. ~~**Scheduled Indexing**: Cron job for automatic re-indexing~~ ✅ **Implemented** (hourly scheduling)
+4. ~~**Filters by Trigger Type**: Allow filtering by specific triggers~~ ✅ **Implemented** (faceted search)
+5. ~~**Blueprint Support**: Index and search blueprint-based automations~~ ✅ **Implemented**
+6. ~~**Line Number Tracking**: Link to specific lines in GitHub files~~ ✅ **Implemented**
+7. **Caching**: Redis for frequently accessed data and search results
+8. **Analytics**: Track popular automations and search queries
+9. **User Contributions**: Allow annotations, ratings, or comments
+10. **API Authentication**: Rate limiting and API keys for third-party integrations
+11. **Deployment Guide**: Kubernetes configs and cloud platform guides
+12. **Testing**: Frontend tests, E2E tests with Playwright
+13. **Monitoring**: Application metrics, performance tracking, and alerting
+14. **Search History**: Save and recall previous searches
+15. **Export Features**: Export search results as JSON or YAML
 
 ## Conclusion
 

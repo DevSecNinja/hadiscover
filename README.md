@@ -204,8 +204,6 @@ hadiscover can be deployed in various ways:
 
 ### Docker Deployment (Recommended)
 
-See [RELEASES.md](./RELEASES.md) for information about:
-
 - Using pre-built Docker images from GHCR
 - Semantic versioning
 - Release process

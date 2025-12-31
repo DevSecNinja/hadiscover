@@ -25,7 +25,7 @@ The system follows a traditional three-tier architecture with clear separation b
 
 ## High-Level Architecture
 
-```
+``` text
 ┌─────────────────────────────────────────────────────────────┐
 │                          User Browser                        │
 │                     (Next.js Frontend)                      │
@@ -100,17 +100,20 @@ The system follows a traditional three-tier architecture with clear separation b
 #### 1. GitHub Service (`app/services/github_service.py`)
 
 **Responsibilities:**
+
 - Interact with GitHub REST API
 - Search for repositories by topic
 - Fetch file contents from repositories
 - Discover automation files using common path patterns
 
 **Key Methods:**
+
 - `search_repositories()`: Find repos with hadiscover topic
 - `get_file_content()`: Fetch raw file content
 - `find_automation_files()`: Locate automation files in repo
 
 **Design Notes:**
+
 - Uses async/await for concurrent API calls
 - Handles rate limiting and errors gracefully
 - Optional GitHub token for higher rate limits
@@ -119,16 +122,19 @@ The system follows a traditional three-tier architecture with clear separation b
 #### 2. Parser Service (`app/services/parser.py`)
 
 **Responsibilities:**
+
 - Parse Home Assistant YAML automation files
 - Extract metadata from automations
 - Handle various YAML structures
 
 **Key Methods:**
+
 - `parse_automation_file()`: Parse complete YAML file
 - `_parse_single_automation()`: Extract metadata from one automation
 - `_extract_trigger_types()`: Identify trigger platforms
 
 **Design Notes:**
+
 - Best-effort parsing (doesn't require perfect YAML)
 - Handles list-of-automations and single-automation formats
 - Extracts trigger types for filtering
@@ -137,15 +143,18 @@ The system follows a traditional three-tier architecture with clear separation b
 #### 3. Indexing Service (`app/services/indexer.py`)
 
 **Responsibilities:**
+
 - Orchestrate the indexing process
 - Coordinate GitHub, Parser, and Database operations
 - Manage transactions and error handling
 
 **Key Methods:**
+
 - `index_repositories()`: Index all discovered repositories
 - `_index_repository()`: Index a single repository
 
 **Design Notes:**
+
 - Updates existing repositories (upsert pattern)
 - Removes old automations before re-indexing
 - Commits per-repository for isolation
@@ -154,15 +163,18 @@ The system follows a traditional three-tier architecture with clear separation b
 #### 4. Search Service (`app/services/search_service.py`)
 
 **Responsibilities:**
+
 - Query database for automations
 - Format search results
 - Provide statistics
 
 **Key Methods:**
+
 - `search_automations()`: Full-text search with filtering
 - `get_statistics()`: Count repositories and automations
 
 **Design Notes:**
+
 - Case-insensitive searching
 - Searches across multiple fields simultaneously
 - Returns recent automations if query is empty
@@ -173,12 +185,14 @@ The system follows a traditional three-tier architecture with clear separation b
 #### Main Page (`frontend/app/page.tsx`)
 
 **Responsibilities:**
+
 - Render search interface
 - Display results
 - Manage application state
 - Call backend API
 
 **Key Features:**
+
 - Real-time search with debouncing would be ideal (not implemented in MVP)
 - Statistics display
 - Manual indexing trigger
@@ -186,6 +200,7 @@ The system follows a traditional three-tier architecture with clear separation b
 - Dark mode support
 
 **Design Notes:**
+
 - Client-side rendering with React hooks
 - Environment variable for API URL configuration
 - Error handling with user-friendly messages
@@ -244,6 +259,7 @@ CREATE TABLE automations (
 ### RESTful Principles
 
 The API follows REST conventions:
+
 - Resources are nouns (e.g., `/search`, `/statistics`)
 - HTTP methods indicate action (GET for read, POST for create/trigger)
 - Stateless requests
@@ -254,10 +270,12 @@ The API follows REST conventions:
 #### `GET /api/v1/search`
 
 **Query Parameters:**
+
 - `q` (string, optional): Search query
 - `limit` (integer, optional, default=50, max=100): Results per page
 
 **Response:**
+
 ```json
 {
   "query": "string",
@@ -269,6 +287,7 @@ The API follows REST conventions:
 #### `GET /api/v1/statistics`
 
 **Response:**
+
 ```json
 {
   "total_repositories": 0,
@@ -281,6 +300,7 @@ The API follows REST conventions:
 **Rate Limiting:** Once every 10 minutes
 
 **Success Response (200):**
+
 ```json
 {
   "message": "Indexing started in background",
@@ -289,6 +309,7 @@ The API follows REST conventions:
 ```
 
 **Rate Limit Response (429):**
+
 ```json
 {
   "detail": "Indexing rate limit exceeded. Please wait 9m 45s before triggering again."
@@ -298,6 +319,7 @@ The API follows REST conventions:
 ### CORS Configuration
 
 Backend allows requests from:
+
 - `http://localhost:8080`
 - `http://127.0.0.1:8080`
 - `https://hadiscover.com`
@@ -313,6 +335,7 @@ This enables local development with separate backend/frontend servers.
 **Decision:** Use SQLite instead of PostgreSQL or MySQL
 
 **Rationale:**
+
 - MVP doesn't require high concurrency
 - Zero configuration required
 - File-based, easy to backup
@@ -324,6 +347,7 @@ This enables local development with separate backend/frontend servers.
 **Decision:** Parse YAML with fault tolerance
 
 **Rationale:**
+
 - Home Assistant configurations vary widely
 - Users may have custom structures
 - Partial data is better than no data
@@ -334,6 +358,7 @@ This enables local development with separate backend/frontend servers.
 **Decision:** Only index repositories with explicit topic
 
 **Rationale:**
+
 - Respects user privacy
 - Clear consent mechanism
 - Easy for users to opt in/out
@@ -344,6 +369,7 @@ This enables local development with separate backend/frontend servers.
 **Decision:** Run indexing as a background task
 
 **Rationale:**
+
 - Indexing can take minutes for many repositories
 - Prevents API timeout issues
 - Better user experience (immediate response)
@@ -354,6 +380,7 @@ This enables local development with separate backend/frontend servers.
 **Decision:** Store and display GitHub URLs for each automation
 
 **Rationale:**
+
 - Users can view full context
 - Encourages community engagement
 - Attribution to original authors
@@ -364,6 +391,7 @@ This enables local development with separate backend/frontend servers.
 **Decision:** No user authentication in MVP
 
 **Rationale:**
+
 - MVP scope is read-only public data
 - Reduces complexity
 - Can add authentication later if needed
@@ -374,6 +402,7 @@ This enables local development with separate backend/frontend servers.
 **Decision:** Use client-side rendering (CSR) with Next.js
 
 **Rationale:**
+
 - Simpler deployment model
 - MVP doesn't need SEO optimization
 - Faster development iteration
@@ -384,6 +413,7 @@ This enables local development with separate backend/frontend servers.
 **Decision:** Separate `backend/` and `frontend/` directories
 
 **Rationale:**
+
 - Clear separation of concerns
 - Independent deployment possible
 - Different tech stacks don't interfere
@@ -394,6 +424,7 @@ This enables local development with separate backend/frontend servers.
 **Decision:** Limit re-indexing to once every 10 minutes
 
 **Rationale:**
+
 - Prevents API abuse and excessive GitHub API calls
 - Reduces server load
 - GitHub API has rate limits that need to be respected

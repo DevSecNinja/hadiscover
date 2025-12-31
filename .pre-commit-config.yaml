@@ -1,4 +1,14 @@
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: check-yaml
+      - id: sort-simple-yaml
+      - id: check-added-large-files
+
   # Using this mirror lets us use mypyc-compiled black, which is about 2x faster
   - repo: https://github.com/psf/black-pre-commit-mirror
     rev: 25.12.0
@@ -36,3 +46,14 @@ repos:
     hooks:
     - id: bandit
       args: ['-c', 'bandit.yml']
+
+  # - repo: https://github.com/shellcheck-py/shellcheck-py
+  #   rev: v0.9.0.5
+  #   hooks:
+  #     - id: shellcheck
+
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.47.0
+    hooks:
+      - id: markdownlint
+        args: ["--fix", "--config", ".markdown-lint.yml"]

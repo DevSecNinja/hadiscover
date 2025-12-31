@@ -20,8 +20,8 @@ python -m uvicorn app.main:app --reload
 
 The API will be available at `http://localhost:8000`
 
-- **API Docs**: http://localhost:8000/docs
-- **Health Check**: http://localhost:8000/api/v1/health
+- **API Docs**: <http://localhost:8000/docs>
+- **Health Check**: <http://localhost:8000/api/v1/health>
 
 ### Running Tests
 
@@ -56,6 +56,7 @@ docker run hadiscover-backend index-now
 ```
 
 This will:
+
 1. Initialize the database
 2. Run the indexing process once
 3. Exit with code 0 on success or 1 on failure
@@ -133,13 +134,14 @@ docker exec -it <container-id> python -m app.cli index-now
 ```
 
 This is ideal for:
+
 - Azure Container App Jobs scheduled to run daily
 - Kubernetes CronJobs
 - Any container orchestration platform with scheduled job support
 
 ## 🛠️ Project Structure
 
-```
+``` text
 backend/
 ├── app/
 │   ├── main.py           # FastAPI application
@@ -162,6 +164,7 @@ backend/
 ## 🔒 CORS Configuration
 
 The backend is configured to accept requests from:
+
 - `http://localhost:8080` (local frontend)
 - `http://127.0.0.1:8080` (local frontend)
 - `https://hadiscover.com` (production frontend)
@@ -194,6 +197,7 @@ Without a token, GitHub limits you to 60 requests per hour. Add a `GITHUB_TOKEN`
 ### CORS Errors
 
 If the frontend can't connect, ensure:
+
 1. The backend is running and accessible
 2. The CORS origins include your frontend URL
 3. The frontend is using the correct API URL

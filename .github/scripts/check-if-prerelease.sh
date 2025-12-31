@@ -12,7 +12,7 @@ VERSION_NUM=$(echo "$VERSION" | grep -oP '\d+\.\d+\.\d+.*' || echo "$VERSION")
 
 # Check if version contains prerelease identifiers or if manually set
 if [[ "$MANUAL_PRERELEASE" == "true" ]] || [[ "$VERSION_NUM" =~ -alpha|-beta|-rc|-pre ]]; then
-    echo "is_prerelease=true"
+	echo "is_prerelease=true"
 else
-    echo "is_prerelease=false"
+	echo "is_prerelease=false"
 fi

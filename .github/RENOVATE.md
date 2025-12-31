@@ -5,6 +5,7 @@ This repository uses [Renovate Bot](https://docs.renovatebot.com/) to automatica
 ## Overview
 
 Renovate automatically:
+
 - Detects outdated dependencies
 - Creates pull requests for updates
 - Groups related updates together
@@ -53,6 +54,7 @@ The main configuration is in [`renovate.json`](../renovate.json) at the reposito
 ## Dependency Dashboard
 
 Renovate creates a "Dependency Dashboard" issue that shows:
+
 - All detected dependencies
 - Pending updates
 - Rate-limited PRs
@@ -65,6 +67,7 @@ Look for an issue titled "Dependency Dashboard" in the Issues tab.
 To temporarily disable Renovate:
 
 1. Add to `renovate.json`:
+
    ```json
    {
      "enabled": false
@@ -76,6 +79,7 @@ To temporarily disable Renovate:
 ## Security Updates
 
 Security updates are:
+
 - Processed immediately (not subject to schedule)
 - Labeled with "security"
 - Never auto-merged (require manual review)

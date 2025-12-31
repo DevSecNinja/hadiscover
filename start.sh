@@ -24,10 +24,10 @@ sleep 3
 
 # Check if backend is running
 if curl -s http://localhost:8000/api/v1/health >/dev/null 2>&1; then
-    echo -e "${GREEN}✓ Backend API running on http://localhost:8000${NC}"
-    echo "  API docs: http://localhost:8000/docs"
+	echo -e "${GREEN}✓ Backend API running on http://localhost:8000${NC}"
+	echo "  API docs: http://localhost:8000/docs"
 else
-    echo -e "${YELLOW}⚠ Backend might still be starting up...${NC}"
+	echo -e "${YELLOW}⚠ Backend might still be starting up...${NC}"
 fi
 
 echo ""

@@ -14,8 +14,8 @@ echo "Testing root endpoint..."
 root_response=$(curl -s "${BASE_URL}/")
 echo "Root endpoint response: $root_response"
 if ! echo "$root_response" | grep -q "hadiscover API"; then
-    echo "✗ Root endpoint test failed"
-    exit 1
+	echo "✗ Root endpoint test failed"
+	exit 1
 fi
 echo "✓ Root endpoint works"
 
@@ -24,16 +24,16 @@ echo "Testing health endpoint..."
 health_response=$(curl -s "${BASE_URL}/api/v1/health")
 echo "Health endpoint response: $health_response"
 if ! echo "$health_response" | grep -q "healthy"; then
-    echo "✗ Health endpoint test failed"
-    exit 1
+	echo "✗ Health endpoint test failed"
+	exit 1
 fi
 echo "✓ Health endpoint works"
 
 # Test version in root endpoint
 echo "Testing version field..."
 if ! echo "$root_response" | grep -q "version"; then
-    echo "✗ Version field not found in root endpoint"
-    exit 1
+	echo "✗ Version field not found in root endpoint"
+	exit 1
 fi
 echo "✓ Version field present"
 
@@ -42,8 +42,8 @@ echo "Testing statistics endpoint..."
 response=$(curl -s "${BASE_URL}/api/v1/statistics")
 echo "Statistics endpoint response: $response"
 if ! echo "$response" | grep -q "total_repositories"; then
-    echo "✗ Statistics endpoint test failed"
-    exit 1
+	echo "✗ Statistics endpoint test failed"
+	exit 1
 fi
 echo "✓ Statistics endpoint works"
 
@@ -52,8 +52,8 @@ echo "Testing search endpoint..."
 response=$(curl -s "${BASE_URL}/api/v1/search?q=test")
 echo "Search endpoint response: $response"
 if ! echo "$response" | grep -q "results"; then
-    echo "✗ Search endpoint test failed"
-    exit 1
+	echo "✗ Search endpoint test failed"
+	exit 1
 fi
 echo "✓ Search endpoint works"
 
@@ -61,8 +61,8 @@ echo "✓ Search endpoint works"
 echo "Testing OpenAPI docs endpoint..."
 status=$(curl -s -o /dev/null -w "%{http_code}" "${BASE_URL}/docs")
 if [ "$status" != "200" ]; then
-    echo "✗ OpenAPI docs endpoint returned status $status"
-    exit 1
+	echo "✗ OpenAPI docs endpoint returned status $status"
+	exit 1
 fi
 echo "✓ OpenAPI docs endpoint works"
 

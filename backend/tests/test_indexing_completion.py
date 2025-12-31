@@ -1,6 +1,6 @@
 """Tests for indexing completion timestamp functionality."""
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 from app.models.database import Base, IndexingMetadata
@@ -118,11 +118,6 @@ async def test_completion_timestamp_updates_on_subsequent_runs(test_db):
     # First successful run
     with patch.object(service.github_service, "search_repositories", return_value=[]):
         await service.index_repositories(test_db)
-
-        first_metadata = (
-            test_db.query(IndexingMetadata).filter_by(key="last_completed_at").first()
-        )
-        first_timestamp = first_metadata.value
 
     # Second successful run
     with patch.object(service.github_service, "search_repositories", return_value=[]):

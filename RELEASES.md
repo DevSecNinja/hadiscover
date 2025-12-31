@@ -182,6 +182,7 @@ __version__ = "0.1.0"
 ```
 
 The version is automatically updated during the release process and displayed in:
+
 - API root endpoint (`/`)
 - OpenAPI documentation (`/docs`)
 
@@ -213,6 +214,7 @@ Before creating a release, ensure:
 ### Docker Container Testing
 
 Every PR and push to main automatically:
+
 - Builds both Docker images
 - Tests container health checks
 - Validates API endpoints
@@ -224,6 +226,7 @@ See `.github/workflows/docker-test.yml` for the full test suite.
 ### Before Release
 
 The release workflow includes all these checks plus:
+
 - Full backend test suite
 - Version file updates
 - Multi-platform image builds
@@ -250,6 +253,7 @@ GitHub releases automatically generate release notes from merged pull requests a
 1. Ensure the release workflow completed successfully
 2. Check that you're using the correct image name and tag
 3. For private repositories, authenticate with GHCR:
+
    ```bash
    echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
    ```
@@ -269,11 +273,13 @@ If automated releases fail, you can manually create a release:
 ### 1. Update Version Files
 
 Backend (`backend/app/version.py`):
+
 ```python
 __version__ = "0.1.1"
 ```
 
 Frontend (`frontend/package.json`):
+
 ```bash
 cd frontend
 npm version 0.1.1 --no-git-tag-version

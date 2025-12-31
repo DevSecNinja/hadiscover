@@ -98,7 +98,7 @@ git push origin main
 
 After successful deployment, your site will be available at:
 
-```
+``` text
 https://<username>.github.io/<repository-name>/
 ```
 

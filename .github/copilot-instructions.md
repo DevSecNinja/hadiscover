@@ -13,6 +13,7 @@
 ## Backend (Python/FastAPI) - Python 3.12+
 
 **Setup** (first time):
+
 ```bash
 cd backend && python3 -m venv venv && source venv/bin/activate
 pip install --upgrade pip && pip install -r requirements.txt
@@ -20,7 +21,7 @@ pip install --upgrade pip && pip install -r requirements.txt
 
 **Test** (ALWAYS before changes): `pytest tests/ -v` - All 40 tests must pass (~2s runtime)
 
-**Dev server**: `python -m uvicorn app.main:app --reload` at http://localhost:8000, docs at /docs
+**Dev server**: `python -m uvicorn app.main:app --reload` at <http://localhost:8000>, docs at /docs
 
 **CLI**: `python -m app.cli index-now` triggers indexing
 
@@ -34,7 +35,7 @@ pip install --upgrade pip && pip install -r requirements.txt
 
 **Build**: `npm run build` (~5s, creates `out/` directory)
 
-**Dev server**: `npm run dev` at http://localhost:8080
+**Dev server**: `npm run dev` at <http://localhost:8080>
 
 **Environment** (optional): `NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1` in `.env.local`
 
@@ -63,7 +64,7 @@ pip install --upgrade pip && pip install -r requirements.txt
 
 ## Project Structure
 
-```
+``` text
 backend/app/: main.py (FastAPI), cli.py (index-now cmd), version.py, api/routes.py,
   models/ (SQLAlchemy), services/ (github_service.py, parser.py, indexer.py, search_service.py)
 backend/tests/: 40 pytest tests
@@ -82,7 +83,7 @@ Root: README.md, ARCHITECTURE.md, DEPLOYMENT.md, docker-compose.yml
 
 **Backend**: `GITHUB_TOKEN` (optional, for 5k/hr vs 60/hr rate limit), `ENVIRONMENT=development` (enables /api/v1/index), `ROOT_PATH=/api/v1` (for reverse proxy that strips path), `DATABASE_URL` (default: sqlite:///./data/hadiscover.db)
 
-**Frontend**: `NEXT_PUBLIC_API_URL` (default: http://localhost:8000/api/v1)
+**Frontend**: `NEXT_PUBLIC_API_URL` (default: <http://localhost:8000/api/v1>)
 
 ## Common Issues
 
@@ -110,6 +111,7 @@ Root: README.md, ARCHITECTURE.md, DEPLOYMENT.md, docker-compose.yml
 ## Code Conventions
 
 **Python**:
+
 - Use type hints for function signatures
 - Docstrings for modules, classes, and public functions (Google style)
 - async/await for I/O operations (GitHub API, database)
@@ -117,6 +119,7 @@ Root: README.md, ARCHITECTURE.md, DEPLOYMENT.md, docker-compose.yml
 - Error handling: Log errors, continue gracefully (best-effort parsing)
 
 **TypeScript**:
+
 - Strict mode enabled; explicit types for props and state
 - Client components: Mark with "use client" directive
 - Interfaces for data structures (see page.tsx for examples)
@@ -124,6 +127,7 @@ Root: README.md, ARCHITECTURE.md, DEPLOYMENT.md, docker-compose.yml
 - Use Tailwind utility classes for styling
 
 **Database**:
+
 - SQLAlchemy ORM models in `backend/app/models/`
 - Migrations: Manual (MVP scope; add Alembic if schema changes frequently)
 - Tables: `repositories` (GitHub repos), `automations` (parsed YAML entries)

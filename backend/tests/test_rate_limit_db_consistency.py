@@ -1,6 +1,6 @@
 """Tests for database consistency when rate limiting occurs during indexing."""
 
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 import pytest
 from app.models.database import Automation, Base, Repository
@@ -71,7 +71,7 @@ async def test_rate_limit_during_indexing_keeps_accurate_counts(test_db):
             description="Test description",
             trigger_types="state",
             source_file_path="automations.yaml",
-            github_url=f"https://github.com/test-owner/existing-repo/blob/main/automations.yaml",
+            github_url="https://github.com/test-owner/existing-repo/blob/main/automations.yaml",
             repository_id=existing_repo.id,
         )
         test_db.add(automation)

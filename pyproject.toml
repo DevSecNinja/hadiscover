@@ -1,5 +1,15 @@
 [tool.black]
 target-version = ["py311"]
+line-length = 88
 
 [tool.isort]
 profile = "black"
+
+[tool.ruff]
+# Same as Black.
+line-length = 88
+indent-width = 4
+target-version = "py311"
+
+[tool.ruff.lint]
+fixable = ["ALL"]

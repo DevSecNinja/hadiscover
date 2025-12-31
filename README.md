@@ -53,9 +53,10 @@ docker-compose up -d
 ```
 
 The application will be available at:
-- **Frontend**: http://localhost:8080
-- **Backend API**: http://localhost:8000
-- **API Documentation**: http://localhost:8000/docs
+
+- **Frontend**: <http://localhost:8080>
+- **Backend API**: <http://localhost:8000>
+- **API Documentation**: <http://localhost:8000/docs>
 
 ### Adding Your Repository
 
@@ -184,6 +185,7 @@ For every pull request that modifies backend or frontend code, Docker images are
 3. **Easy Testing**: Pull and run the images to test the changes in isolation
 
 Example:
+
 ```bash
 # Pull PR images (replace with actual PR number)
 docker pull ghcr.io/devsecninja/hadiscover/backend:0.0.0-pr.123.abc1234
@@ -203,6 +205,7 @@ hadiscover can be deployed in various ways:
 ### Docker Deployment (Recommended)
 
 See [RELEASES.md](./RELEASES.md) for information about:
+
 - Using pre-built Docker images from GHCR
 - Semantic versioning
 - Release process

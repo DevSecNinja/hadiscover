@@ -1,11 +1,7 @@
 """Tests for rate limiting on the index endpoint."""
 
 import os
-import time
 
-import pytest
-from app.api.routes import INDEXING_COOLDOWN_MINUTES, last_indexing_time
-from app.main import app
 from fastapi.testclient import TestClient
 
 

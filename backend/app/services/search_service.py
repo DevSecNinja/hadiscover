@@ -123,6 +123,7 @@ class SearchService:
                             "owner": repository.owner,
                             "description": repository.description,
                             "url": repository.url,
+                            "stars": repository.stars or 0,
                         },
                         "indexed_at": (
                             automation.indexed_at.isoformat()
@@ -189,6 +190,7 @@ class SearchService:
                             "owner": repository.owner,
                             "description": repository.description,
                             "url": repository.url,
+                            "stars": repository.stars or 0,
                         },
                         "indexed_at": (
                             automation.indexed_at.isoformat()

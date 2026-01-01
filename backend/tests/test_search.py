@@ -37,9 +37,10 @@ def test_search_by_alias(test_db):
     test_db.commit()
 
     # Search for "Light"
-    results = SearchService.search_automations(test_db, "Light", limit=10)
+    results, total = SearchService.search_automations(test_db, "Light", page=1, per_page=10)
 
     assert len(results) == 1
+    assert total == 1
     assert results[0]["alias"] == "Light Control"
 
 
@@ -65,9 +66,10 @@ def test_search_by_description(test_db):
     test_db.add(automation)
     test_db.commit()
 
-    results = SearchService.search_automations(test_db, "temperature", limit=10)
+    results, total = SearchService.search_automations(test_db, "temperature", page=1, per_page=10)
 
     assert len(results) == 1
+    assert total == 1
     assert "temperature" in results[0]["description"].lower()
 
 
@@ -94,12 +96,14 @@ def test_search_case_insensitive(test_db):
     test_db.commit()
 
     # Search with lowercase
-    results = SearchService.search_automations(test_db, "motion", limit=10)
+    results, total = SearchService.search_automations(test_db, "motion", page=1, per_page=10)
     assert len(results) == 1
+    assert total == 1
 
     # Search with uppercase
-    results = SearchService.search_automations(test_db, "SENSOR", limit=10)
+    results, total = SearchService.search_automations(test_db, "SENSOR", page=1, per_page=10)
     assert len(results) == 1
+    assert total == 1
 
 
 def test_search_empty_query(test_db):
@@ -124,8 +128,9 @@ def test_search_empty_query(test_db):
     test_db.add(automation)
     test_db.commit()
 
-    results = SearchService.search_automations(test_db, "", limit=10)
+    results, total = SearchService.search_automations(test_db, "", page=1, per_page=10)
     assert len(results) == 1
+    assert total == 1
 
 
 def test_search_no_results(test_db):
@@ -150,8 +155,9 @@ def test_search_no_results(test_db):
     test_db.add(automation)
     test_db.commit()
 
-    results = SearchService.search_automations(test_db, "nonexistent", limit=10)
+    results, total = SearchService.search_automations(test_db, "nonexistent", page=1, per_page=10)
     assert len(results) == 0
+    assert total == 0
 
 
 def test_get_statistics(test_db):
@@ -216,9 +222,10 @@ def test_search_result_format(test_db):
     test_db.add(automation)
     test_db.commit()
 
-    results = SearchService.search_automations(test_db, "test", limit=10)
+    results, total = SearchService.search_automations(test_db, "test", page=1, per_page=10)
 
     assert len(results) == 1
+    assert total == 1
     result = results[0]
 
     # Check result structure
@@ -246,3 +253,112 @@ def test_search_result_format(test_db):
     # Check trigger types are parsed
     assert isinstance(result["trigger_types"], list)
     assert len(result["trigger_types"]) == 2
+
+
+def test_pagination_first_page(test_db):
+    """Test pagination first page."""
+    repo = Repository(
+        name="test-repo",
+        owner="testuser",
+        description="Test repository",
+        url="https://github.com/testuser/test-repo",
+    )
+    test_db.add(repo)
+    test_db.commit()
+
+    # Create 35 automations
+    for i in range(35):
+        automation = Automation(
+            alias=f"Automation {i}",
+            description="Test description",
+            trigger_types="state",
+            source_file_path="automations.yaml",
+            github_url="https://github.com/testuser/test-repo/blob/main/automations.yaml",
+            repository_id=repo.id,
+        )
+        test_db.add(automation)
+    test_db.commit()
+
+    # Get first page with 30 results
+    results, total = SearchService.search_automations(test_db, "", page=1, per_page=30)
+    
+    assert len(results) == 30
+    assert total == 35
+
+
+def test_pagination_second_page(test_db):
+    """Test pagination second page."""
+    repo = Repository(
+        name="test-repo",
+        owner="testuser",
+        description="Test repository",
+        url="https://github.com/testuser/test-repo",
+    )
+    test_db.add(repo)
+    test_db.commit()
+
+    # Create 35 automations
+    for i in range(35):
+        automation = Automation(
+            alias=f"Automation {i}",
+            description="Test description",
+            trigger_types="state",
+            source_file_path="automations.yaml",
+            github_url="https://github.com/testuser/test-repo/blob/main/automations.yaml",
+            repository_id=repo.id,
+        )
+        test_db.add(automation)
+    test_db.commit()
+
+    # Get second page with remaining 5 results
+    results, total = SearchService.search_automations(test_db, "", page=2, per_page=30)
+    
+    assert len(results) == 5
+    assert total == 35
+
+
+def test_pagination_with_search_query(test_db):
+    """Test pagination with search query."""
+    repo = Repository(
+        name="test-repo",
+        owner="testuser",
+        description="Test repository",
+        url="https://github.com/testuser/test-repo",
+    )
+    test_db.add(repo)
+    test_db.commit()
+
+    # Create 25 matching automations
+    for i in range(25):
+        automation = Automation(
+            alias=f"Light Automation {i}",
+            description="Controls lights",
+            trigger_types="state",
+            source_file_path="automations.yaml",
+            github_url="https://github.com/testuser/test-repo/blob/main/automations.yaml",
+            repository_id=repo.id,
+        )
+        test_db.add(automation)
+    
+    # Create 10 non-matching automations
+    for i in range(10):
+        automation = Automation(
+            alias=f"Temperature Automation {i}",
+            description="Monitors temperature",
+            trigger_types="numeric_state",
+            source_file_path="automations.yaml",
+            github_url="https://github.com/testuser/test-repo/blob/main/automations.yaml",
+            repository_id=repo.id,
+        )
+        test_db.add(automation)
+    test_db.commit()
+
+    # Search for "Light" - first page
+    results, total = SearchService.search_automations(test_db, "Light", page=1, per_page=20)
+    assert len(results) == 20
+    assert total == 25
+    
+    # Search for "Light" - second page
+    results, total = SearchService.search_automations(test_db, "Light", page=2, per_page=20)
+    assert len(results) == 5
+    assert total == 25

@@ -309,10 +309,10 @@ class SearchService:
                 repo_query.with_entities(
                     Repository.owner,
                     Repository.name,
-                    Repository.stars,
+                    func.max(Repository.stars).label("stars"),
                     func.count(Automation.id).label("count"),
                 )
-                .group_by(Repository.owner, Repository.name, Repository.stars)
+                .group_by(Repository.owner, Repository.name)
                 .order_by(func.count(Automation.id).desc())
                 .limit(20)
                 .all()

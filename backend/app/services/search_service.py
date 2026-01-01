@@ -1,7 +1,7 @@
 """Search service for querying Home Assistant automations."""
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from app.models.database import Automation, IndexingMetadata, Repository
 from sqlalchemy import func, or_
@@ -22,7 +22,7 @@ class SearchService:
         repo_filter: Optional[str] = None,
         blueprint_filter: Optional[str] = None,
         trigger_filter: Optional[str] = None,
-    ) -> tuple[List[Dict[str, Any]], int]:
+    ) -> Tuple[List[Dict[str, Any]], int]:
         """
         Search automations by text query across multiple fields.
 
@@ -151,7 +151,7 @@ class SearchService:
     @staticmethod
     def _get_recent_automations(
         db: Session, page: int, per_page: int
-    ) -> tuple[List[Dict[str, Any]], int]:
+    ) -> Tuple[List[Dict[str, Any]], int]:
         """
         Get most recently indexed automations.
 

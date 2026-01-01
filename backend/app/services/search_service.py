@@ -21,6 +21,7 @@ class SearchService:
         repo_filter: Optional[str] = None,
         blueprint_filter: Optional[str] = None,
         trigger_filter: Optional[str] = None,
+        action_filter: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         """
         Search automations by text query across multiple fields.
@@ -32,6 +33,7 @@ class SearchService:
             repo_filter: Filter by repository (format: "owner/name")
             blueprint_filter: Filter by blueprint path
             trigger_filter: Filter by trigger type
+            action_filter: Filter by action call (service name)
 
         Returns:
             List of automation results with repository information
@@ -41,6 +43,7 @@ class SearchService:
             and not repo_filter
             and not blueprint_filter
             and not trigger_filter
+            and not action_filter
         ):
             # Return recent automations if no query or filters
             return SearchService._get_recent_automations(db, limit)
@@ -61,6 +64,9 @@ class SearchService:
                             func.lower(search_pattern)
                         ),
                         func.lower(Automation.trigger_types).like(
+                            func.lower(search_pattern)
+                        ),
+                        func.lower(Automation.action_calls).like(
                             func.lower(search_pattern)
                         ),
                         func.lower(Repository.owner).like(func.lower(search_pattern)),
@@ -91,6 +97,13 @@ class SearchService:
                 # Trigger types are stored as comma-separated, use LIKE
                 base_query = base_query.filter(
                     Automation.trigger_types.like(f"%{trigger_filter}%")
+                )
+
+            # Apply action filter
+            if action_filter:
+                # Action calls are stored as comma-separated, use LIKE
+                base_query = base_query.filter(
+                    Automation.action_calls.like(f"%{action_filter}%")
                 )
 
             results = base_query.limit(limit).all()
@@ -252,6 +265,7 @@ class SearchService:
         repo_filter: Optional[str] = None,
         blueprint_filter: Optional[str] = None,
         trigger_filter: Optional[str] = None,
+        action_filter: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Get facets (aggregated counts) for filters.
@@ -262,9 +276,10 @@ class SearchService:
             repo_filter: Currently selected repository filter
             blueprint_filter: Currently selected blueprint filter
             trigger_filter: Currently selected trigger filter
+            action_filter: Currently selected action filter
 
         Returns:
-            Dictionary with facets for repositories, blueprints, and triggers
+            Dictionary with facets for repositories, blueprints, triggers, and actions
         """
         try:
             # Build base query with current filters (except the one we're aggregating)
@@ -284,6 +299,9 @@ class SearchService:
                         func.lower(Automation.trigger_types).like(
                             func.lower(search_pattern)
                         ),
+                        func.lower(Automation.action_calls).like(
+                            func.lower(search_pattern)
+                        ),
                         func.lower(Repository.owner).like(func.lower(search_pattern)),
                         func.lower(Repository.name).like(func.lower(search_pattern)),
                         func.lower(Repository.description).like(
@@ -301,6 +319,10 @@ class SearchService:
             if trigger_filter:
                 repo_query = repo_query.filter(
                     Automation.trigger_types.like(f"%{trigger_filter}%")
+                )
+            if action_filter:
+                repo_query = repo_query.filter(
+                    Automation.action_calls.like(f"%{action_filter}%")
                 )
 
             repo_facets = (
@@ -326,6 +348,10 @@ class SearchService:
                 blueprint_query = blueprint_query.filter(
                     Automation.trigger_types.like(f"%{trigger_filter}%")
                 )
+            if action_filter:
+                blueprint_query = blueprint_query.filter(
+                    Automation.action_calls.like(f"%{action_filter}%")
+                )
 
             blueprint_facets = (
                 blueprint_query.filter(Automation.blueprint_path.isnot(None))
@@ -349,6 +375,10 @@ class SearchService:
                 trigger_query = trigger_query.filter(
                     Automation.blueprint_path == blueprint_filter
                 )
+            if action_filter:
+                trigger_query = trigger_query.filter(
+                    Automation.action_calls.like(f"%{action_filter}%")
+                )
 
             # Get all trigger types and aggregate
             all_triggers = (
@@ -371,6 +401,43 @@ class SearchService:
                 trigger_counts.items(), key=lambda x: x[1], reverse=True
             )[:20]
 
+            # Get action facets (excluding current action filter)
+            action_query = base_query
+            if repo_filter and "/" in repo_filter:
+                owner, name = repo_filter.split("/", 1)
+                action_query = action_query.filter(
+                    Repository.owner == owner, Repository.name == name
+                )
+            if blueprint_filter:
+                action_query = action_query.filter(
+                    Automation.blueprint_path == blueprint_filter
+                )
+            if trigger_filter:
+                action_query = action_query.filter(
+                    Automation.trigger_types.like(f"%{trigger_filter}%")
+                )
+
+            # Get all action calls and aggregate
+            all_actions = (
+                action_query.filter(Automation.action_calls.isnot(None))
+                .with_entities(Automation.action_calls)
+                .all()
+            )
+
+            # Parse comma-separated action calls and count
+            action_counts: Dict[str, int] = {}
+            for (action_str,) in all_actions:
+                if action_str:
+                    for action in action_str.split(","):
+                        action = action.strip()
+                        if action:
+                            action_counts[action] = action_counts.get(action, 0) + 1
+
+            # Sort by count and limit
+            action_facets = sorted(
+                action_counts.items(), key=lambda x: x[1], reverse=True
+            )[:20]
+
             return {
                 "repositories": [
                     {"owner": owner, "name": name, "count": count}
@@ -383,8 +450,12 @@ class SearchService:
                     {"type": trigger, "count": count}
                     for trigger, count in trigger_facets
                 ],
+                "actions": [
+                    {"call": action, "count": count}
+                    for action, count in action_facets
+                ],
             }
 
         except Exception as e:
             logger.error(f"Error getting facets: {e}")
-            return {"repositories": [], "blueprints": [], "triggers": []}
+            return {"repositories": [], "blueprints": [], "triggers": [], "actions": []}

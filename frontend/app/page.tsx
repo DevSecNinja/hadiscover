@@ -301,15 +301,6 @@ export default function Home() {
       name: "DevSecNinja",
       url: "https://github.com/DevSecNinja",
     },
-    aggregateRating: statistics
-      ? {
-          "@type": "AggregateRating",
-          ratingValue: "5",
-          ratingCount: statistics.repo_star_count.toString(),
-          bestRating: "5",
-          worstRating: "1",
-        }
-      : undefined,
   };
 
   return (

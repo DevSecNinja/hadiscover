@@ -62,6 +62,7 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  manifest: "/site.webmanifest",
 };
 
 export const viewport: Viewport = {
@@ -81,12 +82,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        {/* Next.js automatically handles favicon.ico from app directory */}
-        {/* Note: Add apple-touch-icon.png to public directory for iOS devices */}
-        {/* <link rel="apple-touch-icon" href="/apple-touch-icon.png" /> */}
-        <link rel="manifest" href="/site.webmanifest" />
-      </head>
       <body className="antialiased">{children}</body>
     </html>
   );

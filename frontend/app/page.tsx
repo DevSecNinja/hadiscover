@@ -552,8 +552,7 @@ export default function Home() {
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
-                    role="img"
-                    aria-label="Clear icon"
+                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap="round"

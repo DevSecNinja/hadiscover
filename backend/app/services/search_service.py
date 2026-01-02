@@ -14,28 +14,40 @@ class SearchService:
     """Service for searching Home Assistant automations."""
 
     @staticmethod
+    def _escape_like(value: str, escape_char: str = "\\") -> str:
+        """Escape SQL LIKE wildcard characters in a value."""
+        # First escape the escape character itself, then '%' and '_'
+        escaped = value.replace(escape_char, escape_char + escape_char)
+        escaped = escaped.replace("%", escape_char + "%")
+        escaped = escaped.replace("_", escape_char + "_")
+        return escaped
+
+    @staticmethod
     def _exact_match_in_comma_list(column, value: str):
         """
         Create SQL condition for exact match in comma-separated list.
-        
+
         Handles these cases:
         - Single value: "value"
         - First in list: "value,..."
         - Middle of list: "...,value,..."
         - Last in list: "...,value"
-        
+
         Args:
             column: SQLAlchemy column containing comma-separated values
             value: The exact value to match
-            
+
         Returns:
             SQLAlchemy OR condition for exact matching
         """
+        escape_char = "\\"
+        escaped_value = SearchService._escape_like(value, escape_char=escape_char)
+
         return or_(
             column == value,  # Exact match (single value)
-            column.like(f"{value},%"),  # First in list
-            column.like(f"%,{value},%"),  # Middle of list
-            column.like(f"%,{value}"),  # Last in list
+            column.like(f"{escaped_value},%", escape=escape_char),  # First in list
+            column.like(f"%,{escaped_value},%", escape=escape_char),  # Middle of list
+            column.like(f"%,{escaped_value}", escape=escape_char),  # Last in list
         )
 
     @staticmethod

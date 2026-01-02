@@ -3,13 +3,13 @@ name: Build PR Images
 on:
   workflow_dispatch:
   #pull_request:
-   # branches:
-   #   - main
-   # paths:
-   #   - 'backend/**'
-   #   - 'frontend/**'
-   #   - '.github/workflows/pr-images.yml'
-   #   - '.github/workflows/build-and-push-image.yml'
+  # branches:
+  #   - main
+  # paths:
+  #   - 'backend/**'
+  #   - 'frontend/**'
+  #   - '.github/workflows/pr-images.yml'
+  #   - '.github/workflows/build-and-push-image.yml'
 
 permissions:
   contents: read
@@ -41,11 +41,11 @@ jobs:
     needs: [determine-version]
     uses: ./.github/workflows/build-and-push-image.yml
     with:
-      registry: 'ghcr.io'
-      image_name: '${{ github.repository }}/backend'
+      registry: "ghcr.io"
+      image_name: "${{ github.repository }}/backend"
       version: ${{ needs.determine-version.outputs.version }}
-      context_path: './backend'
-      update_version_script: 'update-backend-version.sh'
+      context_path: "./backend"
+      update_version_script: "update-backend-version.sh"
       is_prerelease: true
 
   build-and-push-frontend:
@@ -54,11 +54,11 @@ jobs:
     needs: [determine-version]
     uses: ./.github/workflows/build-and-push-image.yml
     with:
-      registry: 'ghcr.io'
-      image_name: '${{ github.repository }}/frontend'
+      registry: "ghcr.io"
+      image_name: "${{ github.repository }}/frontend"
       version: ${{ needs.determine-version.outputs.version }}
-      context_path: './frontend'
-      update_version_script: 'update-frontend-version.sh'
+      context_path: "./frontend"
+      update_version_script: "update-frontend-version.sh"
       is_prerelease: true
       build_args: |
         NEXT_PUBLIC_API_URL=/api/v1

@@ -20,7 +20,13 @@ services:
     restart: unless-stopped
     healthcheck:
       # Curl not installed in base image
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')"]
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3

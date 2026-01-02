@@ -6,66 +6,66 @@
 frontend:
   - changed-files:
       - any-glob-to-any-file:
-          - 'frontend/**/*'
-          - 'biome.json'
+          - "frontend/**/*"
+          - "biome.json"
 
 # Backend changes (Python, FastAPI, API)
 backend:
   - changed-files:
       - any-glob-to-any-file:
-          - 'backend/**/*'
-          - 'pyproject.toml'
-          - 'bandit.yml'
+          - "backend/**/*"
+          - "pyproject.toml"
+          - "bandit.yml"
 
 # Dependency updates
 dependencies:
   - changed-files:
       - any-glob-to-any-file:
-          - 'package.json'
-          - 'package-lock.json'
-          - 'requirements.txt'
-          - 'backend/requirements.txt'
-          - 'renovate.json'
+          - "package.json"
+          - "package-lock.json"
+          - "requirements.txt"
+          - "backend/requirements.txt"
+          - "renovate.json"
 
 # CI/CD workflow changes
 ci/cd:
   - changed-files:
       - any-glob-to-any-file:
-          - '.github/workflows/**/*'
-          - '.github/scripts/**/*'
+          - ".github/workflows/**/*"
+          - ".github/scripts/**/*"
 
 # Documentation changes
 documentation:
   - changed-files:
       - any-glob-to-any-file:
-          - '**/*.md'
-          - '.github/copilot-instructions.md'
+          - "**/*.md"
+          - ".github/copilot-instructions.md"
 
 # Docker configuration
 docker:
   - changed-files:
       - any-glob-to-any-file:
-          - '**/Dockerfile'
-          - '**/docker-compose*.yml'
-          - '**/.dockerignore'
+          - "**/Dockerfile"
+          - "**/docker-compose*.yml"
+          - "**/.dockerignore"
 
 # Tests
 tests:
   - changed-files:
       - any-glob-to-any-file:
-          - 'backend/tests/**/*'
-          - '**/test_*.py'
-          - '**/*_test.py'
-          - 'pytest.ini'
+          - "backend/tests/**/*"
+          - "**/test_*.py"
+          - "**/*_test.py"
+          - "pytest.ini"
 
 # Configuration files
 configuration:
   - changed-files:
       - any-glob-to-any-file:
-          - '.editorconfig'
-          - '.gitignore'
-          - '.pre-commit-config.yaml'
-          - '.markdown-lint.yml'
-          - 'setup.sh'
-          - 'start.sh'
-          - 'stop.sh'
+          - ".editorconfig"
+          - ".gitignore"
+          - ".pre-commit-config.yaml"
+          - ".markdown-lint.yml"
+          - "setup.sh"
+          - "start.sh"
+          - "stop.sh"

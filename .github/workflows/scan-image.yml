@@ -4,19 +4,19 @@ on:
   workflow_call:
     inputs:
       registry:
-        description: 'Container registry URL'
+        description: "Container registry URL"
         required: true
         type: string
       image_name:
-        description: 'Full image name (e.g., owner/repo/backend)'
+        description: "Full image name (e.g., owner/repo/backend)"
         required: true
         type: string
       digest:
-        description: 'Image digest to scan'
+        description: "Image digest to scan"
         required: true
         type: string
       category:
-        description: 'Security category for SARIF upload (e.g., backend-image)'
+        description: "Security category for SARIF upload (e.g., backend-image)"
         required: true
         type: string
 
@@ -54,12 +54,12 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ${{ steps.image_ref.outputs.ref }}
-          format: 'sarif'
-          output: 'trivy-results.sarif'
+          format: "sarif"
+          output: "trivy-results.sarif"
 
       - name: Upload Trivy results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: "trivy-results.sarif"
           category: ${{ inputs.category }}

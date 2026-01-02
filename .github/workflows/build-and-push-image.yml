@@ -4,38 +4,38 @@ on:
   workflow_call:
     inputs:
       registry:
-        description: 'Container registry URL'
+        description: "Container registry URL"
         required: true
         type: string
       image_name:
-        description: 'Full image name (e.g., owner/repo/backend)'
+        description: "Full image name (e.g., owner/repo/backend)"
         required: true
         type: string
       version:
-        description: 'Version to tag the image with'
+        description: "Version to tag the image with"
         required: true
         type: string
       context_path:
-        description: 'Docker build context path (e.g., ./backend)'
+        description: "Docker build context path (e.g., ./backend)"
         required: true
         type: string
       update_version_script:
-        description: 'Script to update version in source (e.g., update-backend-version.sh)'
+        description: "Script to update version in source (e.g., update-backend-version.sh)"
         required: true
         type: string
       build_args:
-        description: 'Optional build arguments (multiline string)'
+        description: "Optional build arguments (multiline string)"
         required: false
         type: string
-        default: ''
+        default: ""
       is_prerelease:
-        description: 'Whether this is a pre-release (true/false)'
+        description: "Whether this is a pre-release (true/false)"
         required: false
         type: boolean
         default: false
     outputs:
       digest:
-        description: 'Image digest from the build'
+        description: "Image digest from the build"
         value: ${{ jobs.build.outputs.digest }}
 
 permissions:

@@ -44,7 +44,7 @@ jobs:
       version: ${{ needs.determine-version.outputs.version }}
       context_path: './backend'
       update_version_script: 'update-backend-version.sh'
-      is_prerelease: 'true'
+      is_prerelease: true
 
   build-and-push-frontend:
     needs: [determine-version]
@@ -55,7 +55,7 @@ jobs:
       version: ${{ needs.determine-version.outputs.version }}
       context_path: './frontend'
       update_version_script: 'update-frontend-version.sh'
-      is_prerelease: 'true'
+      is_prerelease: true
       build_args: |
         NEXT_PUBLIC_API_URL=/api/v1
 

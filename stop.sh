@@ -9,7 +9,6 @@ echo ""
 # Colors for output
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 # Find and stop backend (uvicorn)
@@ -17,7 +16,7 @@ echo "Stopping Backend API..."
 BACKEND_PIDS=$(pgrep -f "uvicorn app.main:app")
 if [ -n "$BACKEND_PIDS" ]; then
 	echo "Found backend process(es): $BACKEND_PIDS"
-	kill $BACKEND_PIDS 2>/dev/null
+	kill "$BACKEND_PIDS" 2>/dev/null
 	sleep 1
 	# Force kill if still running
 	if pgrep -f "uvicorn app.main:app" >/dev/null; then
@@ -36,7 +35,7 @@ echo "Stopping Frontend..."
 FRONTEND_PIDS=$(pgrep -f "next dev")
 if [ -n "$FRONTEND_PIDS" ]; then
 	echo "Found frontend process(es): $FRONTEND_PIDS"
-	kill $FRONTEND_PIDS 2>/dev/null
+	kill "$FRONTEND_PIDS" 2>/dev/null
 	sleep 1
 	# Force kill if still running
 	if pgrep -f "next dev" >/dev/null; then

@@ -12,7 +12,8 @@ NC='\033[0m' # No Color
 
 # Start Backend
 echo -e "${GREEN}Starting Backend API...${NC}"
-cd backend
+cd backend || exit
+# shellcheck disable=SC1091
 source venv/bin/activate
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 &
 BACKEND_PID=$!
@@ -34,7 +35,7 @@ echo ""
 
 # Start Frontend
 echo -e "${GREEN}Starting Frontend...${NC}"
-cd frontend
+cd frontend || exit
 npm run dev &
 FRONTEND_PID=$!
 cd ..

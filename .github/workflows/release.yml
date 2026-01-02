@@ -184,7 +184,7 @@ jobs:
         run: npm run build
         env:
           # Use the production API URL for GitHub Pages deployment
-          NEXT_PUBLIC_API_URL: ${{ secrets.API_URL || 'https://api.hadiscover.com/api/v1' }}
+          NEXT_PUBLIC_API_URL: ${{ vars.FRONTEND_API_URL || 'https://api.hadiscover.com/api/v1' }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4

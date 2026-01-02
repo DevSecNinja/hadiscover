@@ -6,7 +6,7 @@ set -e
 
 cd backend
 
-echo "Running backend tests..."
-pytest tests/ -v --tb=short
+echo "Running backend tests with coverage..."
+pytest tests/ -v --tb=short --cov --cov-branch --cov-report=xml --cov-report=term
 
 echo "✓ Backend tests passed"

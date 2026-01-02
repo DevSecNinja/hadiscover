@@ -32,8 +32,16 @@ jobs:
       - name: Install backend dependencies
         run: .github/scripts/install-backend-deps.sh
 
-      - name: Run backend tests
+      - name: Run backend tests with coverage
         run: .github/scripts/run-backend-tests.sh
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./backend/coverage.xml
+          flags: backend
+          name: backend-coverage
 
   determine-version:
     runs-on: ubuntu-latest

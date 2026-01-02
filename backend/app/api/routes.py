@@ -35,6 +35,7 @@ class RepositoryResponse(BaseModel):
     owner: str
     description: Optional[str]
     url: str
+    stars: int
 
 
 class RepositoryFacet(BaseModel):
@@ -42,6 +43,7 @@ class RepositoryFacet(BaseModel):
 
     owner: str
     name: str
+    stars: int
     count: int
 
 
@@ -59,12 +61,20 @@ class TriggerFacet(BaseModel):
     count: int
 
 
+class ActionFacet(BaseModel):
+    """Action call facet with count."""
+
+    call: str
+    count: int
+
+
 class Facets(BaseModel):
     """Facets for filtering."""
 
     repositories: List[RepositoryFacet]
     blueprints: List[BlueprintFacet]
     triggers: List[TriggerFacet]
+    actions: List[ActionFacet]
 
 
 class AutomationResponse(BaseModel):
@@ -129,18 +139,20 @@ async def search_automations(
     repo: Optional[str] = None,
     blueprint: Optional[str] = None,
     trigger: Optional[str] = None,
+    action: Optional[str] = None,
     db: Session = Depends(get_db),
 ):
     """
     Search for Home Assistant automations.
 
     Args:
-        q: Search query string (searches across automation name, description, triggers, and repository)
+        q: Search query string (searches across automation name, description, triggers, actions, and repository)
         page: Page number (default: 1, min: 1)
         per_page: Results per page (default: 30, max: 100)
         repo: Filter by repository (format: "owner/name")
         blueprint: Filter by blueprint path
         trigger: Filter by trigger type
+        action: Filter by action call (service name)
         db: Database session
 
     Returns:
@@ -162,10 +174,16 @@ async def search_automations(
         repo_filter=repo,
         blueprint_filter=blueprint,
         trigger_filter=trigger,
+        action_filter=action,
     )
 
     facets = SearchService.get_facets(
-        db, q, repo_filter=repo, blueprint_filter=blueprint, trigger_filter=trigger
+        db,
+        q,
+        repo_filter=repo,
+        blueprint_filter=blueprint,
+        trigger_filter=trigger,
+        action_filter=action,
     )
 
     return {

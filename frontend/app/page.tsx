@@ -7,6 +7,7 @@ interface Repository {
   owner: string;
   description: string | null;
   url: string;
+  stars: number;
 }
 
 interface Automation {
@@ -27,6 +28,7 @@ interface Automation {
 interface RepositoryFacet {
   owner: string;
   name: string;
+  stars: number;
   count: number;
 }
 
@@ -40,10 +42,16 @@ interface TriggerFacet {
   count: number;
 }
 
+interface ActionFacet {
+  call: string;
+  count: number;
+}
+
 interface Facets {
   repositories: RepositoryFacet[];
   blueprints: BlueprintFacet[];
   triggers: TriggerFacet[];
+  actions: ActionFacet[];
 }
 
 interface SearchResponse {
@@ -98,12 +106,14 @@ export default function Home() {
     repositories: [],
     blueprints: [],
     triggers: [],
+    actions: [],
   });
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
   const [selectedBlueprint, setSelectedBlueprint] = useState<string | null>(
     null,
   );
   const [selectedTrigger, setSelectedTrigger] = useState<string | null>(null);
+  const [selectedAction, setSelectedAction] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -111,7 +121,10 @@ export default function Home() {
   const [perPage] = useState(30); // Fixed at 30 per requirement
 
   // Calculate total pages for pagination
-  const totalPages = useMemo(() => Math.ceil(totalResults / perPage), [totalResults, perPage]);
+  const totalPages = useMemo(
+    () => Math.ceil(totalResults / perPage),
+    [totalResults, perPage],
+  );
 
   useEffect(() => {
     // Load theme preference from localStorage
@@ -181,6 +194,7 @@ export default function Home() {
       if (selectedRepo) params.append("repo", selectedRepo);
       if (selectedBlueprint) params.append("blueprint", selectedBlueprint);
       if (selectedTrigger) params.append("trigger", selectedTrigger);
+      if (selectedAction) params.append("action", selectedAction);
 
       const response = await fetch(
         `${API_BASE_URL}/search?${params.toString()}`,
@@ -212,7 +226,8 @@ export default function Home() {
   // biome-ignore lint/correctness/useExhaustiveDependencies: Filter changes should trigger search
   useEffect(() => {
     performSearch(query, 1);
-  }, [selectedRepo, selectedBlueprint, selectedTrigger]);
+  }, [selectedRepo, selectedBlueprint, selectedTrigger, selectedAction]);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     performSearch(query, 1);
@@ -699,7 +714,8 @@ export default function Home() {
           {/* Filter Section */}
           {(facets.repositories.length > 0 ||
             facets.blueprints.length > 0 ||
-            facets.triggers.length > 0) && (
+            facets.triggers.length > 0 ||
+            facets.actions.length > 0) && (
             <>
               <aside
                 className={`
@@ -778,7 +794,10 @@ export default function Home() {
                     }}
                   >
                     {/* Active Filters */}
-                    {(selectedRepo || selectedBlueprint || selectedTrigger) && (
+                    {(selectedRepo ||
+                      selectedBlueprint ||
+                      selectedTrigger ||
+                      selectedAction) && (
                       <div
                         className="pb-4 border-b"
                         style={{
@@ -802,6 +821,7 @@ export default function Home() {
                               setSelectedRepo(null);
                               setSelectedBlueprint(null);
                               setSelectedTrigger(null);
+                              setSelectedAction(null);
                             }}
                             className="text-xs px-2 py-1 rounded-lg transition-colors"
                             style={{
@@ -873,6 +893,28 @@ export default function Home() {
                               <button
                                 type="button"
                                 onClick={() => setSelectedTrigger(null)}
+                                className="ml-2 hover:opacity-70"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          )}
+                          {selectedAction && (
+                            <div
+                              className="flex items-center justify-between text-sm px-3 py-2 rounded-lg"
+                              style={{
+                                background: isDark
+                                  ? "rgba(251, 191, 36, 0.15)"
+                                  : "rgba(245, 158, 11, 0.1)",
+                                color: isDark ? "#fbbf24" : "#d97706",
+                              }}
+                            >
+                              <span className="truncate font-mono text-xs">
+                                {selectedAction}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => setSelectedAction(null)}
                                 className="ml-2 hover:opacity-70"
                               >
                                 ✕
@@ -990,14 +1032,32 @@ export default function Home() {
                                   </span>
                                 </div>
                                 <div
-                                  className="text-xs truncate mt-0.5"
+                                  className="flex items-center gap-2 text-xs truncate mt-0.5"
                                   style={{
                                     color: isDark
                                       ? "rgba(255, 255, 255, 0.4)"
                                       : "rgba(0, 0, 0, 0.4)",
                                   }}
                                 >
-                                  {repo.owner}
+                                  <span>{repo.owner}</span>
+                                  {repo.stars > 0 && (
+                                    <>
+                                      <span style={{ opacity: 0.5 }}>•</span>
+                                      <span className="inline-flex items-center gap-0.5">
+                                        <svg
+                                          className="w-3 h-3"
+                                          style={{ color: "#f59e0b" }}
+                                          fill="currentColor"
+                                          viewBox="0 0 24 24"
+                                          role="img"
+                                          aria-label="Star icon"
+                                        >
+                                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                        </svg>
+                                        <span>{repo.stars}</span>
+                                      </span>
+                                    </>
+                                  )}
                                 </div>
                               </button>
                             );
@@ -1237,6 +1297,120 @@ export default function Home() {
                         </div>
                       </div>
                     )}
+
+                    {/* Action Filter */}
+                    {facets.actions.length > 0 && (
+                      <div>
+                        <h3
+                          className="text-sm font-semibold mb-3"
+                          style={{
+                            color: isDark ? "#e0e7ff" : "#1f2937",
+                          }}
+                        >
+                          🎬 Actions
+                        </h3>
+                        <div
+                          className={`space-y-2 pb-1 ${isMobile ? "max-h-48" : "max-h-64"} overflow-y-auto`}
+                        >
+                          {facets.actions.map((action) => {
+                            const isSelected = selectedAction === action.call;
+                            return (
+                              <button
+                                key={action.call}
+                                type="button"
+                                onClick={() =>
+                                  setSelectedAction(
+                                    isSelected ? null : action.call,
+                                  )
+                                }
+                                className="w-full text-left px-3 py-2 rounded-lg transition-all duration-150"
+                                style={{
+                                  background: isSelected
+                                    ? isDark
+                                      ? "rgba(251, 191, 36, 0.2)"
+                                      : "rgba(245, 158, 11, 0.15)"
+                                    : isDark
+                                      ? "rgba(255, 255, 255, 0.05)"
+                                      : "rgba(0, 0, 0, 0.03)",
+                                  border: isSelected
+                                    ? isDark
+                                      ? "1px solid rgba(251, 191, 36, 0.4)"
+                                      : "1px solid rgba(245, 158, 11, 0.3)"
+                                    : isDark
+                                      ? "1px solid rgba(255, 255, 255, 0.05)"
+                                      : "1px solid rgba(0, 0, 0, 0.05)",
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (isDark) {
+                                    e.currentTarget.style.background =
+                                      isSelected
+                                        ? "rgba(251, 191, 36, 0.3)"
+                                        : "rgba(255, 255, 255, 0.1)";
+                                    e.currentTarget.style.boxShadow =
+                                      "0 4px 12px rgba(0, 0, 0, 0.2)";
+                                  } else {
+                                    e.currentTarget.style.background =
+                                      isSelected
+                                        ? "rgba(245, 158, 11, 0.2)"
+                                        : "rgba(0, 0, 0, 0.05)";
+                                    e.currentTarget.style.boxShadow =
+                                      "0 2px 8px rgba(0, 0, 0, 0.08)";
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background = isSelected
+                                    ? isDark
+                                      ? "rgba(251, 191, 36, 0.2)"
+                                      : "rgba(245, 158, 11, 0.15)"
+                                    : isDark
+                                      ? "rgba(255, 255, 255, 0.05)"
+                                      : "rgba(0, 0, 0, 0.03)";
+                                  e.currentTarget.style.boxShadow = "none";
+                                }}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <span
+                                    className="text-sm truncate font-mono"
+                                    style={{
+                                      color: isSelected
+                                        ? isDark
+                                          ? "#fbbf24"
+                                          : "#d97706"
+                                        : isDark
+                                          ? "rgba(255, 255, 255, 0.8)"
+                                          : "rgba(0, 0, 0, 0.8)",
+                                    }}
+                                  >
+                                    {action.call}
+                                  </span>
+                                  <span
+                                    className="text-xs font-medium px-2 py-0.5 rounded-full ml-2"
+                                    style={{
+                                      background: isSelected
+                                        ? isDark
+                                          ? "rgba(251, 191, 36, 0.3)"
+                                          : "rgba(245, 158, 11, 0.2)"
+                                        : isDark
+                                          ? "rgba(255, 255, 255, 0.1)"
+                                          : "rgba(0, 0, 0, 0.08)",
+                                      color: isSelected
+                                        ? isDark
+                                          ? "#fbbf24"
+                                          : "#d97706"
+                                        : isDark
+                                          ? "rgba(255, 255, 255, 0.6)"
+                                          : "rgba(0, 0, 0, 0.6)",
+                                    }}
+                                  >
+                                    {action.count}
+                                  </span>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </aside>
@@ -1399,10 +1573,27 @@ export default function Home() {
                           href={automation.repository.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="hover:text-[rgb(var(--ha-blue))] transition-colors font-medium"
+                          className="hover:text-[rgb(var(--ha-blue))] transition-colors font-medium flex items-center gap-1.5"
                         >
-                          {automation.repository.owner}/
-                          {automation.repository.name}
+                          <span>
+                            {automation.repository.owner}/
+                            {automation.repository.name}
+                          </span>
+                          {automation.repository.stars > 0 && (
+                            <span className="inline-flex items-center gap-0.5">
+                              <svg
+                                className="w-3.5 h-3.5"
+                                style={{ color: "#f59e0b" }}
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                                role="img"
+                                aria-label="Star icon"
+                              >
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                              </svg>
+                              <span>{automation.repository.stars}</span>
+                            </span>
+                          )}
                         </a>
                         <span style={{ opacity: 0.5 }}>•</span>
                         <span className="font-mono text-xs truncate">
@@ -1566,7 +1757,7 @@ export default function Home() {
                 </article>
               ))
             )}
-            
+
             {/* Pagination Controls */}
             {!loading && results.length > 0 && totalResults > perPage && (
               <div
@@ -1618,7 +1809,9 @@ export default function Home() {
                 <div
                   className="flex items-center gap-2"
                   style={{
-                    color: isDark ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.7)",
+                    color: isDark
+                      ? "rgba(255, 255, 255, 0.7)"
+                      : "rgba(0, 0, 0, 0.7)",
                   }}
                 >
                   <span className="font-medium">
@@ -1828,8 +2021,8 @@ export default function Home() {
                     Edit in YAML, then paste your code
                   </li>
                   <li>
-                    <strong>Customize</strong> - Update entity names and settings
-                    to match your setup
+                    <strong>Customize</strong> - Update entity names and
+                    settings to match your setup
                   </li>
                   <li>
                     <strong>Save</strong> - Save your automation and test it!

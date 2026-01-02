@@ -122,6 +122,7 @@ class GitHubService:
                                     "default_branch": repo.get(
                                         "default_branch", "main"
                                     ),
+                                    "stars": repo.get("stargazers_count", 0),
                                 }
                             )
 

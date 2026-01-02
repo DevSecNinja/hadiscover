@@ -31,8 +31,8 @@ on:
       is_prerelease:
         description: 'Whether this is a pre-release (true/false)'
         required: false
-        type: string
-        default: 'false'
+        type: boolean
+        default: false
     outputs:
       digest:
         description: 'Image digest from the build'

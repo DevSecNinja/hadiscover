@@ -15,7 +15,7 @@ fi
 echo "Waiting for $CONTAINER_NAME container to be healthy..."
 elapsed=0
 
-while [ $elapsed -lt $TIMEOUT ]; do
+while [ $elapsed -lt "$TIMEOUT" ]; do
 	if [ "$(docker inspect --format='{{.State.Health.Status}}' "$CONTAINER_NAME" 2>/dev/null)" = "healthy" ]; then
 		echo "✓ $CONTAINER_NAME container is healthy"
 		exit 0

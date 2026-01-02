@@ -111,6 +111,17 @@ Run backend tests:
 cd backend && source venv/bin/activate && pytest tests/ -v
 ```
 
+Run stress tests to evaluate performance at different scales:
+
+```bash
+./run_stress_tests.sh          # Run all levels (5.6s)
+./run_stress_tests.sh level1   # Light: 100 repos, 1k automations
+./run_stress_tests.sh level2   # Medium: 500 repos, 5k automations
+./run_stress_tests.sh level3   # Heavy: 2k repos, 20k automations
+```
+
+See [STRESS_TESTING.md](./STRESS_TESTING.md) for performance testing guide and [STRESS_TEST_RESULTS.md](./STRESS_TEST_RESULTS.md) for detailed results.
+
 CI automatically tests Docker containers, API endpoints, and integration on every PR.
 
 ### API Documentation
@@ -127,6 +138,8 @@ OpenAPI/Swagger docs available at <http://localhost:8000/docs> once running.
 ## More Information
 
 - **Architecture**: See [ARCHITECTURE.md](./ARCHITECTURE.md) for technical details
+- **Stress Testing**: See [STRESS_TESTING.md](./STRESS_TESTING.md) for performance testing guide
+- **Performance Results**: See [STRESS_TEST_RESULTS.md](./STRESS_TEST_RESULTS.md) for detailed benchmark results
 - **Contributing**: PRs welcome! Open an issue for bugs or feature requests. PRs are automatically labeled based on changed files—see [.github/LABELING.md](./.github/LABELING.md) for details
 - **License**: MIT License
 - **Stack**: FastAPI (Python), Next.js (TypeScript), SQLite

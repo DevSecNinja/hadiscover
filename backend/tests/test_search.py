@@ -881,21 +881,21 @@ def test_filter_by_action_domain(test_db):
 
     # Filter by light domain
     results, total = SearchService.search_automations(
-        test_db, "", limit=10, action_domain_filter="light"
+        test_db, "", page=1, per_page=10, action_domain_filter="light"
     )
     assert len(results) == 1
     assert results[0]["alias"] == "Light automation"
 
     # Filter by media_player domain
     results, total = SearchService.search_automations(
-        test_db, "", limit=10, action_domain_filter="media_player"
+        test_db, "", page=1, per_page=10, action_domain_filter="media_player"
     )
     assert len(results) == 1
     assert results[0]["alias"] == "Media automation"
 
     # Filter by notify domain
     results, total = SearchService.search_automations(
-        test_db, "", limit=10, action_domain_filter="notify"
+        test_db, "", page=1, per_page=10, action_domain_filter="notify"
     )
     assert len(results) == 1
     assert results[0]["alias"] == "Notification automation"

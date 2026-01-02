@@ -578,3 +578,72 @@ def test_trigger_filter_exact_match(test_db):
     )
     assert len(results) == 1
     assert results[0]["alias"] == "Numeric state trigger"
+
+
+def test_action_filter_with_sql_wildcards(test_db):
+    """Test that SQL wildcard characters in filter values are properly escaped."""
+    repo = Repository(
+        name="test-repo",
+        owner="testuser",
+        description="Test repository",
+        url="https://github.com/testuser/test-repo",
+    )
+    test_db.add(repo)
+    test_db.commit()
+
+    # Create automations with action names containing SQL wildcard characters
+    automation1 = Automation(
+        alias="Underscore action",
+        description="Action with underscore",
+        trigger_types="state",
+        action_calls="light_turn_on",  # Contains underscore
+        source_file_path="automations.yaml",
+        github_url="https://github.com/testuser/test-repo/blob/main/automations.yaml",
+        repository_id=repo.id,
+    )
+    automation2 = Automation(
+        alias="No underscore action",
+        description="Action without underscore",
+        trigger_types="state",
+        action_calls="lightXturn_on",  # X instead of underscore at first position
+        source_file_path="automations.yaml",
+        github_url="https://github.com/testuser/test-repo/blob/main/automations.yaml",
+        repository_id=repo.id,
+    )
+    automation3 = Automation(
+        alias="Percent action",
+        description="Action with percent",
+        trigger_types="state",
+        action_calls="light%turn",  # Contains percent
+        source_file_path="automations.yaml",
+        github_url="https://github.com/testuser/test-repo/blob/main/automations.yaml",
+        repository_id=repo.id,
+    )
+    automation4 = Automation(
+        alias="Normal action",
+        description="Normal action name",
+        trigger_types="state",
+        action_calls="light.turn.on",  # Normal dots, no wildcards
+        source_file_path="automations.yaml",
+        github_url="https://github.com/testuser/test-repo/blob/main/automations.yaml",
+        repository_id=repo.id,
+    )
+    test_db.add(automation1)
+    test_db.add(automation2)
+    test_db.add(automation3)
+    test_db.add(automation4)
+    test_db.commit()
+
+    # Filter by "light_turn_on" should match only exact underscore, not treat _ as wildcard
+    results = SearchService.search_automations(
+        test_db, "", limit=10, action_filter="light_turn_on"
+    )
+    assert len(results) == 1
+    assert results[0]["alias"] == "Underscore action"
+
+    # Filter by "light%turn" should match only exact percent, not treat % as wildcard
+    results = SearchService.search_automations(
+        test_db, "", limit=10, action_filter="light%turn"
+    )
+    assert len(results) == 1
+    assert results[0]["alias"] == "Percent action"

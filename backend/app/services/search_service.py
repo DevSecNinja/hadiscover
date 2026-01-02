@@ -23,6 +23,21 @@ class SearchService:
         return escaped
 
     @staticmethod
+    def _extract_action_domain(action_call: str) -> str:
+        """
+        Extract the domain from an action call.
+
+        Args:
+            action_call: Action call in format "domain.service" (e.g., "media_player.volume_set")
+
+        Returns:
+            The domain part (e.g., "media_player"), or empty string if no domain found
+        """
+        if "." in action_call:
+            return action_call.split(".")[0]
+        return ""
+
+    @staticmethod
     def _exact_match_in_comma_list(column, value: str):
         """
         Create SQL condition for exact match in comma-separated list.
@@ -144,14 +159,21 @@ class SearchService:
             # Apply action domain filter
             if action_domain_filter:
                 # Action calls are stored as comma-separated (e.g., "media_player.volume_set")
-                # Filter by domain (e.g., "media_player") by matching "domain." pattern
+                # Filter by domain (e.g., "media_player") by matching patterns that ensure
+                # the domain is followed by a dot (to avoid partial matches)
                 escape_char = "\\"
                 escaped_domain = SearchService._escape_like(
                     action_domain_filter, escape_char=escape_char
                 )
+                # Match domain at start or after comma, always followed by a dot
                 base_query = base_query.filter(
-                    Automation.action_calls.like(
-                        f"%{escaped_domain}.%", escape=escape_char
+                    or_(
+                        Automation.action_calls.like(
+                            f"{escaped_domain}.%", escape=escape_char
+                        ),  # Start of string
+                        Automation.action_calls.like(
+                            f"%,{escaped_domain}.%", escape=escape_char
+                        ),  # After comma
                     )
                 )
 
@@ -390,8 +412,13 @@ class SearchService:
                     action_domain_filter, escape_char=escape_char
                 )
                 repo_query = repo_query.filter(
-                    Automation.action_calls.like(
-                        f"%{escaped_domain}.%", escape=escape_char
+                    or_(
+                        Automation.action_calls.like(
+                            f"{escaped_domain}.%", escape=escape_char
+                        ),
+                        Automation.action_calls.like(
+                            f"%,{escaped_domain}.%", escape=escape_char
+                        ),
                     )
                 )
             if action_filter:
@@ -433,8 +460,13 @@ class SearchService:
                     action_domain_filter, escape_char=escape_char
                 )
                 blueprint_query = blueprint_query.filter(
-                    Automation.action_calls.like(
-                        f"%{escaped_domain}.%", escape=escape_char
+                    or_(
+                        Automation.action_calls.like(
+                            f"{escaped_domain}.%", escape=escape_char
+                        ),
+                        Automation.action_calls.like(
+                            f"%,{escaped_domain}.%", escape=escape_char
+                        ),
                     )
                 )
             if action_filter:
@@ -472,8 +504,13 @@ class SearchService:
                     action_domain_filter, escape_char=escape_char
                 )
                 trigger_query = trigger_query.filter(
-                    Automation.action_calls.like(
-                        f"%{escaped_domain}.%", escape=escape_char
+                    or_(
+                        Automation.action_calls.like(
+                            f"{escaped_domain}.%", escape=escape_char
+                        ),
+                        Automation.action_calls.like(
+                            f"%,{escaped_domain}.%", escape=escape_char
+                        ),
                     )
                 )
             if action_filter:
@@ -541,13 +578,11 @@ class SearchService:
                 if action_str:
                     for action in action_str.split(","):
                         action = action.strip()
-                        if action and "." in action:
-                            # Extract domain (part before the first dot)
-                            domain = action.split(".")[0]
-                            if domain:
-                                action_domain_counts[domain] = (
-                                    action_domain_counts.get(domain, 0) + 1
-                                )
+                        domain = SearchService._extract_action_domain(action)
+                        if domain:
+                            action_domain_counts[domain] = (
+                                action_domain_counts.get(domain, 0) + 1
+                            )
 
             # Sort by count and limit
             action_domain_facets = sorted(
@@ -577,8 +612,13 @@ class SearchService:
                     action_domain_filter, escape_char=escape_char
                 )
                 action_query = action_query.filter(
-                    Automation.action_calls.like(
-                        f"%{escaped_domain}.%", escape=escape_char
+                    or_(
+                        Automation.action_calls.like(
+                            f"{escaped_domain}.%", escape=escape_char
+                        ),
+                        Automation.action_calls.like(
+                            f"%,{escaped_domain}.%", escape=escape_char
+                        ),
                     )
                 )
 

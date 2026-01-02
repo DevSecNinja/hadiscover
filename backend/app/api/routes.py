@@ -35,6 +35,7 @@ class RepositoryResponse(BaseModel):
     owner: str
     description: Optional[str]
     url: str
+    stars: int
 
 
 class RepositoryFacet(BaseModel):
@@ -42,6 +43,7 @@ class RepositoryFacet(BaseModel):
 
     owner: str
     name: str
+    stars: int
     count: int
 
 

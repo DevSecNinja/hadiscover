@@ -201,6 +201,7 @@ class IndexingService:
                 # Update existing repository
                 repository = existing_repo
                 repository.description = repo_data.get("description", "")
+                repository.stars = repo_data.get("stars", 0)
                 logger.info(f"Updating existing repository: {owner}/{name}")
 
                 # Remove old automations to re-index
@@ -213,6 +214,7 @@ class IndexingService:
                     owner=owner,
                     description=repo_data.get("description", ""),
                     url=url,
+                    stars=repo_data.get("stars", 0),
                 )
                 db.add(repository)
                 logger.info(f"Adding new repository: {owner}/{name}")

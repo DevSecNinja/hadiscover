@@ -18,6 +18,7 @@ class Repository(Base):
     owner = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     url = Column(String(512), nullable=False, unique=True)
+    stars = Column(Integer, nullable=False, default=0)
     indexed_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     # Relationship to automations

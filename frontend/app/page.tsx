@@ -7,6 +7,7 @@ interface Repository {
   owner: string;
   description: string | null;
   url: string;
+  stars: number;
 }
 
 interface Automation {
@@ -27,6 +28,7 @@ interface Automation {
 interface RepositoryFacet {
   owner: string;
   name: string;
+  stars: number;
   count: number;
 }
 
@@ -976,14 +978,32 @@ export default function Home() {
                                   </span>
                                 </div>
                                 <div
-                                  className="text-xs truncate mt-0.5"
+                                  className="flex items-center gap-2 text-xs truncate mt-0.5"
                                   style={{
                                     color: isDark
                                       ? "rgba(255, 255, 255, 0.4)"
                                       : "rgba(0, 0, 0, 0.4)",
                                   }}
                                 >
-                                  {repo.owner}
+                                  <span>{repo.owner}</span>
+                                  {repo.stars > 0 && (
+                                    <>
+                                      <span style={{ opacity: 0.5 }}>•</span>
+                                      <span className="inline-flex items-center gap-0.5">
+                                        <svg
+                                          className="w-3 h-3"
+                                          style={{ color: "#f59e0b" }}
+                                          fill="currentColor"
+                                          viewBox="0 0 24 24"
+                                          role="img"
+                                          aria-label="Star icon"
+                                        >
+                                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                        </svg>
+                                        <span>{repo.stars}</span>
+                                      </span>
+                                    </>
+                                  )}
                                 </div>
                               </button>
                             );
@@ -1385,10 +1405,27 @@ export default function Home() {
                           href={automation.repository.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="hover:text-[rgb(var(--ha-blue))] transition-colors font-medium"
+                          className="hover:text-[rgb(var(--ha-blue))] transition-colors font-medium flex items-center gap-1.5"
                         >
-                          {automation.repository.owner}/
-                          {automation.repository.name}
+                          <span>
+                            {automation.repository.owner}/
+                            {automation.repository.name}
+                          </span>
+                          {automation.repository.stars > 0 && (
+                            <span className="inline-flex items-center gap-0.5">
+                              <svg
+                                className="w-3.5 h-3.5"
+                                style={{ color: "#f59e0b" }}
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                                role="img"
+                                aria-label="Star icon"
+                              >
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                              </svg>
+                              <span>{automation.repository.stars}</span>
+                            </span>
+                          )}
                         </a>
                         <span style={{ opacity: 0.5 }}>•</span>
                         <span className="font-mono text-xs truncate">
@@ -1714,8 +1751,8 @@ export default function Home() {
                     Edit in YAML, then paste your code
                   </li>
                   <li>
-                    <strong>Customize</strong> - Update entity names and settings
-                    to match your setup
+                    <strong>Customize</strong> - Update entity names and
+                    settings to match your setup
                   </li>
                   <li>
                     <strong>Save</strong> - Save your automation and test it!

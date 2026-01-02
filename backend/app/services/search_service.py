@@ -123,6 +123,7 @@ class SearchService:
                             "owner": repository.owner,
                             "description": repository.description,
                             "url": repository.url,
+                            "stars": repository.stars or 0,
                         },
                         "indexed_at": (
                             automation.indexed_at.isoformat()
@@ -189,6 +190,7 @@ class SearchService:
                             "owner": repository.owner,
                             "description": repository.description,
                             "url": repository.url,
+                            "stars": repository.stars or 0,
                         },
                         "indexed_at": (
                             automation.indexed_at.isoformat()
@@ -307,6 +309,7 @@ class SearchService:
                 repo_query.with_entities(
                     Repository.owner,
                     Repository.name,
+                    func.max(Repository.stars).label("stars"),
                     func.count(Automation.id).label("count"),
                 )
                 .group_by(Repository.owner, Repository.name)
@@ -373,8 +376,8 @@ class SearchService:
 
             return {
                 "repositories": [
-                    {"owner": owner, "name": name, "count": count}
-                    for owner, name, count in repo_facets
+                    {"owner": owner, "name": name, "stars": stars or 0, "count": count}
+                    for owner, name, stars, count in repo_facets
                 ],
                 "blueprints": [
                     {"path": path, "count": count} for path, count in blueprint_facets

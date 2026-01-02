@@ -211,7 +211,6 @@ export default function Home() {
   }, [selectedRepo, selectedBlueprint, selectedTrigger]);
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setCurrentPage(1); // Reset to page 1 on new search
     performSearch(query, 1);
   };
 

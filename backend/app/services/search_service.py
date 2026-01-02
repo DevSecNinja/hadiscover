@@ -176,7 +176,7 @@ class SearchService:
             results = (
                 db.query(Automation, Repository)
                 .join(Repository, Automation.repository_id == Repository.id)
-                .order_by(func.random())
+                .order_by(Automation.indexed_at.desc(), Automation.id.desc())
                 .offset(offset)
                 .limit(per_page)
                 .all()

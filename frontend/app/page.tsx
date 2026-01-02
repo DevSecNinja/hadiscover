@@ -392,40 +392,6 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <header className="text-center mb-16 pt-8">
-          <div
-            className="inline-flex items-center gap-2.5 mb-8 px-4 py-2 rounded-full backdrop-blur-xl"
-            style={{
-              background: isDark
-                ? "rgba(25, 25, 40, 0.6)"
-                : "rgba(255, 255, 255, 0.7)",
-              border: isDark
-                ? "1px solid rgba(255, 255, 255, 0.08)"
-                : "1px solid rgba(0, 0, 0, 0.08)",
-            }}
-          >
-            <svg
-              className="w-4 h-4"
-              style={{ color: "#12bcf2" }}
-              fill="currentColor"
-              viewBox="0 0 24 24"
-              role="img"
-              aria-label="hadiscover logo"
-            >
-              <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
-            </svg>
-            <span
-              className="text-sm font-medium"
-              style={{
-                color: isDark
-                  ? "rgba(255, 255, 255, 0.7)"
-                  : "rgba(0, 0, 0, 0.7)",
-                opacity: 0.9,
-              }}
-            >
-              Home Assistant Automation Discovery
-            </span>
-          </div>
-
           {/* Logo */}
           <div className="mb-8 flex justify-center">
             <Image

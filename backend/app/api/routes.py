@@ -61,6 +61,13 @@ class TriggerFacet(BaseModel):
     count: int
 
 
+class ActionDomainFacet(BaseModel):
+    """Action domain facet with count."""
+
+    domain: str
+    count: int
+
+
 class ActionFacet(BaseModel):
     """Action call facet with count."""
 
@@ -74,6 +81,7 @@ class Facets(BaseModel):
     repositories: List[RepositoryFacet]
     blueprints: List[BlueprintFacet]
     triggers: List[TriggerFacet]
+    action_domains: List[ActionDomainFacet]
     actions: List[ActionFacet]
 
 
@@ -135,6 +143,7 @@ async def search_automations(
     repo: Optional[str] = None,
     blueprint: Optional[str] = None,
     trigger: Optional[str] = None,
+    action_domain: Optional[str] = None,
     action: Optional[str] = None,
     db: Session = Depends(get_db),
 ):
@@ -147,6 +156,7 @@ async def search_automations(
         repo: Filter by repository (format: "owner/name")
         blueprint: Filter by blueprint path
         trigger: Filter by trigger type
+        action_domain: Filter by action domain (e.g., "media_player")
         action: Filter by action call (service name)
         db: Database session
 
@@ -163,6 +173,7 @@ async def search_automations(
         repo_filter=repo,
         blueprint_filter=blueprint,
         trigger_filter=trigger,
+        action_domain_filter=action_domain,
         action_filter=action,
     )
 
@@ -172,6 +183,7 @@ async def search_automations(
         repo_filter=repo,
         blueprint_filter=blueprint,
         trigger_filter=trigger,
+        action_domain_filter=action_domain,
         action_filter=action,
     )
 

@@ -58,6 +58,7 @@ class SearchService:
         repo_filter: Optional[str] = None,
         blueprint_filter: Optional[str] = None,
         trigger_filter: Optional[str] = None,
+        action_domain_filter: Optional[str] = None,
         action_filter: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         """
@@ -70,6 +71,7 @@ class SearchService:
             repo_filter: Filter by repository (format: "owner/name")
             blueprint_filter: Filter by blueprint path
             trigger_filter: Filter by trigger type
+            action_domain_filter: Filter by action domain (e.g., "media_player")
             action_filter: Filter by action call (service name)
 
         Returns:
@@ -80,6 +82,7 @@ class SearchService:
             and not repo_filter
             and not blueprint_filter
             and not trigger_filter
+            and not action_domain_filter
             and not action_filter
         ):
             # Return recent automations if no query or filters
@@ -135,6 +138,20 @@ class SearchService:
                 base_query = base_query.filter(
                     SearchService._exact_match_in_comma_list(
                         Automation.trigger_types, trigger_filter
+                    )
+                )
+
+            # Apply action domain filter
+            if action_domain_filter:
+                # Action calls are stored as comma-separated (e.g., "media_player.volume_set")
+                # Filter by domain (e.g., "media_player") by matching "domain." pattern
+                escape_char = "\\"
+                escaped_domain = SearchService._escape_like(
+                    action_domain_filter, escape_char=escape_char
+                )
+                base_query = base_query.filter(
+                    Automation.action_calls.like(
+                        f"%{escaped_domain}.%", escape=escape_char
                     )
                 )
 
@@ -308,6 +325,7 @@ class SearchService:
         repo_filter: Optional[str] = None,
         blueprint_filter: Optional[str] = None,
         trigger_filter: Optional[str] = None,
+        action_domain_filter: Optional[str] = None,
         action_filter: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
@@ -319,10 +337,11 @@ class SearchService:
             repo_filter: Currently selected repository filter
             blueprint_filter: Currently selected blueprint filter
             trigger_filter: Currently selected trigger filter
+            action_domain_filter: Currently selected action domain filter
             action_filter: Currently selected action filter
 
         Returns:
-            Dictionary with facets for repositories, blueprints, triggers, and actions
+            Dictionary with facets for repositories, blueprints, triggers, action domains, and actions
         """
         try:
             # Build base query with current filters (except the one we're aggregating)
@@ -365,6 +384,16 @@ class SearchService:
                         Automation.trigger_types, trigger_filter
                     )
                 )
+            if action_domain_filter:
+                escape_char = "\\"
+                escaped_domain = SearchService._escape_like(
+                    action_domain_filter, escape_char=escape_char
+                )
+                repo_query = repo_query.filter(
+                    Automation.action_calls.like(
+                        f"%{escaped_domain}.%", escape=escape_char
+                    )
+                )
             if action_filter:
                 repo_query = repo_query.filter(
                     SearchService._exact_match_in_comma_list(
@@ -398,6 +427,16 @@ class SearchService:
                         Automation.trigger_types, trigger_filter
                     )
                 )
+            if action_domain_filter:
+                escape_char = "\\"
+                escaped_domain = SearchService._escape_like(
+                    action_domain_filter, escape_char=escape_char
+                )
+                blueprint_query = blueprint_query.filter(
+                    Automation.action_calls.like(
+                        f"%{escaped_domain}.%", escape=escape_char
+                    )
+                )
             if action_filter:
                 blueprint_query = blueprint_query.filter(
                     SearchService._exact_match_in_comma_list(
@@ -427,6 +466,16 @@ class SearchService:
                 trigger_query = trigger_query.filter(
                     Automation.blueprint_path == blueprint_filter
                 )
+            if action_domain_filter:
+                escape_char = "\\"
+                escaped_domain = SearchService._escape_like(
+                    action_domain_filter, escape_char=escape_char
+                )
+                trigger_query = trigger_query.filter(
+                    Automation.action_calls.like(
+                        f"%{escaped_domain}.%", escape=escape_char
+                    )
+                )
             if action_filter:
                 trigger_query = trigger_query.filter(
                     SearchService._exact_match_in_comma_list(
@@ -455,6 +504,56 @@ class SearchService:
                 trigger_counts.items(), key=lambda x: x[1], reverse=True
             )[:20]
 
+            # Get action domain facets (excluding current action domain filter)
+            action_domain_query = base_query
+            if repo_filter and "/" in repo_filter:
+                owner, name = repo_filter.split("/", 1)
+                action_domain_query = action_domain_query.filter(
+                    Repository.owner == owner, Repository.name == name
+                )
+            if blueprint_filter:
+                action_domain_query = action_domain_query.filter(
+                    Automation.blueprint_path == blueprint_filter
+                )
+            if trigger_filter:
+                action_domain_query = action_domain_query.filter(
+                    SearchService._exact_match_in_comma_list(
+                        Automation.trigger_types, trigger_filter
+                    )
+                )
+            if action_filter:
+                action_domain_query = action_domain_query.filter(
+                    SearchService._exact_match_in_comma_list(
+                        Automation.action_calls, action_filter
+                    )
+                )
+
+            # Get all action calls and extract domains
+            all_action_domains = (
+                action_domain_query.filter(Automation.action_calls.isnot(None))
+                .with_entities(Automation.action_calls)
+                .all()
+            )
+
+            # Parse comma-separated action calls, extract domains, and count
+            action_domain_counts: Dict[str, int] = {}
+            for (action_str,) in all_action_domains:
+                if action_str:
+                    for action in action_str.split(","):
+                        action = action.strip()
+                        if action and "." in action:
+                            # Extract domain (part before the first dot)
+                            domain = action.split(".")[0]
+                            if domain:
+                                action_domain_counts[domain] = (
+                                    action_domain_counts.get(domain, 0) + 1
+                                )
+
+            # Sort by count and limit
+            action_domain_facets = sorted(
+                action_domain_counts.items(), key=lambda x: x[1], reverse=True
+            )[:20]
+
             # Get action facets (excluding current action filter)
             action_query = base_query
             if repo_filter and "/" in repo_filter:
@@ -470,6 +569,16 @@ class SearchService:
                 action_query = action_query.filter(
                     SearchService._exact_match_in_comma_list(
                         Automation.trigger_types, trigger_filter
+                    )
+                )
+            if action_domain_filter:
+                escape_char = "\\"
+                escaped_domain = SearchService._escape_like(
+                    action_domain_filter, escape_char=escape_char
+                )
+                action_query = action_query.filter(
+                    Automation.action_calls.like(
+                        f"%{escaped_domain}.%", escape=escape_char
                     )
                 )
 
@@ -506,6 +615,10 @@ class SearchService:
                     {"type": trigger, "count": count}
                     for trigger, count in trigger_facets
                 ],
+                "action_domains": [
+                    {"domain": domain, "count": count}
+                    for domain, count in action_domain_facets
+                ],
                 "actions": [
                     {"call": action, "count": count} for action, count in action_facets
                 ],
@@ -513,4 +626,10 @@ class SearchService:
 
         except Exception as e:
             logger.error(f"Error getting facets: {e}")
-            return {"repositories": [], "blueprints": [], "triggers": [], "actions": []}
+            return {
+                "repositories": [],
+                "blueprints": [],
+                "triggers": [],
+                "action_domains": [],
+                "actions": [],
+            }

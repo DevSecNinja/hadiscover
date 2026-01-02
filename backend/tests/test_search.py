@@ -834,3 +834,247 @@ def test_action_filter_with_sql_wildcards(test_db):
     assert len(results) == 1
     assert total == 1
     assert results[0]["alias"] == "Percent action"
+
+
+def test_filter_by_action_domain(test_db):
+    """Test filtering automations by action domain."""
+    repo = Repository(
+        name="test-repo",
+        owner="testuser",
+        description="Test repository",
+        url="https://github.com/testuser/test-repo",
+    )
+    test_db.add(repo)
+    test_db.commit()
+
+    automation1 = Automation(
+        alias="Light automation",
+        description="Controls lights",
+        trigger_types="state",
+        action_calls="light.turn_on,light.turn_off",
+        source_file_path="automations.yaml",
+        github_url="https://github.com/testuser/test-repo/blob/main/automations.yaml",
+        repository_id=repo.id,
+    )
+    automation2 = Automation(
+        alias="Media automation",
+        description="Controls media player",
+        trigger_types="state",
+        action_calls="media_player.volume_set,media_player.play",
+        source_file_path="automations.yaml",
+        github_url="https://github.com/testuser/test-repo/blob/main/automations.yaml",
+        repository_id=repo.id,
+    )
+    automation3 = Automation(
+        alias="Notification automation",
+        description="Sends notifications",
+        trigger_types="state",
+        action_calls="notify.mobile_app",
+        source_file_path="automations.yaml",
+        github_url="https://github.com/testuser/test-repo/blob/main/automations.yaml",
+        repository_id=repo.id,
+    )
+    test_db.add(automation1)
+    test_db.add(automation2)
+    test_db.add(automation3)
+    test_db.commit()
+
+    # Filter by light domain
+    results, total = SearchService.search_automations(
+        test_db, "", page=1, per_page=10, action_domain_filter="light"
+    )
+    assert len(results) == 1
+    assert results[0]["alias"] == "Light automation"
+
+    # Filter by media_player domain
+    results, total = SearchService.search_automations(
+        test_db, "", page=1, per_page=10, action_domain_filter="media_player"
+    )
+    assert len(results) == 1
+    assert results[0]["alias"] == "Media automation"
+
+    # Filter by notify domain
+    results, total = SearchService.search_automations(
+        test_db, "", page=1, per_page=10, action_domain_filter="notify"
+    )
+    assert len(results) == 1
+    assert results[0]["alias"] == "Notification automation"
+
+
+def test_get_action_domain_facets(test_db):
+    """Test getting action domain facets."""
+    repo = Repository(
+        name="test-repo",
+        owner="testuser",
+        description="Test repository",
+        url="https://github.com/testuser/test-repo",
+    )
+    test_db.add(repo)
+    test_db.commit()
+
+    automation1 = Automation(
+        alias="Auto1",
+        description="Test",
+        trigger_types="state",
+        action_calls="light.turn_on,notify.mobile_app",
+        source_file_path="automations.yaml",
+        github_url="https://github.com/testuser/test-repo/blob/main/automations.yaml",
+        repository_id=repo.id,
+    )
+    automation2 = Automation(
+        alias="Auto2",
+        description="Test",
+        trigger_types="time",
+        action_calls="light.turn_off,climate.set_temperature",
+        source_file_path="automations.yaml",
+        github_url="https://github.com/testuser/test-repo/blob/main/automations.yaml",
+        repository_id=repo.id,
+    )
+    test_db.add(automation1)
+    test_db.add(automation2)
+    test_db.commit()
+
+    facets = SearchService.get_facets(test_db)
+
+    # Check that action_domains facets are present
+    assert "action_domains" in facets
+    assert len(facets["action_domains"]) > 0
+
+    # light domain should appear twice
+    light_facet = next(
+        (f for f in facets["action_domains"] if f["domain"] == "light"), None
+    )
+    assert light_facet is not None
+    assert light_facet["count"] == 2
+
+    # notify and climate domains should each appear once
+    notify_facet = next(
+        (f for f in facets["action_domains"] if f["domain"] == "notify"), None
+    )
+    climate_facet = next(
+        (f for f in facets["action_domains"] if f["domain"] == "climate"), None
+    )
+    assert notify_facet is not None
+    assert notify_facet["count"] == 1
+    assert climate_facet is not None
+    assert climate_facet["count"] == 1
+
+
+def test_combined_filters_with_action_domain(test_db):
+    """Test combining action domain filter with other filters."""
+    repo = Repository(
+        name="test-repo",
+        owner="testuser",
+        description="Test repository",
+        url="https://github.com/testuser/test-repo",
+    )
+    test_db.add(repo)
+    test_db.commit()
+
+    automation1 = Automation(
+        alias="Light state trigger",
+        description="Light automation with state trigger",
+        trigger_types="state",
+        action_calls="light.turn_on",
+        source_file_path="automations.yaml",
+        github_url="https://github.com/testuser/test-repo/blob/main/automations.yaml",
+        repository_id=repo.id,
+    )
+    automation2 = Automation(
+        alias="Light time trigger",
+        description="Light automation with time trigger",
+        trigger_types="time",
+        action_calls="light.turn_off",
+        source_file_path="automations.yaml",
+        github_url="https://github.com/testuser/test-repo/blob/main/automations.yaml",
+        repository_id=repo.id,
+    )
+    automation3 = Automation(
+        alias="Climate state trigger",
+        description="Climate automation",
+        trigger_types="state",
+        action_calls="climate.set_temperature",
+        source_file_path="automations.yaml",
+        github_url="https://github.com/testuser/test-repo/blob/main/automations.yaml",
+        repository_id=repo.id,
+    )
+    test_db.add(automation1)
+    test_db.add(automation2)
+    test_db.add(automation3)
+    test_db.commit()
+
+    # Filter by action domain + trigger
+    results, _ = SearchService.search_automations(
+        test_db,
+        "",
+        page=1,
+        per_page=10,
+        action_domain_filter="light",
+        trigger_filter="state",
+    )
+    assert len(results) == 1
+    assert results[0]["alias"] == "Light state trigger"
+
+    # Filter by action domain only
+    results, _ = SearchService.search_automations(
+        test_db,
+        "",
+        page=1,
+        per_page=10,
+        action_domain_filter="light",
+    )
+    assert len(results) == 2
+
+    # Filter by action domain and specific action
+    results, _ = SearchService.search_automations(
+        test_db,
+        "",
+        page=1,
+        per_page=10,
+        action_domain_filter="light",
+        action_filter="light.turn_on",
+    )
+    assert len(results) == 1
+    assert results[0]["alias"] == "Light state trigger"
+
+
+def test_action_domain_filter_with_wildcards(test_db):
+    """Test that action domain filter properly escapes SQL wildcards."""
+    repo = Repository(
+        name="test-repo",
+        owner="testuser",
+        description="Test repository",
+        url="https://github.com/testuser/test-repo",
+    )
+    test_db.add(repo)
+    test_db.commit()
+
+    # Create automations with domains containing SQL wildcard characters
+    automation1 = Automation(
+        alias="Underscore domain",
+        description="Domain with underscore",
+        trigger_types="state",
+        action_calls="light_turn.action",  # Underscore in domain
+        source_file_path="automations.yaml",
+        github_url="https://github.com/testuser/test-repo/blob/main/automations.yaml",
+        repository_id=repo.id,
+    )
+    automation2 = Automation(
+        alias="Normal domain",
+        description="Normal domain",
+        trigger_types="state",
+        action_calls="lightXturn.action",  # X instead of underscore
+        source_file_path="automations.yaml",
+        github_url="https://github.com/testuser/test-repo/blob/main/automations.yaml",
+        repository_id=repo.id,
+    )
+    test_db.add(automation1)
+    test_db.add(automation2)
+    test_db.commit()
+
+    # Filter by "light_turn" domain should match only exact underscore
+    results, total = SearchService.search_automations(
+        test_db, "", page=1, per_page=10, action_domain_filter="light_turn"
+    )
+    assert len(results) == 1
+    assert results[0]["alias"] == "Underscore domain"

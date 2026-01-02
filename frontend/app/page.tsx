@@ -43,6 +43,11 @@ interface TriggerFacet {
   count: number;
 }
 
+interface ActionDomainFacet {
+  domain: string;
+  count: number;
+}
+
 interface ActionFacet {
   call: string;
   count: number;
@@ -52,6 +57,7 @@ interface Facets {
   repositories: RepositoryFacet[];
   blueprints: BlueprintFacet[];
   triggers: TriggerFacet[];
+  action_domains: ActionDomainFacet[];
   actions: ActionFacet[];
 }
 
@@ -107,6 +113,7 @@ export default function Home() {
     repositories: [],
     blueprints: [],
     triggers: [],
+    action_domains: [],
     actions: [],
   });
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
@@ -114,6 +121,9 @@ export default function Home() {
     null,
   );
   const [selectedTrigger, setSelectedTrigger] = useState<string | null>(null);
+  const [selectedActionDomain, setSelectedActionDomain] = useState<
+    string | null
+  >(null);
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
@@ -198,6 +208,8 @@ export default function Home() {
       if (selectedRepo) params.append("repo", selectedRepo);
       if (selectedBlueprint) params.append("blueprint", selectedBlueprint);
       if (selectedTrigger) params.append("trigger", selectedTrigger);
+      if (selectedActionDomain)
+        params.append("action_domain", selectedActionDomain);
       if (selectedAction) params.append("action", selectedAction);
 
       const response = await fetch(
@@ -230,7 +242,13 @@ export default function Home() {
   // biome-ignore lint/correctness/useExhaustiveDependencies: Filter changes should trigger search
   useEffect(() => {
     performSearch(query, 1);
-  }, [selectedRepo, selectedBlueprint, selectedTrigger, selectedAction]);
+  }, [
+    selectedRepo,
+    selectedBlueprint,
+    selectedTrigger,
+    selectedActionDomain,
+    selectedAction,
+  ]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -374,40 +392,6 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <header className="text-center mb-16 pt-8">
-          <div
-            className="inline-flex items-center gap-2.5 mb-8 px-4 py-2 rounded-full backdrop-blur-xl"
-            style={{
-              background: isDark
-                ? "rgba(25, 25, 40, 0.6)"
-                : "rgba(255, 255, 255, 0.7)",
-              border: isDark
-                ? "1px solid rgba(255, 255, 255, 0.08)"
-                : "1px solid rgba(0, 0, 0, 0.08)",
-            }}
-          >
-            <svg
-              className="w-4 h-4"
-              style={{ color: "#12bcf2" }}
-              fill="currentColor"
-              viewBox="0 0 24 24"
-              role="img"
-              aria-label="hadiscover logo"
-            >
-              <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
-            </svg>
-            <span
-              className="text-sm font-medium"
-              style={{
-                color: isDark
-                  ? "rgba(255, 255, 255, 0.7)"
-                  : "rgba(0, 0, 0, 0.7)",
-                opacity: 0.9,
-              }}
-            >
-              Home Assistant Automation Discovery
-            </span>
-          </div>
-
           {/* Logo */}
           <div className="mb-8 flex justify-center">
             <Image
@@ -815,6 +799,7 @@ export default function Home() {
                     {(selectedRepo ||
                       selectedBlueprint ||
                       selectedTrigger ||
+                      selectedActionDomain ||
                       selectedAction) && (
                       <div
                         className="pb-4 border-b"
@@ -839,6 +824,7 @@ export default function Home() {
                               setSelectedRepo(null);
                               setSelectedBlueprint(null);
                               setSelectedTrigger(null);
+                              setSelectedActionDomain(null);
                               setSelectedAction(null);
                             }}
                             className="text-xs px-2 py-1 rounded-lg transition-colors"
@@ -911,6 +897,28 @@ export default function Home() {
                               <button
                                 type="button"
                                 onClick={() => setSelectedTrigger(null)}
+                                className="ml-2 hover:opacity-70"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          )}
+                          {selectedActionDomain && (
+                            <div
+                              className="flex items-center justify-between text-sm px-3 py-2 rounded-lg"
+                              style={{
+                                background: isDark
+                                  ? "rgba(249, 115, 22, 0.15)"
+                                  : "rgba(234, 88, 12, 0.1)",
+                                color: isDark ? "#fb923c" : "#ea580c",
+                              }}
+                            >
+                              <span className="truncate font-mono text-xs">
+                                {selectedActionDomain}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => setSelectedActionDomain(null)}
                                 className="ml-2 hover:opacity-70"
                               >
                                 ✕
@@ -1301,6 +1309,119 @@ export default function Home() {
                                     }}
                                   >
                                     {trigger.count}
+                                  </span>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Action Domain Filter */}
+                    {facets.action_domains.length > 0 && (
+                      <div>
+                        <h3
+                          className="text-sm font-semibold mb-3"
+                          style={{
+                            color: isDark ? "#e0e7ff" : "#1f2937",
+                          }}
+                        >
+                          🔧 Action Domains
+                        </h3>
+                        <div className="space-y-2 pb-1">
+                          {facets.action_domains.map((actionDomain) => {
+                            const isSelected =
+                              selectedActionDomain === actionDomain.domain;
+                            return (
+                              <button
+                                key={actionDomain.domain}
+                                type="button"
+                                onClick={() =>
+                                  setSelectedActionDomain(
+                                    isSelected ? null : actionDomain.domain,
+                                  )
+                                }
+                                className="w-full text-left px-3 py-2 rounded-lg transition-all duration-150"
+                                style={{
+                                  background: isSelected
+                                    ? isDark
+                                      ? "rgba(249, 115, 22, 0.2)"
+                                      : "rgba(234, 88, 12, 0.15)"
+                                    : isDark
+                                      ? "rgba(255, 255, 255, 0.05)"
+                                      : "rgba(0, 0, 0, 0.03)",
+                                  border: isSelected
+                                    ? isDark
+                                      ? "1px solid rgba(249, 115, 22, 0.4)"
+                                      : "1px solid rgba(234, 88, 12, 0.3)"
+                                    : isDark
+                                      ? "1px solid rgba(255, 255, 255, 0.05)"
+                                      : "1px solid rgba(0, 0, 0, 0.05)",
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (isDark) {
+                                    e.currentTarget.style.background =
+                                      isSelected
+                                        ? "rgba(249, 115, 22, 0.3)"
+                                        : "rgba(255, 255, 255, 0.1)";
+                                    e.currentTarget.style.boxShadow =
+                                      "0 4px 12px rgba(0, 0, 0, 0.2)";
+                                  } else {
+                                    e.currentTarget.style.background =
+                                      isSelected
+                                        ? "rgba(234, 88, 12, 0.2)"
+                                        : "rgba(0, 0, 0, 0.05)";
+                                    e.currentTarget.style.boxShadow =
+                                      "0 2px 8px rgba(0, 0, 0, 0.08)";
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background = isSelected
+                                    ? isDark
+                                      ? "rgba(249, 115, 22, 0.2)"
+                                      : "rgba(234, 88, 12, 0.15)"
+                                    : isDark
+                                      ? "rgba(255, 255, 255, 0.05)"
+                                      : "rgba(0, 0, 0, 0.03)";
+                                  e.currentTarget.style.boxShadow = "none";
+                                }}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <span
+                                    className="text-sm truncate font-mono"
+                                    style={{
+                                      color: isSelected
+                                        ? isDark
+                                          ? "#fb923c"
+                                          : "#ea580c"
+                                        : isDark
+                                          ? "rgba(255, 255, 255, 0.8)"
+                                          : "rgba(0, 0, 0, 0.8)",
+                                    }}
+                                  >
+                                    {actionDomain.domain}
+                                  </span>
+                                  <span
+                                    className="text-xs font-medium px-2 py-0.5 rounded-full ml-2"
+                                    style={{
+                                      background: isSelected
+                                        ? isDark
+                                          ? "rgba(249, 115, 22, 0.3)"
+                                          : "rgba(234, 88, 12, 0.2)"
+                                        : isDark
+                                          ? "rgba(255, 255, 255, 0.1)"
+                                          : "rgba(0, 0, 0, 0.08)",
+                                      color: isSelected
+                                        ? isDark
+                                          ? "#fb923c"
+                                          : "#ea580c"
+                                        : isDark
+                                          ? "rgba(255, 255, 255, 0.6)"
+                                          : "rgba(0, 0, 0, 0.6)",
+                                    }}
+                                  >
+                                    {actionDomain.count}
                                   </span>
                                 </div>
                               </button>

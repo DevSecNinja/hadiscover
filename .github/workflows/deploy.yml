@@ -1,15 +1,19 @@
-name: Deploy to GitHub Pages
+name: Deploy to GitHub Pages (Emergency Only)
 
-# This workflow deploys the frontend to GitHub Pages
-# IMPORTANT: Before running this workflow, you must:
-# 1. Deploy the backend API
-# 2. Configure the API_URL secret in GitHub repository settings
-#    OR update NEXT_PUBLIC_API_URL in the build step below
+# IMPORTANT: This workflow is for EMERGENCY manual deployments only
+# Normal deployments happen automatically as part of the release workflow
+# which ensures backend changes are coordinated with frontend deployments.
+#
+# Use this workflow ONLY when:
+# - You need to deploy a hotfix outside the normal release cycle
+# - The release workflow is broken and you need to deploy immediately
+#
+# Before running this workflow manually, ensure:
+# 1. The backend API is deployed and ready
+# 2. API_URL secret is configured in GitHub repository settings
+#    OR NEXT_PUBLIC_API_URL is updated in the build step below
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 permissions:

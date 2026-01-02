@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 interface Repository {
@@ -405,6 +406,22 @@ export default function Home() {
             >
               Home Assistant Automation Discovery
             </span>
+          </div>
+
+          {/* Logo */}
+          <div className="mb-8 flex justify-center">
+            <Image
+              src="/logo.png"
+              alt="hadiscover logo"
+              width={120}
+              height={106}
+              priority
+              style={{
+                filter: isDark
+                  ? "drop-shadow(0 4px 12px rgba(18, 188, 242, 0.3))"
+                  : "drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15))",
+              }}
+            />
           </div>
 
           <h1 className="text-7xl sm:text-8xl font-bold mb-6 tracking-tight">
@@ -937,9 +954,7 @@ export default function Home() {
                         >
                           📦 Repositories
                         </h3>
-                        <div
-                          className="space-y-2 pb-1"
-                        >
+                        <div className="space-y-2 pb-1">
                           {facets.repositories.map((repo) => {
                             const repoKey = `${repo.owner}/${repo.name}`;
                             const isSelected = selectedRepo === repoKey;
@@ -1078,9 +1093,7 @@ export default function Home() {
                         >
                           🎨 Blueprints
                         </h3>
-                        <div
-                          className="space-y-2 pb-1"
-                        >
+                        <div className="space-y-2 pb-1">
                           {facets.blueprints.map((blueprint) => {
                             const isSelected =
                               selectedBlueprint === blueprint.path;
@@ -1196,9 +1209,7 @@ export default function Home() {
                         >
                           ⚡ Triggers
                         </h3>
-                        <div
-                          className="space-y-2 pb-1"
-                        >
+                        <div className="space-y-2 pb-1">
                           {facets.triggers.map((trigger) => {
                             const isSelected = selectedTrigger === trigger.type;
                             return (
@@ -1310,9 +1321,7 @@ export default function Home() {
                         >
                           🎬 Actions
                         </h3>
-                        <div
-                          className="space-y-2 pb-1"
-                        >
+                        <div className="space-y-2 pb-1">
                           {facets.actions.map((action) => {
                             const isSelected = selectedAction === action.call;
                             return (
@@ -1777,7 +1786,10 @@ export default function Home() {
                   onClick={() => {
                     const newPage = currentPage - 1;
                     performSearch(query, newPage);
-                    resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    resultsRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
                   }}
                   disabled={currentPage === 1}
                   aria-label="Go to previous page"
@@ -1829,7 +1841,10 @@ export default function Home() {
                   onClick={() => {
                     const newPage = currentPage + 1;
                     performSearch(query, newPage);
-                    resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    resultsRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
                   }}
                   disabled={currentPage >= totalPages}
                   aria-label="Go to next page"
@@ -2354,6 +2369,17 @@ Here's my automation YAML:
               </p>
             </div>
           )}
+
+          {/* Footer Logo */}
+          <div className="flex justify-center mt-8 mb-4">
+            <Image
+              src="/logo.png"
+              alt="hadiscover logo"
+              width={60}
+              height={53}
+              className="opacity-60"
+            />
+          </div>
 
           <div
             className="text-center mt-6 text-sm"

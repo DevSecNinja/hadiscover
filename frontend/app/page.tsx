@@ -241,7 +241,12 @@ export default function Home() {
     if (shouldScrollToTop && !loading) {
       const resultsSection = document.getElementById("results-section");
       if (resultsSection) {
-        resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        const elementPosition = resultsSection.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.scrollY - 20;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth",
+        });
       }
       setShouldScrollToTop(false);
     }

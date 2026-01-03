@@ -236,10 +236,13 @@ export default function Home() {
     performSearch("");
   }, []);
 
-  // Scroll to top after pagination changes and results are loaded
+  // Scroll to results section after pagination changes and results are loaded
   useEffect(() => {
     if (shouldScrollToTop && !loading) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      const resultsSection = document.getElementById("results-section");
+      if (resultsSection) {
+        resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
       setShouldScrollToTop(false);
     }
   }, [shouldScrollToTop, loading]);
@@ -1561,7 +1564,7 @@ export default function Home() {
           )}
 
           {/* Results */}
-          <div className="space-y-4 flex-1">
+          <div id="results-section" className="space-y-4 flex-1">
             {loading ? (
               <div className="text-center py-20">
                 <div

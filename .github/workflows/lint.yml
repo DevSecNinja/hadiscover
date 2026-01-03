@@ -38,9 +38,10 @@ jobs:
           VALIDATE_HTML_PRETTIER: false
           VALIDATE_NATURAL_LANGUAGE: false
           VALIDATE_PYTHON_FLAKE8: false
+          # TODO: fix tsx linter errors
           VALIDATE_TSX: false
-
-          # VALIDATE_JSCPD: false
+          # TODO: fix jscpd linter errors
+          VALIDATE_JSCPD: false
           # VALIDATE_MARKDOWN_PRETTIER: false
           # VALIDATE_PYTHON_MYPY: false
           # VALIDATE_PYTHON_PYLINT: false

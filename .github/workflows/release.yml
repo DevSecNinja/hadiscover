@@ -61,7 +61,7 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           GIT_REF: ${{ github.ref }}
         run: |
-          OUTPUT=$(.github/scripts/extract-version.sh "$EVENT_NAME" "" "$GIT_REF")
+          OUTPUT="$(.github/scripts/extract-version.sh "$EVENT_NAME" "" "$GIT_REF")"
           echo "$OUTPUT" >> $GITHUB_OUTPUT
 
           # Extract version for validation
@@ -75,7 +75,7 @@ jobs:
         env:
           VERSION: ${{ steps.get_version.outputs.version }}
         run: |
-          OUTPUT=$(.github/scripts/check-if-prerelease.sh "$VERSION" "")
+          OUTPUT="$(.github/scripts/check-if-prerelease.sh "$VERSION" "")"
           echo "$OUTPUT" >> $GITHUB_OUTPUT
 
   build-and-push-backend:

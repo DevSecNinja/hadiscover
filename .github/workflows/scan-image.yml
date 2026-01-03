@@ -47,7 +47,7 @@ jobs:
       - name: Generate lowercase image ref
         id: image_ref
         run: |
-          OUTPUT=$(.github/scripts/generate-lowercase-image-ref.sh "${{ inputs.registry }}" "${{ inputs.image_name }}" "${{ inputs.digest }}")
+          OUTPUT="$(.github/scripts/generate-lowercase-image-ref.sh "${{ inputs.registry }}" "${{ inputs.image_name }}" "${{ inputs.digest }}")"
           echo "$OUTPUT" >> $GITHUB_OUTPUT
 
       - name: Run Trivy vulnerability scanner

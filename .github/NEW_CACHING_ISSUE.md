@@ -241,7 +241,7 @@ Expected improvement: Consistently under 5ms response time
 ### Environment Variables
 ```env
 # Redis Configuration
-REDIS_ENABLED=true  # Set to 'true' or 'false' as string
+REDIS_ENABLED="true"  # Boolean values as strings: "true" or "false"
 REDIS_URL=redis://localhost:6379
 REDIS_DB=0
 REDIS_MAX_CONNECTIONS=50
@@ -254,7 +254,7 @@ CACHE_TTL_STATS=300         # 5 minutes
 CACHE_TTL_RATELIMIT=60      # 1 minute
 
 # Rate Limiting
-RATELIMIT_ENABLED=true  # Set to 'true' or 'false' as string
+RATELIMIT_ENABLED="true"  # Boolean values as strings: "true" or "false"
 RATELIMIT_REQUESTS=100      # requests per window
 RATELIMIT_WINDOW=60         # seconds
 ```

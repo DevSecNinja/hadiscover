@@ -2,10 +2,10 @@
 
 [![codecov](https://codecov.io/gh/DevSecNinja/hadiscover/graph/badge.svg?token=4V189H55CG)](https://codecov.io/gh/DevSecNinja/hadiscover)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Docker](https://img.shields.io/badge/docker-ready-blue?logo=docker)](https://github.com/DevSecNinja/hadiscover/pkgs/container/hadiscover)
+[![Docker](https://img.shields.io/badge/docker-ready-blue?logo=docker)](https://github.com/DevSecNinja?tab=packages&repo_name=hadiscover)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-green.svg?logo=fastapi)](https://fastapi.tiangolo.com)
-[![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.128+-green.svg?logo=fastapi)](https://fastapi.tiangolo.com)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 
 A search engine for discovering Home Assistant automations shared on GitHub.
 

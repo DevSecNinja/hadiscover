@@ -82,3 +82,19 @@ repos:
       - id: eslint
         files: \.[jt]sx?$ # *.js, *.jsx, *.ts and *.tsx
         types: [file]
+
+  ## Takes too long
+  # - repo: local
+  #   hooks:
+  #     - id: pylint
+  #       name: pylint
+  #       entry: ./backend/venv/bin/pylint
+  #       language: system
+  #       types: [python]
+  #       args: [--ignore-patterns=venv]
+
+  ## Fights with black
+  # - repo: https://github.com/hhatto/autopep8
+  #   rev: v2.3.2
+  #   hooks:
+  #     - id: autopep8

@@ -3,7 +3,7 @@
 
 services:
   api:
-    image: ghcr.io/devsecninja/hadiscover/backend:latest@sha256:feaf3183dd3076827d69ee359daaada490393e46426d24979c58faa8a0decb01
+    image: ghcr.io/devsecninja/hadiscover/backend:0.2.13@sha256:7daa79ec1b01cc17bc619d3848f5c4f78d6879d38a4ba3ab68e96517fe3db860
     container_name: api
     ports:
       - "8000:8000"
@@ -29,7 +29,7 @@ services:
       start_period: 5s
 
   web:
-    image: ghcr.io/devsecninja/hadiscover/frontend:latest@sha256:62d2d80309e5c18972fac99f11ab7d72b96b1ad8fbe07fdf212f6c87d3558572
+    image: ghcr.io/devsecninja/hadiscover/frontend:0.2.13@sha256:7e1a72ca56279dcc8275e00fa0db672e1bc466b77ae0fc6e6d9cc19b230ac3c0
     container_name: web
     ports:
       - "8080:80"

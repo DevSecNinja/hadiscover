@@ -11,7 +11,7 @@ echo "✅ Bash aliases configured!"
 # Install pre-commit hooks
 echo "📦 Installing pre-commit..."
 pip install pre-commit
-pre-commit install
+pre-commit install --install-hooks
 
 # Setup backend
 echo "🐍 Setting up Python backend..."

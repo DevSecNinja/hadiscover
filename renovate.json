@@ -108,7 +108,8 @@
         "ghcr.io/devsecninja/hadiscover/backend",
         "ghcr.io/devsecninja/hadiscover/frontend"
       ],
-      "groupName": "hadiscover Docker images"
+      "groupName": "hadiscover Docker images",
+      "automerge": true
     },
     {
       "description": "Group GitHub Actions updates",

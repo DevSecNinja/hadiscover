@@ -1,17 +1,17 @@
 {
   "name": "hadiscover Development",
-  "image": "mcr.microsoft.com/devcontainers/python:3.14-bookworm",
+  "image": "mcr.microsoft.com/devcontainers/python:3.14-bookworm@sha256:693007dcfa133cd4d5295fdfe7ba8af87743a2e17c2c41dd79b0131fa5aff360",
 
   "features": {
-    "ghcr.io/devcontainers/features/node:1": {
+    "ghcr.io/devcontainers/features/node:1@sha256:3c35dff2aedeaeb86f03e10c265c29b56a1b3609324d83d6e901dbb6032543a4": {
       "version": "24",
       "nodeGypDependencies": true
     },
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2@sha256:ac0a882e936ba6275d7f4ed5ebfc09e4ddca8cbcaeaad18b412beacddeb2fa91": {
       "version": "latest",
       "dockerDashComposeVersion": "v2"
     },
-    "ghcr.io/devcontainers/features/github-cli:1": {
+    "ghcr.io/devcontainers/features/github-cli:1@sha256:1ad1ec1a806cc9926c84ca5b147427bba03b97e14e91f9df89af83726039ecaf": {
       "version": "latest"
     }
   },

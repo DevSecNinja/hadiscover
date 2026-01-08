@@ -102,6 +102,15 @@
       "automerge": true
     },
     {
+      "description": "Group hadiscover Docker images (backend/frontend) into one PR",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": [
+        "ghcr.io/devsecninja/hadiscover/backend",
+        "ghcr.io/devsecninja/hadiscover/frontend"
+      ],
+      "groupName": "hadiscover Docker images"
+    },
+    {
       "description": "Group GitHub Actions updates",
       "matchManagers": [
         "github-actions"

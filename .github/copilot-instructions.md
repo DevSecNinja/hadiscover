@@ -33,7 +33,7 @@ pip install --upgrade pip && pip install -r requirements.txt
 
 **Code Style**: Black formatter (line length 88), isort for imports (Black profile). After code changes: `pre-commit run --all-files` (runs Black, isort, and other checks).
 
-## Frontend (Next.js/TypeScript) - Node.js 18+
+## Frontend (Next.js/TypeScript) - Node.js 24+
 
 **Setup**: `cd frontend && npm install`
 

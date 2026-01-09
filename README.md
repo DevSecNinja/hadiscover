@@ -12,7 +12,7 @@ A search engine for discovering Home Assistant automations shared on GitHub.
 
 [Try it now at hadiscover.com](https://hadiscover.com/)
 
-![Screenshot of hadiscover.com web page in dark mode](frontend/assets/screenshot-dark.png)
+[![Screenshot of hadiscover.com web page in dark mode](frontend/assets/screenshot-dark.png)](https://hadiscover.com/)
 
 ## What is it?
 

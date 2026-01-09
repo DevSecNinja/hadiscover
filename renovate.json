@@ -23,6 +23,10 @@
   "pre-commit": {
     "enabled": true
   },
+  "devcontainer": {
+    "enabled": true,
+    "pinDigests": false
+  },
   "packageRules": [
     {
       "matchCategories": [

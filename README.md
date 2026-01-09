@@ -53,7 +53,7 @@ To have your automations indexed:
 ### Prerequisites
 
 - Python 3.12+, pip, venv
-- Node.js 18+, npm
+- Node.js 24+, npm
 - Optional: GitHub Personal Access Token (for 5k/hr rate limit vs 60/hr)
 
 ### Quick Setup

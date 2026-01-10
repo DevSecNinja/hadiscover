@@ -16,23 +16,21 @@ A search engine for discovering Home Assistant automations shared on GitHub.
 
 ## What is it?
 
-hadiscover indexes Home Assistant automation files from GitHub repositories that opt in by adding the `hadiscover` topic. Search by name, description, trigger types, or repository to find real-world automation examples.
+hadiscover is a search engine for discovering Home Assistant automations shared on GitHub. It indexes `automations.yaml` files from repositories that opt in by adding the `hadiscover` topic, making it easy to find real-world automation examples and explore new integration possibilities.
 
 ## Why use it?
 
-- **Discover**: Find automations from the Home Assistant community in one place
-- **Learn**: See how others solve similar automation challenges
-- **Share**: Make your automations discoverable by adding the `hadiscover` topic
-- **Privacy**: Opt-in only—your repos are indexed only if you add the topic
+- **Discover integrations**: Find new domains and services to use in your automations (e.g., media_player, climate, notify)
+- **Filter by triggers**: Browse automations by trigger type (state, time, webhook, zone, etc.)
+- **Find examples**: See how others implement automations for specific use cases
+- **Opt-in only**: Privacy-focused—your repos are only indexed if you add the `hadiscover` topic
 
 ## Features
 
-- Full-text search across automations and repositories
-- Filter by trigger types, blueprints, and repositories
-- Direct GitHub links with precise line numbers
-- Hourly automated indexing for fresh results
-- Modern responsive UI with dark mode
-- RESTful API with OpenAPI documentation
+- **Multi-filter search**: Filter by repositories, trigger types, action domains (integrations), and specific service calls
+- **Full-text search**: Search across automation names, descriptions, triggers, actions, and repositories
+- **Integration discovery**: Browse by action domains to find automations using specific integrations
+- **Direct GitHub links**: Jump to exact line numbers in source files
 
 ## Adding Your Repository
 

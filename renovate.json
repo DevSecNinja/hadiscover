@@ -29,21 +29,10 @@
   },
   "packageRules": [
     {
-      "description": "Pin digests for Docker images but exclude devcontainer",
       "matchCategories": [
         "docker"
       ],
-      "excludeDepTypes": [
-        "feature"
-      ],
       "enabled": true,
-      "pinDigests": true
-    },
-    {
-      "description": "Explicitly disable digest pinning for devcontainer features",
-      "matchManagers": [
-        "devcontainer"
-      ],
       "pinDigests": false
     },
     {

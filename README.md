@@ -12,6 +12,8 @@ A search engine for discovering Home Assistant automations shared on GitHub.
 
 [Try it now at hadiscover.com](https://hadiscover.com/)
 
+[![Screenshot of hadiscover.com web page in dark mode](frontend/assets/screenshot-dark.png)](https://hadiscover.com/)
+
 ## What is it?
 
 hadiscover indexes Home Assistant automation files from GitHub repositories that opt in by adding the `hadiscover` topic. Search by name, description, trigger types, or repository to find real-world automation examples.

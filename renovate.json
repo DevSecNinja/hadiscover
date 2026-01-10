@@ -33,7 +33,7 @@
         "docker"
       ],
       "enabled": true,
-      "pinDigests": true
+      "pinDigests": false
     },
     {
       "description": "Group pre-commit hooks updates",

@@ -1,0 +1,11 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Explicitly allow favicon and icon files for search engines
+Allow: /favicon.ico
+Allow: /icon.png
+Allow: /apple-icon.png
+
+# Sitemap location (if you add one in the future)
+# Sitemap: https://hadiscover.com/sitemap.xml

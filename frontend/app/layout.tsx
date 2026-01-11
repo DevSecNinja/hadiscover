@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     "Search and explore powerful Home Assistant automations from the community. Find triggers, actions, and blueprints shared on GitHub.",
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
+      { url: "/favicon.ico", sizes: "any", type: "image/x-icon" },
       { url: "/icon.png", sizes: "48x48", type: "image/png" },
     ],
     apple: [

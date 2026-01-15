@@ -24,19 +24,44 @@ jobs:
         id: check
         run: |
           PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_LABELS="${{ toJson(github.event.pull_request.labels.*.name) }}"
           echo "PR Title: $PR_TITLE"
+          echo "PR Labels: $PR_LABELS"
 
-          # Check if this is an automerge candidate based on title patterns
+          # Check if PR has dependencies label
+          # (all Renovate PRs should have this)
+          if ! echo "$PR_LABELS" | grep -q "dependencies"; then
+            echo "automerge=false" >> $GITHUB_OUTPUT
+            echo "This PR does not have dependencies label"
+            exit 0
+          fi
+
+          # Exclude major updates and security updates from auto-merge
+          if echo "$PR_LABELS" | grep -q "major-update"; then
+            echo "automerge=false" >> $GITHUB_OUTPUT
+            echo "Major updates are not auto-merged"
+            exit 0
+          fi
+
+          if echo "$PR_LABELS" | grep -q "security"; then
+            echo "automerge=false" >> $GITHUB_OUTPUT
+            echo "Security updates require manual review"
+            exit 0
+          fi
+
+          # Check if this is an automerge candidate based on title
+          # Covers: digest updates, npm deps, lock file maintenance,
+          # minor/patch updates
           if [[ "$PR_TITLE" == *"update"*"digest"* ]] || \
              [[ "$PR_TITLE" == *"update npm dependencies"* ]] || \
              [[ "$PR_TITLE" == *"lock file maintenance"* ]] || \
-             [[ "$PR_TITLE" == "chore(deps): update"* ]] || \
+             [[ "$PR_TITLE" == "chore(deps):"* ]] || \
              [[ "$PR_TITLE" == "fix(deps): update npm dependencies"* ]]; then
             echo "automerge=true" >> $GITHUB_OUTPUT
             echo "This PR is eligible for auto-merge"
           else
             echo "automerge=false" >> $GITHUB_OUTPUT
-            echo "This PR is NOT eligible for auto-merge"
+            echo "This PR is NOT eligible for auto-merge based on title"
           fi
 
       - name: Auto-approve PR
@@ -54,6 +79,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Enable auto-merge - PR will only merge after
+          # all required checks pass
           gh pr merge ${{ github.event.pull_request.number }} \
             --auto \
             --squash \

@@ -122,6 +122,13 @@
       ],
       "groupName": "GitHub Actions",
       "automerge": true
+    },
+    {
+      "description": "Automerge digest updates for all managers",
+      "matchUpdateTypes": [
+        "digest"
+      ],
+      "automerge": true
     }
   ],
   "vulnerabilityAlerts": {

@@ -1,0 +1,60 @@
+---
+name: Auto-merge Renovate PRs
+
+on:  # yamllint disable-line rule:truthy
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    name: Auto-merge Renovate PRs
+    runs-on: ubuntu-latest
+    # Only run for Renovate PRs
+    if: github.event.pull_request.user.login == 'renovate[bot]'
+
+    steps:
+      - name: Check PR labels and title
+        id: check
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          echo "PR Title: $PR_TITLE"
+
+          # Check if this is an automerge candidate based on title patterns
+          if [[ "$PR_TITLE" == *"update"*"digest"* ]] || \
+             [[ "$PR_TITLE" == *"update npm dependencies"* ]] || \
+             [[ "$PR_TITLE" == *"lock file maintenance"* ]] || \
+             [[ "$PR_TITLE" == "chore(deps): update"* ]] || \
+             [[ "$PR_TITLE" == "fix(deps): update npm dependencies"* ]]; then
+            echo "automerge=true" >> $GITHUB_OUTPUT
+            echo "This PR is eligible for auto-merge"
+          else
+            echo "automerge=false" >> $GITHUB_OUTPUT
+            echo "This PR is NOT eligible for auto-merge"
+          fi
+
+      - name: Auto-approve PR
+        if: steps.check.outputs.automerge == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr review ${{ github.event.pull_request.number }} \
+            --approve \
+            --body "Auto-approving Renovate PR" \
+            --repo ${{ github.repository }}
+
+      - name: Enable auto-merge
+        if: steps.check.outputs.automerge == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge ${{ github.event.pull_request.number }} \
+            --auto \
+            --squash \
+            --repo ${{ github.repository }}

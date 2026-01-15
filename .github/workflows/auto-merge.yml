@@ -17,6 +17,7 @@ jobs:
     name: Auto-merge Renovate PRs
     runs-on: ubuntu-latest
     # Only run for Renovate PRs
+    # Note: renovate[bot] is the official GitHub App user
     if: github.event.pull_request.user.login == 'renovate[bot]'
 
     steps:
@@ -55,11 +56,13 @@ jobs:
           # Check if this is an automerge candidate based on title
           # Covers: digest updates, npm deps, lock file maintenance,
           # minor/patch updates
-          if [[ "$PR_TITLE" == *"update"*"digest"* ]] || \
-             [[ "$PR_TITLE" == *"update npm dependencies"* ]] || \
-             [[ "$PR_TITLE" == *"lock file maintenance"* ]] || \
+          # Convert title to lowercase for case-insensitive matching
+          PR_TITLE_LOWER=$(echo "$PR_TITLE" | tr '[:upper:]' '[:lower:]')
+          if [[ "$PR_TITLE_LOWER" == *"update"*"digest"* ]] || \
+             [[ "$PR_TITLE_LOWER" == *"update npm dependencies"* ]] || \
+             [[ "$PR_TITLE_LOWER" == *"lock file maintenance"* ]] || \
              [[ "$PR_TITLE" == "chore(deps):"* ]] || \
-             [[ "$PR_TITLE" == "fix(deps): update npm dependencies"* ]]; then
+             [[ "$PR_TITLE" == "fix(deps):"* ]]; then
             echo "automerge=true" >> $GITHUB_OUTPUT
             echo "This PR is eligible for auto-merge"
           else

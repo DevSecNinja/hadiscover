@@ -30,20 +30,23 @@ jobs:
 
           # Check if PR has dependencies label
           # (all Renovate PRs should have this)
-          if ! echo "$PR_LABELS" | grep -q "dependencies"; then
+          if ! echo "$PR_LABELS" | \
+             jq -e '. | index("dependencies")' > /dev/null; then
             echo "automerge=false" >> $GITHUB_OUTPUT
             echo "This PR does not have dependencies label"
             exit 0
           fi
 
           # Exclude major updates and security updates from auto-merge
-          if echo "$PR_LABELS" | grep -q "major-update"; then
+          if echo "$PR_LABELS" | \
+             jq -e '. | index("major-update")' > /dev/null; then
             echo "automerge=false" >> $GITHUB_OUTPUT
             echo "Major updates are not auto-merged"
             exit 0
           fi
 
-          if echo "$PR_LABELS" | grep -q "security"; then
+          if echo "$PR_LABELS" | \
+             jq -e '. | index("security")' > /dev/null; then
             echo "automerge=false" >> $GITHUB_OUTPUT
             echo "Security updates require manual review"
             exit 0

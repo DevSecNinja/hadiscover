@@ -121,6 +121,18 @@ cd backend && source venv/bin/activate && pytest tests/ -v
 
 CI automatically tests Docker containers, API endpoints, and integration on every PR.
 
+#### Testing Configuration (Optional)
+
+For testing and development purposes, you can enable no-topic search to find more repositories:
+
+```bash
+# In backend/.env or as environment variables
+ENABLE_NO_TOPIC_SEARCH=true    # Search without requiring hadiscover topic
+MAX_REPOSITORIES=10             # Limit results for testing (optional)
+```
+
+**Warning**: Keep `ENABLE_NO_TOPIC_SEARCH=false` in production to maintain the opt-in privacy model.
+
 ### API Documentation
 
 OpenAPI/Swagger docs available at <http://localhost:8000/docs> once running.

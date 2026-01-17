@@ -98,6 +98,7 @@ class GitHubService:
                 # Search for repositories with automation files (no topic requirement)
                 # Use a broad search for Home Assistant automation files
                 page = 1
+                reached_limit = False
                 while True:
                     try:
                         url = f"{self.BASE_URL}/search/repositories"
@@ -150,13 +151,11 @@ class GitHubService:
                                 logger.info(
                                     f"Reached max repository limit: {self.max_repositories}"
                                 )
+                                reached_limit = True
                                 break
 
-                        # Check if we've reached the maximum or there are no more pages
-                        if (
-                            self.max_repositories is not None
-                            and len(all_repositories) >= self.max_repositories
-                        ) or len(items) < per_page:
+                        # Stop pagination if we've reached the limit or there are no more pages
+                        if reached_limit or len(items) < per_page:
                             break
 
                         page += 1

@@ -29,6 +29,18 @@
   },
   "packageRules": [
     {
+      "description": "Automerge devDependency updates for linting/formatting tools",
+      "matchDepTypes": ["devDependencies"],
+      "matchPackageNames": ["biome", "prettier"],
+      "automerge": true
+    },
+    {
+      "description": "Automerge digests",
+      "matchUpdateTypes": ["digest"],
+      "automerge": true
+    },
+    {
+      "description": "Prevent pinning of Docker digests",
       "matchCategories": [
         "docker"
       ],
@@ -133,10 +145,7 @@
   },
   "lockFileMaintenance": {
     "enabled": true,
-    "automerge": true,
-    "schedule": [
-      "before 3am on the first day of the month"
-    ]
+    "automerge": true
   },
   "reviewers": [
     "DevSecNinja"

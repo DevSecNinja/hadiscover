@@ -42,7 +42,7 @@ repos:
         additional_dependencies: ["@biomejs/biome@2.3.10"]
 
   - repo: https://github.com/PyCQA/bandit
-    rev: "1.9.2"
+    rev: "1.9.3"
     hooks:
       - id: bandit
         args: ["-c", "bandit.yml"]

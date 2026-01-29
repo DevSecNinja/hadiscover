@@ -1,6 +1,6 @@
 {
   "name": "hadiscover Development",
-  "image": "mcr.microsoft.com/devcontainers/python:3.14-bookworm@sha256:693007dcfa133cd4d5295fdfe7ba8af87743a2e17c2c41dd79b0131fa5aff360",
+  "image": "mcr.microsoft.com/devcontainers/python:3.14-bookworm@sha256:443e59c83bcb477606789f440a6d14fc95701ce88e9cbaf96e20aa14ae4f451c",
 
   "features": {
     "ghcr.io/devcontainers/features/git-lfs:1": {},

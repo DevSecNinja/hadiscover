@@ -59,8 +59,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:8080", "https://hadiscover.com"],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type", "Authorization"],
 )
 
 # Determine the API route prefix based on root_path configuration

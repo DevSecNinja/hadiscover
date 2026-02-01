@@ -41,8 +41,28 @@ async def run_indexing():
     if not github_token:
         logger.warning("GITHUB_TOKEN not set - API rate limits will be lower")
 
+    # Get no-topic search configuration
+    enable_no_topic_search = os.getenv("ENABLE_NO_TOPIC_SEARCH", "false").lower() in (
+        "true",
+        "1",
+        "yes",
+    )
+    max_repositories_str = os.getenv("MAX_REPOSITORIES")
+    max_repositories = int(max_repositories_str) if max_repositories_str else None
+
+    if enable_no_topic_search:
+        logger.info("No-topic search enabled")
+        if max_repositories:
+            logger.info(f"Maximum repositories limit: {max_repositories}")
+    else:
+        logger.info("Topic-based search enabled (default)")
+
     # Create indexing service
-    indexer = IndexingService(github_token=github_token)
+    indexer = IndexingService(
+        github_token=github_token,
+        enable_no_topic_search=enable_no_topic_search,
+        max_repositories=max_repositories,
+    )
 
     # Get database session (this also initializes the database)
     db = get_db_session()

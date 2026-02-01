@@ -44,7 +44,9 @@ SQLite Database ←→ GitHub API
 
 ### GitHub Service (`app/services/github_service.py`)
 
-- Search repositories by topic via GitHub API
+- Search repositories by topic via GitHub API (default: `hadiscover` or `ha-discover`)
+- Optional no-topic search mode for testing/development (`ENABLE_NO_TOPIC_SEARCH`)
+- Configurable repository limit for testing (`MAX_REPOSITORIES`)
 - Fetch file contents from repos
 - Discover automation files using path patterns
 - Optional GitHub token for higher rate limits (5k/hr vs 60/hr)
@@ -139,6 +141,8 @@ Fault-tolerant YAML parsing handles varied Home Assistant configurations. Partia
 ### Opt-In via GitHub Topic
 
 Only indexes repositories with explicit `hadiscover` topic. Respects privacy and user consent.
+
+**Testing Mode**: For development and testing, can be configured to search without topic requirement using `ENABLE_NO_TOPIC_SEARCH=true` environment variable. A `MAX_REPOSITORIES` limit can also be set to control result size.
 
 ### Hourly Scheduled Indexing
 

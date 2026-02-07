@@ -40,8 +40,7 @@ jobs:
 
       - name: Generate schema diagram
         # v17.6.0
-        uses: >-
-          schemacrawler/SchemaCrawler-Action@9a56a3998eca72506a483f3a0de36901c93321bf
+        uses: schemacrawler/SchemaCrawler-Action@v17.6.0
         with:
           entrypoint: /schemacrawler.sh
           args: >-

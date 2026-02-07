@@ -79,7 +79,7 @@ SQLite Database ←→ GitHub API
 
 ## Database Schema
 
-A visual schema diagram is automatically generated on each push to main when models change. See the workflow artifacts or the committed `schema-diagram.png` in the repository root.
+A visual schema diagram is automatically generated on each push to main when models change. Download it from the workflow artifacts at [Actions > Generate Database Schema Diagram](../../actions/workflows/schema-diagram.yml).
 
 ### repositories
 

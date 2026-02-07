@@ -10,20 +10,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 BACKEND_DIR="$PROJECT_ROOT/backend"
 
-# Change to backend directory
-cd "$BACKEND_DIR"
-
-# Activate virtual environment if it exists, otherwise create it
-if [ ! -d "venv" ]; then
-    echo "Creating virtual environment..."
-    python3 -m venv venv
-fi
-
-source venv/bin/activate
-
-# Install dependencies
-echo "Installing dependencies..."
-pip install -q -r requirements.txt
+# Install backend dependencies using the shared script
+echo "Installing backend dependencies..."
+cd "$PROJECT_ROOT"
+.github/scripts/install-backend-deps.sh
 
 # Create a temporary Python script to generate the database
 cat > /tmp/create_db.py << 'EOF'
@@ -39,6 +29,7 @@ print("Sample database created successfully at backend/sample_schema.db")
 EOF
 
 # Set PYTHONPATH and run the script
+cd "$BACKEND_DIR"
 export PYTHONPATH="$BACKEND_DIR:$PYTHONPATH"
 python /tmp/create_db.py
 

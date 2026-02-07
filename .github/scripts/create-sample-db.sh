@@ -28,9 +28,8 @@ pip install -q -r requirements.txt
 # Create a temporary Python script to generate the database
 cat > /tmp/create_db.py << 'EOF'
 """Generate sample SQLite database from SQLAlchemy models."""
-from app.models.database import Base, Repository, Automation, IndexingMetadata
+from app.models.database import Base
 from sqlalchemy import create_engine
-from datetime import datetime, timezone
 
 # Create engine and database
 engine = create_engine('sqlite:///sample_schema.db')

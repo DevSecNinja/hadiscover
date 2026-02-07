@@ -1,7 +1,8 @@
 ---
 name: Generate Database Schema Diagram
 
-on: # yamllint disable-line rule:truthy
+# yamllint disable-line rule:truthy
+on:
   workflow_dispatch: null
   push:
     branches:
@@ -21,12 +22,14 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        # v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: true
 
       - name: Setup Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
+        # v6
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: "3.14"
           cache: "pip"
@@ -36,7 +39,9 @@ jobs:
         run: .github/scripts/create-sample-db.sh
 
       - name: Generate schema diagram
-        uses: schemacrawler/SchemaCrawler-Action@9a56a3998eca72506a483f3a0de36901c93321bf # v17.6.0
+        # v17.6.0
+        uses: >-
+          schemacrawler/SchemaCrawler-Action@9a56a3998eca72506a483f3a0de36901c93321bf
         with:
           entrypoint: /schemacrawler.sh
           args: >-
@@ -48,7 +53,9 @@ jobs:
             --output-file=schema-diagram.png
 
       - name: Upload schema diagram
-        uses: actions/upload-artifact@c0d66db0b43eb92e5f6e4fc5f8f67c6d8c1e2d10 # v4
+        # v4
+        uses: >-
+          actions/upload-artifact@c0d66db0b43eb92e5f6e4fc5f8f67c6d8c1e2d10
         with:
           name: database-schema-diagram
           path: schema-diagram.png
@@ -56,8 +63,10 @@ jobs:
 
       - name: Commit schema diagram to repository
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.email \
+            "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add schema-diagram.png
-          git diff --staged --quiet || git commit -m "Update database schema diagram [skip ci]"
+          git diff --staged --quiet || \
+            git commit -m "Update database schema diagram [skip ci]"
           git push

@@ -39,7 +39,7 @@ jobs:
         run: .github/scripts/install-backend-deps.sh
 
       - name: Create sample database
-        run: .github/scripts/create-sample-db.sh "${{ github.workspace }}/hadiscover.db"
+        run: ../.github/scripts/create-sample-db.sh "${{ github.workspace }}/hadiscover.db"
         working-directory: backend
 
       - name: Generate schema diagram

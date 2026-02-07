@@ -46,11 +46,7 @@ jobs:
         working-directory: ./backend
         run: |
           mkdir -p data
-          python -c "
-          from app.models import init_db
-          init_db()
-          print('Database initialized with schema')
-          "
+          python -c "from app.models import init_db; init_db(); print('Database initialized with schema')"
 
       - name: Generate schema diagram with SchemaCrawler
         # v16.22.2

@@ -27,7 +27,7 @@ RUN sed -i '/basePath:/d' next.config.ts
 RUN npm run build
 
 # Production stage with nginx to serve static files
-FROM nginx:alpine@sha256:5878d06ae4c83d73285438255f705bb3f9a736f41cd24876ed25bb33faf76c7d AS runner
+FROM nginx:alpine@sha256:1d13701a5f9f3fb01aaa88cef2344d65b6b5bf6b7d9fa4cf0dca557a8d7702ba AS runner
 
 # Remove inherited maintainer label from base image
 LABEL maintainer=""

@@ -46,9 +46,20 @@ class SchedulerService:
         if not github_token:
             logger.warning("GITHUB_TOKEN not set - API rate limits will be lower")
 
+        # Get no-topic search configuration
+        enable_no_topic_search = os.getenv(
+            "ENABLE_NO_TOPIC_SEARCH", "false"
+        ).lower() in ("true", "1", "yes")
+        max_repositories_str = os.getenv("MAX_REPOSITORIES")
+        max_repositories = int(max_repositories_str) if max_repositories_str else None
+
         # Create indexing service if not already created
         if not self.indexer:
-            self.indexer = IndexingService(github_token=github_token)
+            self.indexer = IndexingService(
+                github_token=github_token,
+                enable_no_topic_search=enable_no_topic_search,
+                max_repositories=max_repositories,
+            )
 
         # Get database session
         db = self._get_db()

@@ -16,9 +16,25 @@ logger = logging.getLogger(__name__)
 class IndexingService:
     """Service for indexing Home Assistant automations from GitHub repositories."""
 
-    def __init__(self, github_token: Optional[str] = None):
-        """Initialize indexing service with GitHub API access."""
-        self.github_service = GitHubService(token=github_token)
+    def __init__(
+        self,
+        github_token: Optional[str] = None,
+        enable_no_topic_search: bool = False,
+        max_repositories: Optional[int] = None,
+    ):
+        """
+        Initialize indexing service with GitHub API access.
+
+        Args:
+            github_token: GitHub personal access token
+            enable_no_topic_search: If True, search for automation files without topic requirement
+            max_repositories: Maximum number of repositories to index (None = no limit)
+        """
+        self.github_service = GitHubService(
+            token=github_token,
+            enable_no_topic_search=enable_no_topic_search,
+            max_repositories=max_repositories,
+        )
         self.parser = AutomationParser()
 
     async def index_repositories(self, db: Session) -> dict:

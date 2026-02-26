@@ -34,9 +34,23 @@ class GitHubService:
         "ha-discover",
     ]  # Support both topics for backwards compatibility
 
-    def __init__(self, token: Optional[str] = None):
-        """Initialize GitHub service with optional authentication token."""
+    def __init__(
+        self,
+        token: Optional[str] = None,
+        enable_no_topic_search: bool = False,
+        max_repositories: Optional[int] = None,
+    ):
+        """
+        Initialize GitHub service with optional authentication token.
+
+        Args:
+            token: GitHub personal access token
+            enable_no_topic_search: If True, search for automation files without topic requirement
+            max_repositories: Maximum number of repositories to return (None = no limit)
+        """
         self.token = token or os.getenv("GITHUB_TOKEN")
+        self.enable_no_topic_search = enable_no_topic_search
+        self.max_repositories = max_repositories
         self.headers = {
             "Accept": "application/vnd.github.v3+json",
         }
@@ -68,6 +82,7 @@ class GitHubService:
     async def search_repositories(self, per_page: int = 100) -> List[Dict]:
         """
         Search for repositories with the hadiscover or ha-discover topics.
+        If enable_no_topic_search is True, search for automation files without topic requirement.
 
         Args:
             per_page: Number of results per page (max 100)
@@ -79,14 +94,16 @@ class GitHubService:
         seen_repos = set()  # Track repos to avoid duplicates
 
         async with httpx.AsyncClient() as client:
-            # Search for each topic
-            for topic in self.SEARCH_TOPICS:
+            if self.enable_no_topic_search:
+                # Search for repositories with automation files (no topic requirement)
+                # Use a broad search for Home Assistant automation files
                 page = 1
+                reached_limit = False
                 while True:
                     try:
                         url = f"{self.BASE_URL}/search/repositories"
                         params = {
-                            "q": f"topic:{topic}",
+                            "q": "automations.yaml in:path",
                             "per_page": per_page,
                             "page": page,
                         }
@@ -126,21 +143,97 @@ class GitHubService:
                                 }
                             )
 
-                        # Check if there are more pages
-                        if len(items) < per_page:
+                            # Check if we've reached the maximum number of repositories
+                            if (
+                                self.max_repositories is not None
+                                and len(all_repositories) >= self.max_repositories
+                            ):
+                                logger.info(
+                                    f"Reached max repository limit: {self.max_repositories}"
+                                )
+                                reached_limit = True
+                                break
+
+                        # Stop pagination if we've reached the limit or there are no more pages
+                        if reached_limit or len(items) < per_page:
                             break
 
                         page += 1
 
                     except httpx.HTTPError as e:
                         logger.error(
-                            f"Error searching repositories with topic '{topic}': {e}"
+                            f"Error searching repositories with automation files: {e}"
                         )
                         break
 
-        logger.info(
-            f"Found {len(all_repositories)} repositories with topics {self.SEARCH_TOPICS}"
-        )
+                logger.info(
+                    f"Found {len(all_repositories)} repositories with automation files (no topic search)"
+                )
+            else:
+                # Original topic-based search
+                # Search for each topic
+                for topic in self.SEARCH_TOPICS:
+                    page = 1
+                    while True:
+                        try:
+                            url = f"{self.BASE_URL}/search/repositories"
+                            params = {
+                                "q": f"topic:{topic}",
+                                "per_page": per_page,
+                                "page": page,
+                            }
+
+                            response = await client.get(
+                                url, headers=self.headers, params=params, timeout=30.0
+                            )
+
+                            # Check for rate limiting (status 429 or 403 with rate limit message)
+                            self._check_rate_limit(response, "search_repositories")
+
+                            response.raise_for_status()
+
+                            data = response.json()
+                            items = data.get("items", [])
+
+                            if not items:
+                                break
+
+                            for repo in items:
+                                repo_key = f"{repo['owner']['login']}/{repo['name']}"
+                                # Skip if we've already seen this repo
+                                if repo_key in seen_repos:
+                                    continue
+
+                                seen_repos.add(repo_key)
+                                all_repositories.append(
+                                    {
+                                        "name": repo["name"],
+                                        "owner": repo["owner"]["login"],
+                                        "description": repo.get("description", ""),
+                                        "url": repo["html_url"],
+                                        "default_branch": repo.get(
+                                            "default_branch", "main"
+                                        ),
+                                        "stars": repo.get("stargazers_count", 0),
+                                    }
+                                )
+
+                            # Check if there are more pages
+                            if len(items) < per_page:
+                                break
+
+                            page += 1
+
+                        except httpx.HTTPError as e:
+                            logger.error(
+                                f"Error searching repositories with topic '{topic}': {e}"
+                            )
+                            break
+
+                logger.info(
+                    f"Found {len(all_repositories)} repositories with topics {self.SEARCH_TOPICS}"
+                )
+
         return all_repositories
 
     async def get_file_content(

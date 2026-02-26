@@ -273,7 +273,17 @@ async def trigger_indexing(
 
     async def run_indexing():
         """Background task to run indexing."""
-        indexer = IndexingService()
+        # Get no-topic search configuration
+        enable_no_topic_search = os.getenv(
+            "ENABLE_NO_TOPIC_SEARCH", "false"
+        ).lower() in ("true", "1", "yes")
+        max_repositories_str = os.getenv("MAX_REPOSITORIES")
+        max_repositories = int(max_repositories_str) if max_repositories_str else None
+
+        indexer = IndexingService(
+            enable_no_topic_search=enable_no_topic_search,
+            max_repositories=max_repositories,
+        )
         # Create a new session for background task
         from app.models import SessionLocal
 

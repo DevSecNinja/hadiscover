@@ -14,7 +14,8 @@
   "prHourlyLimit": 2,
   "github-actions": {
     "enabled": true,
-    "pinDigests": true
+    "pinDigests": true,
+    "rangeStrategy": "pin"
   },
   "pre-commit": {
     "enabled": true
@@ -124,12 +125,14 @@
       "automerge": true
     },
     {
-      "description": "Group GitHub Actions updates",
+      "description": "GitHub Actions with proper digest pinning and version comments",
       "matchManagers": [
         "github-actions"
       ],
       "groupName": "GitHub Actions",
-      "automerge": true
+      "automerge": true,
+      "pinDigests": true,
+      "separateMinorPatch": false
     }
   ],
   "vulnerabilityAlerts": {

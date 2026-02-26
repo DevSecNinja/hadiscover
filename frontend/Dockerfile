@@ -1,5 +1,5 @@
 # Build stage
-FROM node:24-alpine@sha256:c921b97d4b74f51744057454b306b418cf693865e73b8100559189605f6955b8 AS builder
+FROM node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03 AS builder
 
 WORKDIR /app
 
@@ -27,7 +27,7 @@ RUN sed -i '/basePath:/d' next.config.ts
 RUN npm run build
 
 # Production stage with nginx to serve static files
-FROM nginx:alpine@sha256:b0f7830b6bfaa1258f45d94c240ab668ced1b3651c8a222aefe6683447c7bf55 AS runner
+FROM nginx:alpine@sha256:1d13701a5f9f3fb01aaa88cef2344d65b6b5bf6b7d9fa4cf0dca557a8d7702ba AS runner
 
 # Remove inherited maintainer label from base image
 LABEL maintainer=""

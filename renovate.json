@@ -9,11 +9,7 @@
   "semanticCommits": "enabled",
   "dependencyDashboard": true,
   "timezone": "UTC",
-  "schedule": [
-    "after 10pm every weekday",
-    "before 5am every weekday",
-    "every weekend"
-  ],
+  "schedule": ["every weekend"],
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
   "github-actions": {

@@ -49,6 +49,8 @@ jobs:
           VALIDATE_TSX: false
           # TODO: fix jscpd linter errors
           VALIDATE_JSCPD: false
+          # Trivy DB mirror (mirror.gcr.io) returns 404 errors; dedicated scan-image.yml handles image scanning
+          VALIDATE_TRIVY: false
           # VALIDATE_MARKDOWN_PRETTIER: false
           # VALIDATE_PYTHON_MYPY: false
           # VALIDATE_YAML_PRETTIER: false

@@ -34,7 +34,7 @@ jobs:
         run: .github/scripts/run-backend-tests.sh
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5
+        uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad # v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./backend/coverage.xml
@@ -144,7 +144,7 @@ jobs:
           persist-credentials: false
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@b25b93d384199fc0fc8c2e126b2d937a0cbeb2ae # v2
+        uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2
         with:
           tag_name: ${{ needs.determine-version.outputs.version_tag }}
           name: ${{ needs.determine-version.outputs.version }}

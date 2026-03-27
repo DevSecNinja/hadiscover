@@ -14,6 +14,10 @@ services:
       # Optional: Add your GitHub token for higher API rate limits
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
       - ENVIRONMENT=development
+      # Optional: Enable no-topic search for testing (default: false)
+      - ENABLE_NO_TOPIC_SEARCH=${ENABLE_NO_TOPIC_SEARCH:-false}
+      # Optional: Limit maximum repositories for testing (no limit if not set)
+      - MAX_REPOSITORIES=${MAX_REPOSITORIES:-}
     volumes:
       # Persist database across container restarts
       - api_data:/app/data

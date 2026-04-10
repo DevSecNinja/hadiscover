@@ -29,12 +29,12 @@
       "description": "Automerge devDependency updates for linting/formatting tools",
       "matchDepTypes": ["devDependencies"],
       "matchPackageNames": ["biome", "prettier"],
-      "automerge": true
+      "automerge": false
     },
     {
       "description": "Automerge digests",
       "matchUpdateTypes": ["digest"],
-      "automerge": true
+      "automerge": false
     },
     {
       "description": "Prevent pinning of Docker digests",
@@ -50,7 +50,7 @@
         "pre-commit"
       ],
       "groupName": "pre-commit hooks",
-      "automerge": true
+      "automerge": false
     },
     {
       "description": "Group Python dependencies",
@@ -62,7 +62,7 @@
         "minor",
         "patch"
       ],
-      "automerge": true
+      "automerge": false
     },
     {
       "description": "Group major Python updates separately",
@@ -88,7 +88,7 @@
         "minor",
         "patch"
       ],
-      "automerge": true
+      "automerge": false
     },
     {
       "description": "Group major npm updates separately",
@@ -112,7 +112,7 @@
       "matchUpdateTypes": [
         "patch"
       ],
-      "automerge": true
+      "automerge": false
     },
     {
       "description": "Group hadiscover Docker images (backend/frontend) into one PR",
@@ -122,7 +122,7 @@
         "ghcr.io/devsecninja/hadiscover/frontend"
       ],
       "groupName": "hadiscover Docker images",
-      "automerge": true
+      "automerge": false
     },
     {
       "description": "GitHub Actions with proper digest pinning and version comments",
@@ -130,7 +130,7 @@
         "github-actions"
       ],
       "groupName": "GitHub Actions",
-      "automerge": true,
+      "automerge": false,
       "pinDigests": true,
       "separateMinorPatch": false
     }

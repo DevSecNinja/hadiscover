@@ -132,7 +132,8 @@
       "groupName": "GitHub Actions",
       "automerge": false,
       "pinDigests": true,
-      "separateMinorPatch": false
+      "separateMinorPatch": false,
+      "versioning": "semver"
     }
   ],
   "vulnerabilityAlerts": {

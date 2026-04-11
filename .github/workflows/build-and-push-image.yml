@@ -54,7 +54,7 @@ jobs:
           persist-credentials: false
 
       - name: Log in to GitHub Container Registry
-        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4.0.0
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
         with:
           registry: ${{ inputs.registry }}
           username: ${{ github.actor }}
@@ -96,16 +96,16 @@ jobs:
         run: .github/scripts/"${UPDATE_VERSION_SCRIPT}" "${VERSION}"
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@29109295f81e9208d7d86ff9eeebb6dec27f7a4f # v3
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@b5730b33e26c863e7e4e1cb3b61e9f52e5caced0 # v3
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
 
       - name: Build and push Docker image
         id: docker_build
         env:
           CONTEXT_PATH: ${{ inputs.context_path }}
-        uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
         with:
           context: ${{ env.CONTEXT_PATH }} # zizmor: ignore[template-injection] Have added validation above.
           push: true

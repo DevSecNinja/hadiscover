@@ -45,11 +45,11 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Set up proper permissions for nginx user
 RUN chown -R nginx:nginx /usr/share/nginx/html && \
-    chown -R nginx:nginx /var/cache/nginx && \
-    chown -R nginx:nginx /var/log/nginx && \
-    chown -R nginx:nginx /etc/nginx/conf.d && \
-    touch /var/run/nginx.pid && \
-    chown -R nginx:nginx /var/run/nginx.pid
+  chown -R nginx:nginx /var/cache/nginx && \
+  chown -R nginx:nginx /var/log/nginx && \
+  chown -R nginx:nginx /etc/nginx/conf.d && \
+  touch /var/run/nginx.pid && \
+  chown -R nginx:nginx /var/run/nginx.pid
 
 # Switch to non-root user
 USER nginx
@@ -57,9 +57,9 @@ USER nginx
 # Expose port
 EXPOSE 80
 
-# Health check
+# Health check (wget is included in BusyBox on Alpine, no extra dependencies needed)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD curl -fsS http://127.0.0.1:80/health.html || exit 1
+  CMD wget -qO /dev/null http://127.0.0.1:80/health.html || exit 1
 
 # Run nginx
 CMD ["nginx", "-g", "daemon off;"]

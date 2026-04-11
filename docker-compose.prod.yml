@@ -37,7 +37,9 @@ services:
       - api
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:80/health.html"]
+      # wget is included in BusyBox on Alpine, no extra dependencies needed
+      test:
+        ["CMD", "wget", "-qO", "/dev/null", "http://127.0.0.1:80/health.html"]
       interval: 30s
       timeout: 10s
       retries: 3

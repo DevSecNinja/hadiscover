@@ -32,9 +32,9 @@
       "automerge": false
     },
     {
-      "description": "Automerge digests",
+      "description": "Disable digest-only update PRs",
       "matchUpdateTypes": ["digest"],
-      "automerge": false
+      "enabled": false
     },
     {
       "description": "Prevent pinning of Docker digests",

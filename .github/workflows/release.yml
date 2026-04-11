@@ -16,6 +16,7 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -144,41 +145,15 @@ jobs:
           persist-credentials: false
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2
-        with:
-          tag_name: ${{ needs.determine-version.outputs.version_tag }}
-          name: ${{ needs.determine-version.outputs.version }}
-          draft: false
-          prerelease: ${{ needs.determine-version.outputs.is_prerelease == 'true' }}
-          generate_release_notes: true
-          body: |
-            ## Release ${{ needs.determine-version.outputs.version }}
-
-            ### Docker Images
-
-            **Backend:**
-            ```bash
-            docker pull ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}:${{ needs.determine-version.outputs.version }}
-            ```
-
-            **Frontend:**
-            ```bash
-            docker pull ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}:${{ needs.determine-version.outputs.version }}
-            ```
-
-            ### Using Docker Compose
-
-            Update your `docker-compose.yml` to use the released images:
-
-            ```yaml
-            services:
-              backend:
-                image: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}:${{ needs.determine-version.outputs.version }}
-              frontend:
-                image: ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}:${{ needs.determine-version.outputs.version }}
-            ```
+        run: bash .github/scripts/create-github-release.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION_TAG: ${{ needs.determine-version.outputs.version_tag }}
+          VERSION: ${{ needs.determine-version.outputs.version }}
+          IS_PRERELEASE: ${{ needs.determine-version.outputs.is_prerelease }}
+          REGISTRY: ${{ env.REGISTRY }}
+          BACKEND_IMAGE_NAME: ${{ env.BACKEND_IMAGE_NAME }}
+          FRONTEND_IMAGE_NAME: ${{ env.FRONTEND_IMAGE_NAME }}
 
   build-pages:
     needs: [create-release, determine-version]

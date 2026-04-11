@@ -740,21 +740,71 @@ export default function Home() {
             facets.blueprints.length > 0 ||
             facets.triggers.length > 0 ||
             facets.actions.length > 0) && (
-            <>
-              <aside
-                className={`
+            <aside
+              className={`
                   ${isMobile ? "w-full" : showFilters ? "w-80 flex-shrink-0" : "w-12 flex-shrink-0"}
                   transition-all duration-300
                 `}
-              >
-                {/* Toggle Button */}
-                <button
-                  type="button"
-                  onClick={() => setShowFilters(!showFilters)}
-                  className={`
+            >
+              {/* Toggle Button */}
+              <button
+                type="button"
+                onClick={() => setShowFilters(!showFilters)}
+                className={`
                     mb-4 p-3 rounded-2xl backdrop-blur-xl transition-all duration-200 hover:scale-105
                     ${isMobile ? "w-full" : "w-full"}
                   `}
+                style={{
+                  background: isDark
+                    ? "rgba(25, 25, 40, 0.6)"
+                    : "rgba(255, 255, 255, 0.8)",
+                  border: isDark
+                    ? "1px solid rgba(255, 255, 255, 0.08)"
+                    : "1px solid rgba(0, 0, 0, 0.08)",
+                }}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <svg
+                    className="w-5 h-5"
+                    style={{
+                      color: isDark ? "#a78bfa" : "#7c3aed",
+                      transform: showFilters
+                        ? "rotate(0deg)"
+                        : "rotate(180deg)",
+                      transition: "transform 0.3s",
+                    }}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    role="img"
+                    aria-label={showFilters ? "Hide filters" : "Show filters"}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                    />
+                  </svg>
+                  {(isMobile || showFilters) && (
+                    <span
+                      className="font-semibold"
+                      style={{
+                        color: isDark ? "#e0e7ff" : "#1f2937",
+                      }}
+                    >
+                      Filters
+                    </span>
+                  )}
+                </div>
+              </button>
+
+              {showFilters && (
+                <div
+                  className={`
+                      rounded-3xl backdrop-blur-xl p-6
+                      ${isMobile ? "space-y-4" : "space-y-6 sticky top-6"}
+                    `}
                   style={{
                     background: isDark
                       ? "rgba(25, 25, 40, 0.6)"
@@ -764,808 +814,744 @@ export default function Home() {
                       : "1px solid rgba(0, 0, 0, 0.08)",
                   }}
                 >
-                  <div className="flex items-center justify-center gap-2">
-                    <svg
-                      className="w-5 h-5"
+                  {/* Active Filters */}
+                  {(selectedRepo ||
+                    selectedBlueprint ||
+                    selectedTrigger ||
+                    selectedActionDomain ||
+                    selectedAction) && (
+                    <div
+                      className="pb-4 border-b"
                       style={{
-                        color: isDark ? "#a78bfa" : "#7c3aed",
-                        transform: showFilters
-                          ? "rotate(0deg)"
-                          : "rotate(180deg)",
-                        transition: "transform 0.3s",
+                        borderColor: isDark
+                          ? "rgba(255, 255, 255, 0.1)"
+                          : "rgba(0, 0, 0, 0.1)",
                       }}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      role="img"
-                      aria-label={showFilters ? "Hide filters" : "Show filters"}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-                      />
-                    </svg>
-                    {(isMobile || showFilters) && (
-                      <span
-                        className="font-semibold"
+                      <div className="flex items-center justify-between mb-3">
+                        <h3
+                          className="text-sm font-semibold"
+                          style={{
+                            color: isDark ? "#e0e7ff" : "#1f2937",
+                          }}
+                        >
+                          Active Filters
+                        </h3>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedRepo(null);
+                            setSelectedBlueprint(null);
+                            setSelectedTrigger(null);
+                            setSelectedActionDomain(null);
+                            setSelectedAction(null);
+                          }}
+                          className="text-xs px-2 py-1 rounded-lg transition-colors"
+                          style={{
+                            color: isDark ? "#f87171" : "#dc2626",
+                            background: isDark
+                              ? "rgba(248, 113, 113, 0.1)"
+                              : "rgba(220, 38, 38, 0.1)",
+                          }}
+                        >
+                          Clear All
+                        </button>
+                      </div>
+                      <div className="space-y-2">
+                        {selectedRepo && (
+                          <div
+                            className="flex items-center justify-between text-sm px-3 py-2 rounded-lg"
+                            style={{
+                              background: isDark
+                                ? "rgba(167, 139, 250, 0.15)"
+                                : "rgba(124, 58, 237, 0.1)",
+                              color: isDark ? "#c4b5fd" : "#7c3aed",
+                            }}
+                          >
+                            <span className="truncate">{selectedRepo}</span>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedRepo(null)}
+                              className="ml-2 hover:opacity-70"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                        {selectedBlueprint && (
+                          <div
+                            className="flex items-center justify-between text-sm px-3 py-2 rounded-lg"
+                            style={{
+                              background: isDark
+                                ? "rgba(96, 165, 250, 0.15)"
+                                : "rgba(37, 99, 235, 0.1)",
+                              color: isDark ? "#93c5fd" : "#2563eb",
+                            }}
+                          >
+                            <span className="truncate">
+                              {selectedBlueprint.split("/").pop()}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedBlueprint(null)}
+                              className="ml-2 hover:opacity-70"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                        {selectedTrigger && (
+                          <div
+                            className="flex items-center justify-between text-sm px-3 py-2 rounded-lg"
+                            style={{
+                              background: isDark
+                                ? "rgba(52, 211, 153, 0.15)"
+                                : "rgba(16, 185, 129, 0.1)",
+                              color: isDark ? "#6ee7b7" : "#10b981",
+                            }}
+                          >
+                            <span className="truncate">{selectedTrigger}</span>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedTrigger(null)}
+                              className="ml-2 hover:opacity-70"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                        {selectedActionDomain && (
+                          <div
+                            className="flex items-center justify-between text-sm px-3 py-2 rounded-lg"
+                            style={{
+                              background: isDark
+                                ? "rgba(249, 115, 22, 0.15)"
+                                : "rgba(234, 88, 12, 0.1)",
+                              color: isDark ? "#fb923c" : "#ea580c",
+                            }}
+                          >
+                            <span className="truncate font-mono text-xs">
+                              {selectedActionDomain}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedActionDomain(null)}
+                              className="ml-2 hover:opacity-70"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                        {selectedAction && (
+                          <div
+                            className="flex items-center justify-between text-sm px-3 py-2 rounded-lg"
+                            style={{
+                              background: isDark
+                                ? "rgba(251, 191, 36, 0.15)"
+                                : "rgba(245, 158, 11, 0.1)",
+                              color: isDark ? "#fbbf24" : "#d97706",
+                            }}
+                          >
+                            <span className="truncate font-mono text-xs">
+                              {selectedAction}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedAction(null)}
+                              className="ml-2 hover:opacity-70"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Repository Filter */}
+                  {facets.repositories.length > 0 && (
+                    <div>
+                      <h3
+                        className="text-sm font-semibold mb-3"
                         style={{
                           color: isDark ? "#e0e7ff" : "#1f2937",
                         }}
                       >
-                        Filters
-                      </span>
-                    )}
-                  </div>
-                </button>
-
-                {showFilters && (
-                  <div
-                    className={`
-                      rounded-3xl backdrop-blur-xl p-6
-                      ${isMobile ? "space-y-4" : "space-y-6 sticky top-6"}
-                    `}
-                    style={{
-                      background: isDark
-                        ? "rgba(25, 25, 40, 0.6)"
-                        : "rgba(255, 255, 255, 0.8)",
-                      border: isDark
-                        ? "1px solid rgba(255, 255, 255, 0.08)"
-                        : "1px solid rgba(0, 0, 0, 0.08)",
-                    }}
-                  >
-                    {/* Active Filters */}
-                    {(selectedRepo ||
-                      selectedBlueprint ||
-                      selectedTrigger ||
-                      selectedActionDomain ||
-                      selectedAction) && (
-                      <div
-                        className="pb-4 border-b"
-                        style={{
-                          borderColor: isDark
-                            ? "rgba(255, 255, 255, 0.1)"
-                            : "rgba(0, 0, 0, 0.1)",
-                        }}
-                      >
-                        <div className="flex items-center justify-between mb-3">
-                          <h3
-                            className="text-sm font-semibold"
-                            style={{
-                              color: isDark ? "#e0e7ff" : "#1f2937",
-                            }}
-                          >
-                            Active Filters
-                          </h3>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setSelectedRepo(null);
-                              setSelectedBlueprint(null);
-                              setSelectedTrigger(null);
-                              setSelectedActionDomain(null);
-                              setSelectedAction(null);
-                            }}
-                            className="text-xs px-2 py-1 rounded-lg transition-colors"
-                            style={{
-                              color: isDark ? "#f87171" : "#dc2626",
-                              background: isDark
-                                ? "rgba(248, 113, 113, 0.1)"
-                                : "rgba(220, 38, 38, 0.1)",
-                            }}
-                          >
-                            Clear All
-                          </button>
-                        </div>
-                        <div className="space-y-2">
-                          {selectedRepo && (
-                            <div
-                              className="flex items-center justify-between text-sm px-3 py-2 rounded-lg"
+                        📦 Repositories
+                      </h3>
+                      <div className="space-y-2 pb-1 max-h-[300px] overflow-y-auto">
+                        {facets.repositories.map((repo) => {
+                          const repoKey = `${repo.owner}/${repo.name}`;
+                          const isSelected = selectedRepo === repoKey;
+                          return (
+                            <button
+                              key={repoKey}
+                              type="button"
+                              onClick={() =>
+                                setSelectedRepo(isSelected ? null : repoKey)
+                              }
+                              className="w-full text-left px-3 py-2 rounded-lg transition-all duration-150"
                               style={{
-                                background: isDark
-                                  ? "rgba(167, 139, 250, 0.15)"
-                                  : "rgba(124, 58, 237, 0.1)",
-                                color: isDark ? "#c4b5fd" : "#7c3aed",
+                                background: isSelected
+                                  ? isDark
+                                    ? "rgba(167, 139, 250, 0.2)"
+                                    : "rgba(124, 58, 237, 0.15)"
+                                  : isDark
+                                    ? "rgba(255, 255, 255, 0.05)"
+                                    : "rgba(0, 0, 0, 0.03)",
+                                border: isSelected
+                                  ? isDark
+                                    ? "1px solid rgba(167, 139, 250, 0.4)"
+                                    : "1px solid rgba(124, 58, 237, 0.3)"
+                                  : isDark
+                                    ? "1px solid rgba(255, 255, 255, 0.05)"
+                                    : "1px solid rgba(0, 0, 0, 0.05)",
                               }}
-                            >
-                              <span className="truncate">{selectedRepo}</span>
-                              <button
-                                type="button"
-                                onClick={() => setSelectedRepo(null)}
-                                className="ml-2 hover:opacity-70"
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          )}
-                          {selectedBlueprint && (
-                            <div
-                              className="flex items-center justify-between text-sm px-3 py-2 rounded-lg"
-                              style={{
-                                background: isDark
-                                  ? "rgba(96, 165, 250, 0.15)"
-                                  : "rgba(37, 99, 235, 0.1)",
-                                color: isDark ? "#93c5fd" : "#2563eb",
-                              }}
-                            >
-                              <span className="truncate">
-                                {selectedBlueprint.split("/").pop()}
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => setSelectedBlueprint(null)}
-                                className="ml-2 hover:opacity-70"
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          )}
-                          {selectedTrigger && (
-                            <div
-                              className="flex items-center justify-between text-sm px-3 py-2 rounded-lg"
-                              style={{
-                                background: isDark
-                                  ? "rgba(52, 211, 153, 0.15)"
-                                  : "rgba(16, 185, 129, 0.1)",
-                                color: isDark ? "#6ee7b7" : "#10b981",
-                              }}
-                            >
-                              <span className="truncate">
-                                {selectedTrigger}
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => setSelectedTrigger(null)}
-                                className="ml-2 hover:opacity-70"
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          )}
-                          {selectedActionDomain && (
-                            <div
-                              className="flex items-center justify-between text-sm px-3 py-2 rounded-lg"
-                              style={{
-                                background: isDark
-                                  ? "rgba(249, 115, 22, 0.15)"
-                                  : "rgba(234, 88, 12, 0.1)",
-                                color: isDark ? "#fb923c" : "#ea580c",
-                              }}
-                            >
-                              <span className="truncate font-mono text-xs">
-                                {selectedActionDomain}
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => setSelectedActionDomain(null)}
-                                className="ml-2 hover:opacity-70"
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          )}
-                          {selectedAction && (
-                            <div
-                              className="flex items-center justify-between text-sm px-3 py-2 rounded-lg"
-                              style={{
-                                background: isDark
-                                  ? "rgba(251, 191, 36, 0.15)"
-                                  : "rgba(245, 158, 11, 0.1)",
-                                color: isDark ? "#fbbf24" : "#d97706",
-                              }}
-                            >
-                              <span className="truncate font-mono text-xs">
-                                {selectedAction}
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => setSelectedAction(null)}
-                                className="ml-2 hover:opacity-70"
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Repository Filter */}
-                    {facets.repositories.length > 0 && (
-                      <div>
-                        <h3
-                          className="text-sm font-semibold mb-3"
-                          style={{
-                            color: isDark ? "#e0e7ff" : "#1f2937",
-                          }}
-                        >
-                          📦 Repositories
-                        </h3>
-                        <div className="space-y-2 pb-1 max-h-[300px] overflow-y-auto">
-                          {facets.repositories.map((repo) => {
-                            const repoKey = `${repo.owner}/${repo.name}`;
-                            const isSelected = selectedRepo === repoKey;
-                            return (
-                              <button
-                                key={repoKey}
-                                type="button"
-                                onClick={() =>
-                                  setSelectedRepo(isSelected ? null : repoKey)
-                                }
-                                className="w-full text-left px-3 py-2 rounded-lg transition-all duration-150"
-                                style={{
-                                  background: isSelected
-                                    ? isDark
-                                      ? "rgba(167, 139, 250, 0.2)"
-                                      : "rgba(124, 58, 237, 0.15)"
-                                    : isDark
-                                      ? "rgba(255, 255, 255, 0.05)"
-                                      : "rgba(0, 0, 0, 0.03)",
-                                  border: isSelected
-                                    ? isDark
-                                      ? "1px solid rgba(167, 139, 250, 0.4)"
-                                      : "1px solid rgba(124, 58, 237, 0.3)"
-                                    : isDark
-                                      ? "1px solid rgba(255, 255, 255, 0.05)"
-                                      : "1px solid rgba(0, 0, 0, 0.05)",
-                                }}
-                                onMouseEnter={(e) => {
-                                  if (isDark) {
-                                    e.currentTarget.style.background =
-                                      isSelected
-                                        ? "rgba(167, 139, 250, 0.3)"
-                                        : "rgba(255, 255, 255, 0.1)";
-                                    e.currentTarget.style.boxShadow =
-                                      "0 4px 12px rgba(0, 0, 0, 0.2)";
-                                  } else {
-                                    e.currentTarget.style.background =
-                                      isSelected
-                                        ? "rgba(124, 58, 237, 0.2)"
-                                        : "rgba(0, 0, 0, 0.05)";
-                                    e.currentTarget.style.boxShadow =
-                                      "0 2px 8px rgba(0, 0, 0, 0.08)";
-                                  }
-                                }}
-                                onMouseLeave={(e) => {
+                              onMouseEnter={(e) => {
+                                if (isDark) {
                                   e.currentTarget.style.background = isSelected
-                                    ? isDark
-                                      ? "rgba(167, 139, 250, 0.2)"
-                                      : "rgba(124, 58, 237, 0.15)"
-                                    : isDark
-                                      ? "rgba(255, 255, 255, 0.05)"
-                                      : "rgba(0, 0, 0, 0.03)";
-                                  e.currentTarget.style.boxShadow = "none";
-                                }}
-                              >
-                                <div className="flex items-center justify-between">
-                                  <span
-                                    className="text-sm truncate"
-                                    style={{
-                                      color: isSelected
-                                        ? isDark
-                                          ? "#c4b5fd"
-                                          : "#7c3aed"
-                                        : isDark
-                                          ? "rgba(255, 255, 255, 0.8)"
-                                          : "rgba(0, 0, 0, 0.8)",
-                                    }}
-                                  >
-                                    {repo.name}
-                                  </span>
-                                  <span
-                                    className="text-xs font-medium px-2 py-0.5 rounded-full ml-2"
-                                    style={{
-                                      background: isSelected
-                                        ? isDark
-                                          ? "rgba(167, 139, 250, 0.3)"
-                                          : "rgba(124, 58, 237, 0.2)"
-                                        : isDark
-                                          ? "rgba(255, 255, 255, 0.1)"
-                                          : "rgba(0, 0, 0, 0.08)",
-                                      color: isSelected
-                                        ? isDark
-                                          ? "#c4b5fd"
-                                          : "#7c3aed"
-                                        : isDark
-                                          ? "rgba(255, 255, 255, 0.6)"
-                                          : "rgba(0, 0, 0, 0.6)",
-                                    }}
-                                  >
-                                    {repo.count}
-                                  </span>
-                                </div>
-                                <div
-                                  className="flex items-center gap-2 text-xs truncate mt-0.5"
+                                    ? "rgba(167, 139, 250, 0.3)"
+                                    : "rgba(255, 255, 255, 0.1)";
+                                  e.currentTarget.style.boxShadow =
+                                    "0 4px 12px rgba(0, 0, 0, 0.2)";
+                                } else {
+                                  e.currentTarget.style.background = isSelected
+                                    ? "rgba(124, 58, 237, 0.2)"
+                                    : "rgba(0, 0, 0, 0.05)";
+                                  e.currentTarget.style.boxShadow =
+                                    "0 2px 8px rgba(0, 0, 0, 0.08)";
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = isSelected
+                                  ? isDark
+                                    ? "rgba(167, 139, 250, 0.2)"
+                                    : "rgba(124, 58, 237, 0.15)"
+                                  : isDark
+                                    ? "rgba(255, 255, 255, 0.05)"
+                                    : "rgba(0, 0, 0, 0.03)";
+                                e.currentTarget.style.boxShadow = "none";
+                              }}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span
+                                  className="text-sm truncate"
                                   style={{
-                                    color: isDark
-                                      ? "rgba(255, 255, 255, 0.4)"
-                                      : "rgba(0, 0, 0, 0.4)",
+                                    color: isSelected
+                                      ? isDark
+                                        ? "#c4b5fd"
+                                        : "#7c3aed"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.8)"
+                                        : "rgba(0, 0, 0, 0.8)",
                                   }}
                                 >
-                                  <span>{repo.owner}</span>
-                                  {repo.stars > 0 && (
-                                    <>
-                                      <span style={{ opacity: 0.5 }}>•</span>
-                                      <span className="inline-flex items-center gap-0.5">
-                                        <svg
-                                          className="w-3 h-3"
-                                          style={{ color: "#f59e0b" }}
-                                          fill="currentColor"
-                                          viewBox="0 0 24 24"
-                                          role="img"
-                                          aria-label="Star icon"
-                                        >
-                                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                        </svg>
-                                        <span>{repo.stars}</span>
-                                      </span>
-                                    </>
-                                  )}
-                                </div>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Blueprint Filter */}
-                    {facets.blueprints.length > 0 && (
-                      <div>
-                        <h3
-                          className="text-sm font-semibold mb-3"
-                          style={{
-                            color: isDark ? "#e0e7ff" : "#1f2937",
-                          }}
-                        >
-                          🎨 Blueprints
-                        </h3>
-                        <div className="space-y-2 pb-1 max-h-[300px] overflow-y-auto">
-                          {facets.blueprints.map((blueprint) => {
-                            const isSelected =
-                              selectedBlueprint === blueprint.path;
-                            const displayName =
-                              blueprint.path.split("/").pop() || blueprint.path;
-                            return (
-                              <button
-                                key={blueprint.path}
-                                type="button"
-                                onClick={() =>
-                                  setSelectedBlueprint(
-                                    isSelected ? null : blueprint.path,
-                                  )
-                                }
-                                className="w-full text-left px-3 py-2 rounded-lg transition-all duration-150"
+                                  {repo.name}
+                                </span>
+                                <span
+                                  className="text-xs font-medium px-2 py-0.5 rounded-full ml-2"
+                                  style={{
+                                    background: isSelected
+                                      ? isDark
+                                        ? "rgba(167, 139, 250, 0.3)"
+                                        : "rgba(124, 58, 237, 0.2)"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.1)"
+                                        : "rgba(0, 0, 0, 0.08)",
+                                    color: isSelected
+                                      ? isDark
+                                        ? "#c4b5fd"
+                                        : "#7c3aed"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.6)"
+                                        : "rgba(0, 0, 0, 0.6)",
+                                  }}
+                                >
+                                  {repo.count}
+                                </span>
+                              </div>
+                              <div
+                                className="flex items-center gap-2 text-xs truncate mt-0.5"
                                 style={{
-                                  background: isSelected
-                                    ? isDark
-                                      ? "rgba(96, 165, 250, 0.2)"
-                                      : "rgba(37, 99, 235, 0.15)"
-                                    : isDark
-                                      ? "rgba(255, 255, 255, 0.05)"
-                                      : "rgba(0, 0, 0, 0.03)",
-                                  border: isSelected
-                                    ? isDark
-                                      ? "1px solid rgba(96, 165, 250, 0.4)"
-                                      : "1px solid rgba(37, 99, 235, 0.3)"
-                                    : isDark
-                                      ? "1px solid rgba(255, 255, 255, 0.05)"
-                                      : "1px solid rgba(0, 0, 0, 0.05)",
+                                  color: isDark
+                                    ? "rgba(255, 255, 255, 0.4)"
+                                    : "rgba(0, 0, 0, 0.4)",
                                 }}
-                                onMouseEnter={(e) => {
-                                  if (isDark) {
-                                    e.currentTarget.style.background =
-                                      isSelected
+                              >
+                                <span>{repo.owner}</span>
+                                {repo.stars > 0 && (
+                                  <>
+                                    <span style={{ opacity: 0.5 }}>•</span>
+                                    <span className="inline-flex items-center gap-0.5">
+                                      <svg
+                                        className="w-3 h-3"
+                                        style={{ color: "#f59e0b" }}
+                                        fill="currentColor"
+                                        viewBox="0 0 24 24"
+                                        role="img"
+                                        aria-label="Star icon"
+                                      >
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                      </svg>
+                                      <span>{repo.stars}</span>
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Blueprint Filter */}
+                  {facets.blueprints.length > 0 && (
+                    <div>
+                      <h3
+                        className="text-sm font-semibold mb-3"
+                        style={{
+                          color: isDark ? "#e0e7ff" : "#1f2937",
+                        }}
+                      >
+                        🎨 Blueprints
+                      </h3>
+                      <div className="space-y-2 pb-1 max-h-[300px] overflow-y-auto">
+                        {facets.blueprints.map((blueprint) => {
+                          const isSelected =
+                            selectedBlueprint === blueprint.path;
+                          const displayName =
+                            blueprint.path.split("/").pop() || blueprint.path;
+                          return (
+                            <button
+                              key={blueprint.path}
+                              type="button"
+                              onClick={() =>
+                                setSelectedBlueprint(
+                                  isSelected ? null : blueprint.path,
+                                )
+                              }
+                              className="w-full text-left px-3 py-2 rounded-lg transition-all duration-150"
+                              style={{
+                                background: isSelected
+                                  ? isDark
+                                    ? "rgba(96, 165, 250, 0.2)"
+                                    : "rgba(37, 99, 235, 0.15)"
+                                  : isDark
+                                    ? "rgba(255, 255, 255, 0.05)"
+                                    : "rgba(0, 0, 0, 0.03)",
+                                border: isSelected
+                                  ? isDark
+                                    ? "1px solid rgba(96, 165, 250, 0.4)"
+                                    : "1px solid rgba(37, 99, 235, 0.3)"
+                                  : isDark
+                                    ? "1px solid rgba(255, 255, 255, 0.05)"
+                                    : "1px solid rgba(0, 0, 0, 0.05)",
+                              }}
+                              onMouseEnter={(e) => {
+                                if (isDark) {
+                                  e.currentTarget.style.background = isSelected
+                                    ? "rgba(96, 165, 250, 0.3)"
+                                    : "rgba(255, 255, 255, 0.1)";
+                                  e.currentTarget.style.boxShadow =
+                                    "0 4px 12px rgba(0, 0, 0, 0.2)";
+                                } else {
+                                  e.currentTarget.style.background = isSelected
+                                    ? "rgba(37, 99, 235, 0.2)"
+                                    : "rgba(0, 0, 0, 0.05)";
+                                  e.currentTarget.style.boxShadow =
+                                    "0 2px 8px rgba(0, 0, 0, 0.08)";
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = isSelected
+                                  ? isDark
+                                    ? "rgba(96, 165, 250, 0.2)"
+                                    : "rgba(37, 99, 235, 0.15)"
+                                  : isDark
+                                    ? "rgba(255, 255, 255, 0.05)"
+                                    : "rgba(0, 0, 0, 0.03)";
+                                e.currentTarget.style.boxShadow = "none";
+                              }}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span
+                                  className="text-sm truncate"
+                                  style={{
+                                    color: isSelected
+                                      ? isDark
+                                        ? "#93c5fd"
+                                        : "#2563eb"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.8)"
+                                        : "rgba(0, 0, 0, 0.8)",
+                                  }}
+                                  title={blueprint.path}
+                                >
+                                  {displayName}
+                                </span>
+                                <span
+                                  className="text-xs font-medium px-2 py-0.5 rounded-full ml-2"
+                                  style={{
+                                    background: isSelected
+                                      ? isDark
                                         ? "rgba(96, 165, 250, 0.3)"
-                                        : "rgba(255, 255, 255, 0.1)";
-                                    e.currentTarget.style.boxShadow =
-                                      "0 4px 12px rgba(0, 0, 0, 0.2)";
-                                  } else {
-                                    e.currentTarget.style.background =
-                                      isSelected
-                                        ? "rgba(37, 99, 235, 0.2)"
-                                        : "rgba(0, 0, 0, 0.05)";
-                                    e.currentTarget.style.boxShadow =
-                                      "0 2px 8px rgba(0, 0, 0, 0.08)";
-                                  }
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.background = isSelected
-                                    ? isDark
-                                      ? "rgba(96, 165, 250, 0.2)"
-                                      : "rgba(37, 99, 235, 0.15)"
-                                    : isDark
-                                      ? "rgba(255, 255, 255, 0.05)"
-                                      : "rgba(0, 0, 0, 0.03)";
-                                  e.currentTarget.style.boxShadow = "none";
-                                }}
-                              >
-                                <div className="flex items-center justify-between">
-                                  <span
-                                    className="text-sm truncate"
-                                    style={{
-                                      color: isSelected
-                                        ? isDark
-                                          ? "#93c5fd"
-                                          : "#2563eb"
-                                        : isDark
-                                          ? "rgba(255, 255, 255, 0.8)"
-                                          : "rgba(0, 0, 0, 0.8)",
-                                    }}
-                                    title={blueprint.path}
-                                  >
-                                    {displayName}
-                                  </span>
-                                  <span
-                                    className="text-xs font-medium px-2 py-0.5 rounded-full ml-2"
-                                    style={{
-                                      background: isSelected
-                                        ? isDark
-                                          ? "rgba(96, 165, 250, 0.3)"
-                                          : "rgba(37, 99, 235, 0.2)"
-                                        : isDark
-                                          ? "rgba(255, 255, 255, 0.1)"
-                                          : "rgba(0, 0, 0, 0.08)",
-                                      color: isSelected
-                                        ? isDark
-                                          ? "#93c5fd"
-                                          : "#2563eb"
-                                        : isDark
-                                          ? "rgba(255, 255, 255, 0.6)"
-                                          : "rgba(0, 0, 0, 0.6)",
-                                    }}
-                                  >
-                                    {blueprint.count}
-                                  </span>
-                                </div>
-                              </button>
-                            );
-                          })}
-                        </div>
+                                        : "rgba(37, 99, 235, 0.2)"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.1)"
+                                        : "rgba(0, 0, 0, 0.08)",
+                                    color: isSelected
+                                      ? isDark
+                                        ? "#93c5fd"
+                                        : "#2563eb"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.6)"
+                                        : "rgba(0, 0, 0, 0.6)",
+                                  }}
+                                >
+                                  {blueprint.count}
+                                </span>
+                              </div>
+                            </button>
+                          );
+                        })}
                       </div>
-                    )}
+                    </div>
+                  )}
 
-                    {/* Trigger Filter */}
-                    {facets.triggers.length > 0 && (
-                      <div>
-                        <h3
-                          className="text-sm font-semibold mb-3"
-                          style={{
-                            color: isDark ? "#e0e7ff" : "#1f2937",
-                          }}
-                        >
-                          ⚡ Triggers
-                        </h3>
-                        <div className="space-y-2 pb-1 max-h-[300px] overflow-y-auto">
-                          {facets.triggers.map((trigger) => {
-                            const isSelected = selectedTrigger === trigger.type;
-                            return (
-                              <button
-                                key={trigger.type}
-                                type="button"
-                                onClick={() =>
-                                  setSelectedTrigger(
-                                    isSelected ? null : trigger.type,
-                                  )
+                  {/* Trigger Filter */}
+                  {facets.triggers.length > 0 && (
+                    <div>
+                      <h3
+                        className="text-sm font-semibold mb-3"
+                        style={{
+                          color: isDark ? "#e0e7ff" : "#1f2937",
+                        }}
+                      >
+                        ⚡ Triggers
+                      </h3>
+                      <div className="space-y-2 pb-1 max-h-[300px] overflow-y-auto">
+                        {facets.triggers.map((trigger) => {
+                          const isSelected = selectedTrigger === trigger.type;
+                          return (
+                            <button
+                              key={trigger.type}
+                              type="button"
+                              onClick={() =>
+                                setSelectedTrigger(
+                                  isSelected ? null : trigger.type,
+                                )
+                              }
+                              className="w-full text-left px-3 py-2 rounded-lg transition-all duration-150"
+                              style={{
+                                background: isSelected
+                                  ? isDark
+                                    ? "rgba(52, 211, 153, 0.2)"
+                                    : "rgba(16, 185, 129, 0.15)"
+                                  : isDark
+                                    ? "rgba(255, 255, 255, 0.05)"
+                                    : "rgba(0, 0, 0, 0.03)",
+                                border: isSelected
+                                  ? isDark
+                                    ? "1px solid rgba(52, 211, 153, 0.4)"
+                                    : "1px solid rgba(16, 185, 129, 0.3)"
+                                  : isDark
+                                    ? "1px solid rgba(255, 255, 255, 0.05)"
+                                    : "1px solid rgba(0, 0, 0, 0.05)",
+                              }}
+                              onMouseEnter={(e) => {
+                                if (isDark) {
+                                  e.currentTarget.style.background = isSelected
+                                    ? "rgba(52, 211, 153, 0.3)"
+                                    : "rgba(255, 255, 255, 0.1)";
+                                  e.currentTarget.style.boxShadow =
+                                    "0 4px 12px rgba(0, 0, 0, 0.2)";
+                                } else {
+                                  e.currentTarget.style.background = isSelected
+                                    ? "rgba(16, 185, 129, 0.2)"
+                                    : "rgba(0, 0, 0, 0.05)";
+                                  e.currentTarget.style.boxShadow =
+                                    "0 2px 8px rgba(0, 0, 0, 0.08)";
                                 }
-                                className="w-full text-left px-3 py-2 rounded-lg transition-all duration-150"
-                                style={{
-                                  background: isSelected
-                                    ? isDark
-                                      ? "rgba(52, 211, 153, 0.2)"
-                                      : "rgba(16, 185, 129, 0.15)"
-                                    : isDark
-                                      ? "rgba(255, 255, 255, 0.05)"
-                                      : "rgba(0, 0, 0, 0.03)",
-                                  border: isSelected
-                                    ? isDark
-                                      ? "1px solid rgba(52, 211, 153, 0.4)"
-                                      : "1px solid rgba(16, 185, 129, 0.3)"
-                                    : isDark
-                                      ? "1px solid rgba(255, 255, 255, 0.05)"
-                                      : "1px solid rgba(0, 0, 0, 0.05)",
-                                }}
-                                onMouseEnter={(e) => {
-                                  if (isDark) {
-                                    e.currentTarget.style.background =
-                                      isSelected
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = isSelected
+                                  ? isDark
+                                    ? "rgba(52, 211, 153, 0.2)"
+                                    : "rgba(16, 185, 129, 0.15)"
+                                  : isDark
+                                    ? "rgba(255, 255, 255, 0.05)"
+                                    : "rgba(0, 0, 0, 0.03)";
+                                e.currentTarget.style.boxShadow = "none";
+                              }}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span
+                                  className="text-sm truncate"
+                                  style={{
+                                    color: isSelected
+                                      ? isDark
+                                        ? "#6ee7b7"
+                                        : "#10b981"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.8)"
+                                        : "rgba(0, 0, 0, 0.8)",
+                                  }}
+                                >
+                                  {trigger.type}
+                                </span>
+                                <span
+                                  className="text-xs font-medium px-2 py-0.5 rounded-full ml-2"
+                                  style={{
+                                    background: isSelected
+                                      ? isDark
                                         ? "rgba(52, 211, 153, 0.3)"
-                                        : "rgba(255, 255, 255, 0.1)";
-                                    e.currentTarget.style.boxShadow =
-                                      "0 4px 12px rgba(0, 0, 0, 0.2)";
-                                  } else {
-                                    e.currentTarget.style.background =
-                                      isSelected
-                                        ? "rgba(16, 185, 129, 0.2)"
-                                        : "rgba(0, 0, 0, 0.05)";
-                                    e.currentTarget.style.boxShadow =
-                                      "0 2px 8px rgba(0, 0, 0, 0.08)";
-                                  }
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.background = isSelected
-                                    ? isDark
-                                      ? "rgba(52, 211, 153, 0.2)"
-                                      : "rgba(16, 185, 129, 0.15)"
-                                    : isDark
-                                      ? "rgba(255, 255, 255, 0.05)"
-                                      : "rgba(0, 0, 0, 0.03)";
-                                  e.currentTarget.style.boxShadow = "none";
-                                }}
-                              >
-                                <div className="flex items-center justify-between">
-                                  <span
-                                    className="text-sm truncate"
-                                    style={{
-                                      color: isSelected
-                                        ? isDark
-                                          ? "#6ee7b7"
-                                          : "#10b981"
-                                        : isDark
-                                          ? "rgba(255, 255, 255, 0.8)"
-                                          : "rgba(0, 0, 0, 0.8)",
-                                    }}
-                                  >
-                                    {trigger.type}
-                                  </span>
-                                  <span
-                                    className="text-xs font-medium px-2 py-0.5 rounded-full ml-2"
-                                    style={{
-                                      background: isSelected
-                                        ? isDark
-                                          ? "rgba(52, 211, 153, 0.3)"
-                                          : "rgba(16, 185, 129, 0.2)"
-                                        : isDark
-                                          ? "rgba(255, 255, 255, 0.1)"
-                                          : "rgba(0, 0, 0, 0.08)",
-                                      color: isSelected
-                                        ? isDark
-                                          ? "#6ee7b7"
-                                          : "#10b981"
-                                        : isDark
-                                          ? "rgba(255, 255, 255, 0.6)"
-                                          : "rgba(0, 0, 0, 0.6)",
-                                    }}
-                                  >
-                                    {trigger.count}
-                                  </span>
-                                </div>
-                              </button>
-                            );
-                          })}
-                        </div>
+                                        : "rgba(16, 185, 129, 0.2)"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.1)"
+                                        : "rgba(0, 0, 0, 0.08)",
+                                    color: isSelected
+                                      ? isDark
+                                        ? "#6ee7b7"
+                                        : "#10b981"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.6)"
+                                        : "rgba(0, 0, 0, 0.6)",
+                                  }}
+                                >
+                                  {trigger.count}
+                                </span>
+                              </div>
+                            </button>
+                          );
+                        })}
                       </div>
-                    )}
+                    </div>
+                  )}
 
-                    {/* Action Domain Filter */}
-                    {facets.action_domains.length > 0 && (
-                      <div>
-                        <h3
-                          className="text-sm font-semibold mb-3"
-                          style={{
-                            color: isDark ? "#e0e7ff" : "#1f2937",
-                          }}
-                        >
-                          🔧 Action Domains
-                        </h3>
-                        <div className="space-y-2 pb-1 max-h-[300px] overflow-y-auto">
-                          {facets.action_domains.map((actionDomain) => {
-                            const isSelected =
-                              selectedActionDomain === actionDomain.domain;
-                            return (
-                              <button
-                                key={actionDomain.domain}
-                                type="button"
-                                onClick={() =>
-                                  setSelectedActionDomain(
-                                    isSelected ? null : actionDomain.domain,
-                                  )
+                  {/* Action Domain Filter */}
+                  {facets.action_domains.length > 0 && (
+                    <div>
+                      <h3
+                        className="text-sm font-semibold mb-3"
+                        style={{
+                          color: isDark ? "#e0e7ff" : "#1f2937",
+                        }}
+                      >
+                        🔧 Action Domains
+                      </h3>
+                      <div className="space-y-2 pb-1 max-h-[300px] overflow-y-auto">
+                        {facets.action_domains.map((actionDomain) => {
+                          const isSelected =
+                            selectedActionDomain === actionDomain.domain;
+                          return (
+                            <button
+                              key={actionDomain.domain}
+                              type="button"
+                              onClick={() =>
+                                setSelectedActionDomain(
+                                  isSelected ? null : actionDomain.domain,
+                                )
+                              }
+                              className="w-full text-left px-3 py-2 rounded-lg transition-all duration-150"
+                              style={{
+                                background: isSelected
+                                  ? isDark
+                                    ? "rgba(249, 115, 22, 0.2)"
+                                    : "rgba(234, 88, 12, 0.15)"
+                                  : isDark
+                                    ? "rgba(255, 255, 255, 0.05)"
+                                    : "rgba(0, 0, 0, 0.03)",
+                                border: isSelected
+                                  ? isDark
+                                    ? "1px solid rgba(249, 115, 22, 0.4)"
+                                    : "1px solid rgba(234, 88, 12, 0.3)"
+                                  : isDark
+                                    ? "1px solid rgba(255, 255, 255, 0.05)"
+                                    : "1px solid rgba(0, 0, 0, 0.05)",
+                              }}
+                              onMouseEnter={(e) => {
+                                if (isDark) {
+                                  e.currentTarget.style.background = isSelected
+                                    ? "rgba(249, 115, 22, 0.3)"
+                                    : "rgba(255, 255, 255, 0.1)";
+                                  e.currentTarget.style.boxShadow =
+                                    "0 4px 12px rgba(0, 0, 0, 0.2)";
+                                } else {
+                                  e.currentTarget.style.background = isSelected
+                                    ? "rgba(234, 88, 12, 0.2)"
+                                    : "rgba(0, 0, 0, 0.05)";
+                                  e.currentTarget.style.boxShadow =
+                                    "0 2px 8px rgba(0, 0, 0, 0.08)";
                                 }
-                                className="w-full text-left px-3 py-2 rounded-lg transition-all duration-150"
-                                style={{
-                                  background: isSelected
-                                    ? isDark
-                                      ? "rgba(249, 115, 22, 0.2)"
-                                      : "rgba(234, 88, 12, 0.15)"
-                                    : isDark
-                                      ? "rgba(255, 255, 255, 0.05)"
-                                      : "rgba(0, 0, 0, 0.03)",
-                                  border: isSelected
-                                    ? isDark
-                                      ? "1px solid rgba(249, 115, 22, 0.4)"
-                                      : "1px solid rgba(234, 88, 12, 0.3)"
-                                    : isDark
-                                      ? "1px solid rgba(255, 255, 255, 0.05)"
-                                      : "1px solid rgba(0, 0, 0, 0.05)",
-                                }}
-                                onMouseEnter={(e) => {
-                                  if (isDark) {
-                                    e.currentTarget.style.background =
-                                      isSelected
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = isSelected
+                                  ? isDark
+                                    ? "rgba(249, 115, 22, 0.2)"
+                                    : "rgba(234, 88, 12, 0.15)"
+                                  : isDark
+                                    ? "rgba(255, 255, 255, 0.05)"
+                                    : "rgba(0, 0, 0, 0.03)";
+                                e.currentTarget.style.boxShadow = "none";
+                              }}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span
+                                  className="text-sm truncate font-mono"
+                                  style={{
+                                    color: isSelected
+                                      ? isDark
+                                        ? "#fb923c"
+                                        : "#ea580c"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.8)"
+                                        : "rgba(0, 0, 0, 0.8)",
+                                  }}
+                                >
+                                  {actionDomain.domain}
+                                </span>
+                                <span
+                                  className="text-xs font-medium px-2 py-0.5 rounded-full ml-2"
+                                  style={{
+                                    background: isSelected
+                                      ? isDark
                                         ? "rgba(249, 115, 22, 0.3)"
-                                        : "rgba(255, 255, 255, 0.1)";
-                                    e.currentTarget.style.boxShadow =
-                                      "0 4px 12px rgba(0, 0, 0, 0.2)";
-                                  } else {
-                                    e.currentTarget.style.background =
-                                      isSelected
-                                        ? "rgba(234, 88, 12, 0.2)"
-                                        : "rgba(0, 0, 0, 0.05)";
-                                    e.currentTarget.style.boxShadow =
-                                      "0 2px 8px rgba(0, 0, 0, 0.08)";
-                                  }
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.background = isSelected
-                                    ? isDark
-                                      ? "rgba(249, 115, 22, 0.2)"
-                                      : "rgba(234, 88, 12, 0.15)"
-                                    : isDark
-                                      ? "rgba(255, 255, 255, 0.05)"
-                                      : "rgba(0, 0, 0, 0.03)";
-                                  e.currentTarget.style.boxShadow = "none";
-                                }}
-                              >
-                                <div className="flex items-center justify-between">
-                                  <span
-                                    className="text-sm truncate font-mono"
-                                    style={{
-                                      color: isSelected
-                                        ? isDark
-                                          ? "#fb923c"
-                                          : "#ea580c"
-                                        : isDark
-                                          ? "rgba(255, 255, 255, 0.8)"
-                                          : "rgba(0, 0, 0, 0.8)",
-                                    }}
-                                  >
-                                    {actionDomain.domain}
-                                  </span>
-                                  <span
-                                    className="text-xs font-medium px-2 py-0.5 rounded-full ml-2"
-                                    style={{
-                                      background: isSelected
-                                        ? isDark
-                                          ? "rgba(249, 115, 22, 0.3)"
-                                          : "rgba(234, 88, 12, 0.2)"
-                                        : isDark
-                                          ? "rgba(255, 255, 255, 0.1)"
-                                          : "rgba(0, 0, 0, 0.08)",
-                                      color: isSelected
-                                        ? isDark
-                                          ? "#fb923c"
-                                          : "#ea580c"
-                                        : isDark
-                                          ? "rgba(255, 255, 255, 0.6)"
-                                          : "rgba(0, 0, 0, 0.6)",
-                                    }}
-                                  >
-                                    {actionDomain.count}
-                                  </span>
-                                </div>
-                              </button>
-                            );
-                          })}
-                        </div>
+                                        : "rgba(234, 88, 12, 0.2)"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.1)"
+                                        : "rgba(0, 0, 0, 0.08)",
+                                    color: isSelected
+                                      ? isDark
+                                        ? "#fb923c"
+                                        : "#ea580c"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.6)"
+                                        : "rgba(0, 0, 0, 0.6)",
+                                  }}
+                                >
+                                  {actionDomain.count}
+                                </span>
+                              </div>
+                            </button>
+                          );
+                        })}
                       </div>
-                    )}
+                    </div>
+                  )}
 
-                    {/* Action Filter */}
-                    {facets.actions.length > 0 && (
-                      <div>
-                        <h3
-                          className="text-sm font-semibold mb-3"
-                          style={{
-                            color: isDark ? "#e0e7ff" : "#1f2937",
-                          }}
-                        >
-                          🎬 Actions
-                        </h3>
-                        <div className="space-y-2 pb-1 max-h-[300px] overflow-y-auto">
-                          {facets.actions.map((action) => {
-                            const isSelected = selectedAction === action.call;
-                            return (
-                              <button
-                                key={action.call}
-                                type="button"
-                                onClick={() =>
-                                  setSelectedAction(
-                                    isSelected ? null : action.call,
-                                  )
-                                }
-                                className="w-full text-left px-3 py-2 rounded-lg transition-all duration-150"
-                                style={{
-                                  background: isSelected
-                                    ? isDark
-                                      ? "rgba(251, 191, 36, 0.2)"
-                                      : "rgba(245, 158, 11, 0.15)"
-                                    : isDark
-                                      ? "rgba(255, 255, 255, 0.05)"
-                                      : "rgba(0, 0, 0, 0.03)",
-                                  border: isSelected
-                                    ? isDark
-                                      ? "1px solid rgba(251, 191, 36, 0.4)"
-                                      : "1px solid rgba(245, 158, 11, 0.3)"
-                                    : isDark
-                                      ? "1px solid rgba(255, 255, 255, 0.05)"
-                                      : "1px solid rgba(0, 0, 0, 0.05)",
-                                }}
-                                onMouseEnter={(e) => {
-                                  if (isDark) {
-                                    e.currentTarget.style.background =
-                                      isSelected
-                                        ? "rgba(251, 191, 36, 0.3)"
-                                        : "rgba(255, 255, 255, 0.1)";
-                                    e.currentTarget.style.boxShadow =
-                                      "0 4px 12px rgba(0, 0, 0, 0.2)";
-                                  } else {
-                                    e.currentTarget.style.background =
-                                      isSelected
-                                        ? "rgba(245, 158, 11, 0.2)"
-                                        : "rgba(0, 0, 0, 0.05)";
-                                    e.currentTarget.style.boxShadow =
-                                      "0 2px 8px rgba(0, 0, 0, 0.08)";
-                                  }
-                                }}
-                                onMouseLeave={(e) => {
+                  {/* Action Filter */}
+                  {facets.actions.length > 0 && (
+                    <div>
+                      <h3
+                        className="text-sm font-semibold mb-3"
+                        style={{
+                          color: isDark ? "#e0e7ff" : "#1f2937",
+                        }}
+                      >
+                        🎬 Actions
+                      </h3>
+                      <div className="space-y-2 pb-1 max-h-[300px] overflow-y-auto">
+                        {facets.actions.map((action) => {
+                          const isSelected = selectedAction === action.call;
+                          return (
+                            <button
+                              key={action.call}
+                              type="button"
+                              onClick={() =>
+                                setSelectedAction(
+                                  isSelected ? null : action.call,
+                                )
+                              }
+                              className="w-full text-left px-3 py-2 rounded-lg transition-all duration-150"
+                              style={{
+                                background: isSelected
+                                  ? isDark
+                                    ? "rgba(251, 191, 36, 0.2)"
+                                    : "rgba(245, 158, 11, 0.15)"
+                                  : isDark
+                                    ? "rgba(255, 255, 255, 0.05)"
+                                    : "rgba(0, 0, 0, 0.03)",
+                                border: isSelected
+                                  ? isDark
+                                    ? "1px solid rgba(251, 191, 36, 0.4)"
+                                    : "1px solid rgba(245, 158, 11, 0.3)"
+                                  : isDark
+                                    ? "1px solid rgba(255, 255, 255, 0.05)"
+                                    : "1px solid rgba(0, 0, 0, 0.05)",
+                              }}
+                              onMouseEnter={(e) => {
+                                if (isDark) {
                                   e.currentTarget.style.background = isSelected
-                                    ? isDark
-                                      ? "rgba(251, 191, 36, 0.2)"
-                                      : "rgba(245, 158, 11, 0.15)"
-                                    : isDark
-                                      ? "rgba(255, 255, 255, 0.05)"
-                                      : "rgba(0, 0, 0, 0.03)";
-                                  e.currentTarget.style.boxShadow = "none";
-                                }}
-                              >
-                                <div className="flex items-center justify-between">
-                                  <span
-                                    className="text-sm truncate font-mono"
-                                    style={{
-                                      color: isSelected
-                                        ? isDark
-                                          ? "#fbbf24"
-                                          : "#d97706"
-                                        : isDark
-                                          ? "rgba(255, 255, 255, 0.8)"
-                                          : "rgba(0, 0, 0, 0.8)",
-                                    }}
-                                  >
-                                    {action.call}
-                                  </span>
-                                  <span
-                                    className="text-xs font-medium px-2 py-0.5 rounded-full ml-2"
-                                    style={{
-                                      background: isSelected
-                                        ? isDark
-                                          ? "rgba(251, 191, 36, 0.3)"
-                                          : "rgba(245, 158, 11, 0.2)"
-                                        : isDark
-                                          ? "rgba(255, 255, 255, 0.1)"
-                                          : "rgba(0, 0, 0, 0.08)",
-                                      color: isSelected
-                                        ? isDark
-                                          ? "#fbbf24"
-                                          : "#d97706"
-                                        : isDark
-                                          ? "rgba(255, 255, 255, 0.6)"
-                                          : "rgba(0, 0, 0, 0.6)",
-                                    }}
-                                  >
-                                    {action.count}
-                                  </span>
-                                </div>
-                              </button>
-                            );
-                          })}
-                        </div>
+                                    ? "rgba(251, 191, 36, 0.3)"
+                                    : "rgba(255, 255, 255, 0.1)";
+                                  e.currentTarget.style.boxShadow =
+                                    "0 4px 12px rgba(0, 0, 0, 0.2)";
+                                } else {
+                                  e.currentTarget.style.background = isSelected
+                                    ? "rgba(245, 158, 11, 0.2)"
+                                    : "rgba(0, 0, 0, 0.05)";
+                                  e.currentTarget.style.boxShadow =
+                                    "0 2px 8px rgba(0, 0, 0, 0.08)";
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = isSelected
+                                  ? isDark
+                                    ? "rgba(251, 191, 36, 0.2)"
+                                    : "rgba(245, 158, 11, 0.15)"
+                                  : isDark
+                                    ? "rgba(255, 255, 255, 0.05)"
+                                    : "rgba(0, 0, 0, 0.03)";
+                                e.currentTarget.style.boxShadow = "none";
+                              }}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span
+                                  className="text-sm truncate font-mono"
+                                  style={{
+                                    color: isSelected
+                                      ? isDark
+                                        ? "#fbbf24"
+                                        : "#d97706"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.8)"
+                                        : "rgba(0, 0, 0, 0.8)",
+                                  }}
+                                >
+                                  {action.call}
+                                </span>
+                                <span
+                                  className="text-xs font-medium px-2 py-0.5 rounded-full ml-2"
+                                  style={{
+                                    background: isSelected
+                                      ? isDark
+                                        ? "rgba(251, 191, 36, 0.3)"
+                                        : "rgba(245, 158, 11, 0.2)"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.1)"
+                                        : "rgba(0, 0, 0, 0.08)",
+                                    color: isSelected
+                                      ? isDark
+                                        ? "#fbbf24"
+                                        : "#d97706"
+                                      : isDark
+                                        ? "rgba(255, 255, 255, 0.6)"
+                                        : "rgba(0, 0, 0, 0.6)",
+                                  }}
+                                >
+                                  {action.count}
+                                </span>
+                              </div>
+                            </button>
+                          );
+                        })}
                       </div>
-                    )}
-                  </div>
-                )}
-              </aside>
-            </>
+                    </div>
+                  )}
+                </div>
+              )}
+            </aside>
           )}
 
           {/* Results */}

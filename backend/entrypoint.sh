@@ -15,21 +15,24 @@ if [ -n "${DB_DOWNLOAD_URL:-}" ]; then
 	echo "Downloading pre-built database from ${DB_DOWNLOAD_URL}..."
 	mkdir -p /app/data
 	if python3 -c "
-import urllib.request, gzip, shutil, sys
+import urllib.request, gzip, shutil, sys, os
 url = sys.argv[1]
+tmp = '/app/data/hadiscover.db.tmp'
 try:
     with urllib.request.urlopen(url) as response, \
          gzip.open(response) as gz_file, \
-         open('/app/data/hadiscover.db', 'wb') as f:
+         open(tmp, 'wb') as f:
         shutil.copyfileobj(gz_file, f)
+    os.replace(tmp, '/app/data/hadiscover.db')
 except Exception as e:
     print('Error downloading database:', e, file=sys.stderr)
+    if os.path.exists(tmp):
+        os.remove(tmp)
     sys.exit(1)
 " "${DB_DOWNLOAD_URL}"; then
 		echo "✓ Pre-built database downloaded successfully"
 	else
 		echo "Warning: Failed to download pre-built database. Continuing with existing or empty database."
-		rm -f /app/data/hadiscover.db
 	fi
 fi
 

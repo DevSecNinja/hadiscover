@@ -15,20 +15,32 @@ if [ -n "${DB_DOWNLOAD_URL:-}" ]; then
 	echo "Downloading pre-built database from ${DB_DOWNLOAD_URL}..."
 	mkdir -p /app/data
 	if python3 -c "
-import urllib.request, gzip, shutil, sys, os
+import urllib.request, gzip, shutil, sys, os, time
 url = sys.argv[1]
 tmp = '/app/data/hadiscover.db.tmp'
-try:
-    with urllib.request.urlopen(url) as response, \
-         gzip.open(response) as gz_file, \
-         open(tmp, 'wb') as f:
-        shutil.copyfileobj(gz_file, f)
-    os.replace(tmp, '/app/data/hadiscover.db')
-except Exception as e:
-    print('Error downloading database:', e, file=sys.stderr)
-    if os.path.exists(tmp):
-        os.remove(tmp)
-    sys.exit(1)
+destination = '/app/data/hadiscover.db'
+download_timeout = 15
+max_attempts = 3
+backoff_seconds = 2
+
+for attempt in range(1, max_attempts + 1):
+    try:
+        with urllib.request.urlopen(url, timeout=download_timeout) as response, \
+             gzip.open(response) as gz_file, \
+             open(tmp, 'wb') as f:
+            shutil.copyfileobj(gz_file, f)
+        os.replace(tmp, destination)
+        break
+    except Exception as e:
+        print(
+            f'Error downloading database (attempt {attempt}/{max_attempts}): {e}',
+            file=sys.stderr,
+        )
+        if os.path.exists(tmp):
+            os.remove(tmp)
+        if attempt == max_attempts:
+            sys.exit(1)
+        time.sleep(backoff_seconds)
 " "${DB_DOWNLOAD_URL}"; then
 		echo "✓ Pre-built database downloaded successfully"
 	else

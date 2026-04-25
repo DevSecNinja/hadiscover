@@ -48,16 +48,26 @@ async def lifespan(app: FastAPI):
     init_db()
     logging.info("Database initialized")
 
-    # Start the scheduler for hourly indexing
-    scheduler_service = SchedulerService()
-    scheduler_service.start()
-    logging.info("Scheduler initialized - hourly indexing enabled")
+    # Start the scheduler for hourly indexing unless explicitly disabled.
+    # Set DISABLE_SCHEDULER=true when using the GitHub Actions update-db workflow
+    # to build and publish the database instead of indexing inside the container.
+    scheduler_service: SchedulerService | None = None
+    if os.getenv("DISABLE_SCHEDULER", "false").lower() != "true":
+        scheduler_service = SchedulerService()
+        scheduler_service.start()
+        logging.info("Scheduler initialized - hourly indexing enabled")
+    else:
+        logging.info(
+            "Scheduler disabled (DISABLE_SCHEDULER=true) - "
+            "indexing is handled externally (e.g. GitHub Actions update-db workflow)"
+        )
 
     yield
 
     # Shutdown
-    scheduler_service.shutdown()
-    logging.info("Scheduler shut down")
+    if scheduler_service is not None:
+        scheduler_service.shutdown()
+        logging.info("Scheduler shut down")
 
 
 # Create FastAPI app

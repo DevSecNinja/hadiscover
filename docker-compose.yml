@@ -14,10 +14,11 @@ services:
       # Optional: Add your GitHub token for higher API rate limits
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
       - ENVIRONMENT=development
-      # Optional: Download the pre-built database on first start instead of
-      # building it from scratch. Set DB_DOWNLOAD_URL to the release asset URL
-      # and DISABLE_SCHEDULER=true to skip the in-process hourly indexer.
-      # - DB_DOWNLOAD_URL=https://github.com/DevSecNinja/hadiscover/releases/download/db-latest/hadiscover.db.gz
+      # Optional: Download the pre-built database on start
+      # instead of building it from scratch. Set DB_DOWNLOAD_URL
+      # to the release asset URL and DISABLE_SCHEDULER=true
+      # to skip the in-process hourly indexer.
+      # - DB_DOWNLOAD_URL=${DB_DOWNLOAD_URL:-}
       # - DISABLE_SCHEDULER=true
     volumes:
       # Persist database across container restarts

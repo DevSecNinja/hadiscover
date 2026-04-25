@@ -1,19 +1,21 @@
+---
 name: Update Database
 
-# Builds the hadiscover SQLite database by running the indexer against GitHub
-# and publishes the result as a rolling release asset (tag: db-latest).
+# Builds the hadiscover SQLite database by running the indexer
+# against GitHub and publishes the result as a release asset.
 #
-# Consumers can then bootstrap their backend without a GitHub API token by
-# pointing DB_DOWNLOAD_URL at the release asset and setting DISABLE_SCHEDULER=true.
+# Consumers can bootstrap their backend without a GitHub API
+# token by pointing DB_DOWNLOAD_URL at the release asset and
+# setting DISABLE_SCHEDULER=true.
 
 on:
   schedule:
-    # Run at the top of every hour
-    - cron: "0 * * * *"
+    # Run daily at 06:00 UTC
+    - cron: "0 6 * * *"
   workflow_dispatch:
 
 permissions:
-  contents: write # Required to create/update the db-latest release
+  contents: write # create/update db-latest release
 
 jobs:
   update-db:

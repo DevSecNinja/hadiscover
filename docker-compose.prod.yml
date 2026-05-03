@@ -3,7 +3,7 @@
 
 services:
   api:
-    image: ghcr.io/devsecninja/hadiscover/backend:0.2.16
+    image: ghcr.io/devsecninja/hadiscover/backend:0.3.0
     container_name: api
     ports:
       - "8000:8000"
@@ -35,7 +35,7 @@ services:
       start_period: 5s
 
   web:
-    image: ghcr.io/devsecninja/hadiscover/frontend:0.2.16
+    image: ghcr.io/devsecninja/hadiscover/frontend:0.3.0
     container_name: web
     ports:
       - "8080:80"

@@ -6,11 +6,6 @@ name: Update Database
 # publishes archival release assets.
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/update-db.yml"
   schedule:
     # Run daily at 06:00 UTC
     - cron: "0 6 * * *"

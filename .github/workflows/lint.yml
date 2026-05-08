@@ -1,56 +1,35 @@
 ---
 name: Lint
 
-on: # yamllint disable-line rule:truthy
-  workflow_dispatch: null
+on:
   pull_request:
     branches:
       - main
   push:
     branches:
       - main
+  workflow_dispatch:
 
-permissions: {}
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
-    name: Lint
-    runs-on: ubuntu-latest
-
+  lint:
+    # renovate: datasource=github-tags depName=DevSecNinja/.github
+    uses: DevSecNinja/.github/.github/workflows/lint.yml@af5030dd0d6f61b80fe58f949c9b985d1931ddf2 # v1.3.0
     permissions:
       contents: read
-      packages: read
-      # To report GitHub Actions status checks
-      statuses: write
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-        with:
-          # super-linter needs the full git history to get the
-          # list of files that changed across commits
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Super-linter
-        uses: super-linter/super-linter/slim@9e863354e3ff62e0727d37183162c4a88873df41 # v8.6.0
-        env:
-          # To report GitHub Actions status checks
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_PYTHON_RUFF_FORMAT: false
-          # Disabled linters
-          VALIDATE_CSS: false
-          VALIDATE_HTML_PRETTIER: false
-          VALIDATE_NATURAL_LANGUAGE: false
-          VALIDATE_PYTHON_FLAKE8: false
-          # Fights with black
-          VALIDATE_PYTHON_PYLINT: false
-          # TODO: fix tsx linter errors
-          VALIDATE_TSX: false
-          # TODO: fix jscpd linter errors
-          VALIDATE_JSCPD: false
-          # Trivy DB mirror (mirror.gcr.io) returns 404 errors; dedicated scan-image.yml handles image scanning
-          VALIDATE_TRIVY: false
-          # VALIDATE_MARKDOWN_PRETTIER: false
-          # VALIDATE_PYTHON_MYPY: false
-          # VALIDATE_YAML_PRETTIER: false
+      security-events: write
+    with:
+      # renovate: datasource=github-releases depName=jdx/mise
+      mise-version: "2026.4.20"
+      lint-dprint: false
+      lint-yamlfmt: false
+      lint-yamllint: false
+      lint-checkov: false
+      lint-trivy: false
+      lint-config-drift: false

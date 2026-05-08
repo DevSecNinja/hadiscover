@@ -111,15 +111,7 @@ docker-compose -f docker-compose.prod.yml up -d
 docker-compose up -d
 ```
 
-Production deployments use the pre-built SQLite database published by the daily `Update Database` GitHub Action. The Action runs the indexer, compresses `hadiscover.db`, and publishes it to the rolling `db-latest` GitHub release as `hadiscover.db.gz`. The backend downloads that release asset on startup, installs it atomically, and runs with the in-process scheduler disabled.
-
-To use another database release asset, set:
-
-```bash
-DB_DOWNLOAD_URL=https://github.com/<owner>/<repo>/releases/download/db-latest/hadiscover.db.gz
-DB_BOOTSTRAP_REQUIRED=true
-DISABLE_SCHEDULER=true
-```
+Production no longer runs a backend API container. The daily `Update Database` GitHub Action runs the indexer, exports `frontend/public/data/search-index.json`, builds the static Next.js site, and deploys it to GitHub Pages. The SQLite database is still published to the rolling `db-latest` GitHub release as an archival/debugging asset.
 
 ### Testing
 
@@ -129,7 +121,7 @@ Run backend tests:
 cd backend && source venv/bin/activate && pytest tests/ -v
 ```
 
-CI automatically tests Docker containers, API endpoints, and integration on every PR.
+CI automatically tests backend tooling, Docker containers, API endpoints for local development, and integration on every PR.
 
 ### API Documentation
 
@@ -141,6 +133,8 @@ OpenAPI/Swagger docs available at <http://localhost:8000/docs> once running.
 - `GET /api/v1/statistics` - Get totals and last indexed time
 - `POST /api/v1/index` - Trigger indexing (dev mode only, rate limited)
 - `GET /api/v1/health` - Health check
+
+The public site uses `/data/search-index.json` and performs search directly in the browser.
 
 ## More Information
 

@@ -118,7 +118,7 @@ jobs:
       update_version_script: "update-frontend-version.sh"
       is_prerelease: ${{ fromJSON(needs.determine-version.outputs.is_prerelease) }}
       build_args: |
-        NEXT_PUBLIC_API_URL=${{ vars.FRONTEND_API_URL || 'http://localhost:8000/api/v1' }}
+        NEXT_PUBLIC_SEARCH_INDEX_URL=${{ vars.FRONTEND_SEARCH_INDEX_URL || 'https://hadiscover.com/data/search-index.json' }}
 
   scan-frontend:
     needs: [build-and-push-frontend]
@@ -177,12 +177,12 @@ jobs:
         working-directory: ./frontend
         run: npm ci
 
+      - name: Download latest search index
+        run: .github/scripts/download-search-index.sh
+
       - name: Build with Next.js
         working-directory: ./frontend
         run: npm run build
-        env:
-          # Use the production API URL for GitHub Pages deployment
-          NEXT_PUBLIC_API_URL: ${{ vars.FRONTEND_API_URL || 'https://api.hadiscover.com/api/v1' }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4

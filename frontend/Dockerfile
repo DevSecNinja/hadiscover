@@ -13,9 +13,9 @@ RUN npm ci
 COPY . .
 
 # Build the application with static export
-# The build process will use NEXT_PUBLIC_API_URL from build args
-ARG NEXT_PUBLIC_API_URL
-ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+# The build process will use NEXT_PUBLIC_SEARCH_INDEX_URL from build args
+ARG NEXT_PUBLIC_SEARCH_INDEX_URL
+ENV NEXT_PUBLIC_SEARCH_INDEX_URL=${NEXT_PUBLIC_SEARCH_INDEX_URL}
 
 # Allows to set the node environment
 ARG NODE_ENV

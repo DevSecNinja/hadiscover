@@ -61,7 +61,7 @@ jobs:
       update_version_script: "update-frontend-version.sh"
       is_prerelease: true
       build_args: |
-        NEXT_PUBLIC_API_URL=/api/v1
+        NEXT_PUBLIC_SEARCH_INDEX_URL=https://hadiscover.com/data/search-index.json
 
   comment-on-pr:
     permissions:

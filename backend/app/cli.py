@@ -6,6 +6,7 @@ import os
 import sys
 
 from app.services.indexer import IndexingService
+from app.services.static_exporter import export_search_index
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -73,6 +74,7 @@ def main():
         print("Usage: python -m app.cli <command>")
         print("Commands:")
         print("  index-now    Run indexing once and exit")
+        print("  export-static [output]    Export static frontend search data")
         sys.exit(1)
 
     command = sys.argv[1]
@@ -80,6 +82,19 @@ def main():
     if command == "index-now":
         exit_code = asyncio.run(run_indexing())
         sys.exit(exit_code)
+    elif command == "export-static":
+        output_path = (
+            sys.argv[2]
+            if len(sys.argv) > 2
+            else "../frontend/public/data/search-index.json"
+        )
+        db = get_db_session()
+        try:
+            destination = export_search_index(db, output_path)
+            logger.info("Static search index exported to %s", destination)
+        finally:
+            db.close()
+        sys.exit(0)
     else:
         print(f"Unknown command: {command}")
         sys.exit(1)

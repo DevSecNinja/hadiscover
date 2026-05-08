@@ -1,12 +1,9 @@
 ---
 name: Update Database
 
-# Builds the hadiscover SQLite database by running the indexer
-# against GitHub and publishes the result as a release asset.
-#
-# Consumers can bootstrap their backend without a GitHub API
-# token by pointing DB_DOWNLOAD_URL at the release asset and
-# setting DISABLE_SCHEDULER=true.
+# Builds the hadiscover SQLite database by running the indexer against GitHub,
+# exports static search data for the frontend, deploys GitHub Pages, and
+# publishes archival release assets.
 
 on:
   schedule:
@@ -16,10 +13,19 @@ on:
 
 permissions:
   contents: write # create/update db-latest release
+  id-token: write # deploy GitHub Pages
+  pages: write # deploy GitHub Pages
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   update-db:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -33,6 +39,16 @@ jobs:
           cache: "pip"
           cache-dependency-path: backend/requirements.txt
 
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Setup Pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
+
       - name: Install backend dependencies
         run: .github/scripts/install-backend-deps.sh
 
@@ -43,10 +59,33 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DATABASE_URL: sqlite:///./data/hadiscover.db
 
+      - name: Export static search data
+        working-directory: ./backend
+        run: python -m app.cli export-static ../frontend/public/data/search-index.json
+        env:
+          DATABASE_URL: sqlite:///./data/hadiscover.db
+
       - name: Compress database
         run: gzip -k backend/data/hadiscover.db
 
-      - name: Publish database as release asset
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build static site
+        working-directory: ./frontend
+        run: npm run build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        with:
+          path: ./frontend/out
+
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5
+
+      - name: Publish data as release assets
         run: .github/scripts/publish-db-release.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

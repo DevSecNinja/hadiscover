@@ -1,6 +1,6 @@
 # hadiscover Backend
 
-This is the backend API for hadiscover, built with FastAPI.
+This is the backend indexing and local API tooling for hadiscover, built with FastAPI.
 
 ## 🚀 Quick Start
 
@@ -31,7 +31,7 @@ pytest tests/ -v
 
 ## 🌐 Deployment
 
-The backend can be deployed as a read/search web server. Indexing for production is handled by the repository's `Update Database` GitHub Action, which publishes a compressed SQLite database to GitHub releases.
+The public production site does not run a backend container. Indexing for production is handled by the repository's `Update Database` GitHub Action, which exports static frontend search data and publishes archival SQLite assets to GitHub releases.
 
 ### Running Modes
 
@@ -72,11 +72,20 @@ This will:
 2. Run the indexing process once
 3. Exit with code 0 on success or 1 on failure
 
-This mode is used by `.github/workflows/update-db.yml` to create `hadiscover.db`, compress it, and publish it as a GitHub release asset.
+This mode is used by `.github/workflows/update-db.yml` to create `hadiscover.db` before exporting static frontend search data.
+
+#### Static Export Mode
+
+After indexing, export browser-consumable search data:
+
+```bash
+python -m app.cli export-static ../frontend/public/data/search-index.json
+```
 
 ### Quick Deploy Options
 
-- **Docker**: Uses `Dockerfile` with flexible entrypoint
+- **GitHub Actions**: Production indexing and static data export
+- **Docker**: Local/development API tooling with flexible entrypoint
 - **Container App Job**: Can be run with `index-now` argument
 
 ### Configuration Files
@@ -137,9 +146,9 @@ curl -X POST http://localhost:8000/api/v1/index
 In production, the `/index` endpoint is disabled for security. The recommended flow is:
 
 1. `.github/workflows/update-db.yml` runs `python -m app.cli index-now`
-2. The workflow compresses `data/hadiscover.db`
-3. The workflow publishes `hadiscover.db.gz` to the `db-latest` GitHub release and a dated snapshot release
-4. The backend downloads that release asset at startup using `DB_DOWNLOAD_URL`
+2. The workflow exports `frontend/public/data/search-index.json`
+3. The workflow builds and deploys the static frontend to GitHub Pages
+4. The workflow publishes `search-index.json` and `hadiscover.db.gz` to the `db-latest` GitHub release and a dated snapshot release
 
 You can still run the container CLI manually to build a database:
 
@@ -181,13 +190,12 @@ backend/
 
 ## 🔒 CORS Configuration
 
-The backend is configured to accept requests from:
+The local/development API is configured to accept requests from:
 
 - `http://localhost:8080` (local frontend)
 - `http://127.0.0.1:8080` (local frontend)
 - `https://hadiscover.com` (production frontend)
 - `https://www.hadiscover.com` (production frontend)
-- `https://api.hadiscover.com` (production API)
 
 If you fork the repository, update the CORS origins in `app/main.py`.
 
@@ -214,11 +222,11 @@ Without a token, GitHub limits you to 60 requests per hour. Add a `GITHUB_TOKEN`
 
 ### CORS Errors
 
-If the frontend can't connect, ensure:
+If the local development frontend can't connect to the API, ensure:
 
 1. The backend is running and accessible
 2. The CORS origins include your frontend URL
-3. The frontend is using the correct API URL
+3. `NEXT_PUBLIC_API_URL` is set when using the local dev re-index button
 
 ## 📝 License
 

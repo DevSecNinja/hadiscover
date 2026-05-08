@@ -1,12 +1,12 @@
 # GitHub Copilot Instructions for hadiscover
 
-**hadiscover** is a Home Assistant automation search engine - a full-stack app with Python/FastAPI backend (SQLite), Next.js/TypeScript frontend, ~50 files, 40 backend tests. Indexes `automations.yaml` from GitHub repos with `hadiscover` topic.
+**hadiscover** is a Home Assistant automation search engine - a static frontend with Python/FastAPI indexing/local API tooling (SQLite), Next.js/TypeScript frontend, ~50 files, 40 backend tests. Indexes `automations.yaml` from GitHub repos with `hadiscover` topic.
 
 ## Project Overview
 
 - **Purpose**: Search engine for discovering Home Assistant automations shared on GitHub
 - **Stack**: Python 3.12+ (FastAPI), Next.js 14 (TypeScript), SQLite database
-- **Architecture**: RESTful API backend, static-export frontend, Docker-based deployment
+- **Architecture**: GitHub Actions indexing/export, static-export frontend on GitHub Pages, local/development REST API tooling
 - **Key Features**: Full-text search, GitHub API integration, automated indexing, opt-in via topics
 - **Documentation**: See README.md (user guide), ARCHITECTURE.md (technical details)
 
@@ -41,7 +41,7 @@ pip install --upgrade pip && pip install -r requirements.txt
 
 **Dev server**: `npm run dev` at <http://localhost:8080>
 
-**Environment** (optional): `NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1` in `.env.local`
+**Environment** (optional): `NEXT_PUBLIC_SEARCH_INDEX_URL=https://hadiscover.com/data/search-index.json` for alternate static data; `NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1` only enables the local dev re-index button
 
 **Code Style**: Biome formatter/linter (configured in `/biome.json`). TypeScript strict mode enabled. Use functional components with hooks.
 
@@ -50,7 +50,7 @@ pip install --upgrade pip && pip install -r requirements.txt
 ```bash
 # Backend: docker build -t test ./backend && docker run -d -p 8000:8000 -e ENVIRONMENT=development test
 # Wait 5s, then: curl http://localhost:8000/api/v1/health
-# Frontend: docker build --build-arg NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1 -t test ./frontend
+# Frontend: docker build --build-arg NEXT_PUBLIC_SEARCH_INDEX_URL=https://hadiscover.com/data/search-index.json -t test ./frontend
 # docker run -d -p 8080:80 test && sleep 3 && curl http://localhost:8080
 ```
 
@@ -87,12 +87,12 @@ Root: README.md, ARCHITECTURE.md, docker-compose.yml
 
 **Backend**: `GITHUB_TOKEN` (optional, for 5k/hr vs 60/hr rate limit), `ENVIRONMENT=development` (enables /api/v1/index), `ROOT_PATH=/api/v1` (for reverse proxy that strips path), `DATABASE_URL` (default: sqlite:///./data/hadiscover.db)
 
-**Frontend**: `NEXT_PUBLIC_API_URL` (default: <http://localhost:8000/api/v1>)
+**Frontend**: `NEXT_PUBLIC_SEARCH_INDEX_URL` (default: `/data/search-index.json`); `NEXT_PUBLIC_API_URL` only for local development re-indexing
 
 ## Common Issues
 
 1. **Datetime warnings in tests**: Code uses deprecated `datetime.utcnow()`. Expected; warnings don't fail tests.
-2. **Frontend "NEXT_PUBLIC_API_URL not set"**: Normal for local builds; defaults to localhost:8000.
+2. **Frontend data missing locally**: Run `cd backend && source venv/bin/activate && python -m app.cli export-static ../frontend/public/data/search-index.json` after indexing, or set `NEXT_PUBLIC_SEARCH_INDEX_URL` to hosted data.
 3. **Docker health check fails**: Wait 5-10s after `docker run`. Check logs with `docker logs <container>`.
 4. **Backend returns 404**: Don't set `ROOT_PATH` for local dev; only for cloud deployments.
 5. **"index-now not found"**: Check Dockerfile installs to /usr/local/bin/.
@@ -105,7 +105,7 @@ Root: README.md, ARCHITECTURE.md, docker-compose.yml
 - **Indexing**: Runs in background thread; returns immediately.
 - **Parsing**: Best-effort YAML parser; gracefully handles errors. Supports both old (`trigger`/`action`/`platform`) and new (`triggers`/`actions`/`trigger`) Home Assistant YAML formats. Automatically deduplicates trigger types.
 - **Export**: Frontend uses Next.js static export with unoptimized images.
-- **Dual mode**: Backend container runs web server (default) or `index-now` CLI (exits after completion).
+- **CLI modes**: Backend tooling can run `index-now` to build the DB or `export-static` to write frontend search data. The public production site does not run a backend container.
 
 ## Pre-Commit Validation
 

@@ -109,7 +109,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+            NEXT_PUBLIC_SEARCH_INDEX_URL=https://hadiscover.com/data/search-index.json
 
       - name: Test frontend container starts
         run: |
@@ -157,7 +157,7 @@ jobs:
           tags: hadiscover-frontend:test
           cache-from: type=gha
           build-args: |
-            NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+            NEXT_PUBLIC_SEARCH_INDEX_URL=https://hadiscover.com/data/search-index.json
 
       - name: Start both containers
         run: .github/scripts/start-integration-containers.sh hadiscover-backend:test hadiscover-frontend:test

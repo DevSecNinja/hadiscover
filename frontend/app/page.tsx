@@ -2,88 +2,20 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-
-interface Repository {
-  name: string;
-  owner: string;
-  description: string | null;
-  url: string;
-  stars: number;
-}
-
-interface Automation {
-  id: number;
-  alias: string | null;
-  description: string | null;
-  trigger_types: string[];
-  blueprint_path: string | null;
-  action_calls: string[];
-  source_file_path: string;
-  github_url: string;
-  start_line: number | null;
-  end_line: number | null;
-  repository: Repository;
-  indexed_at: string | null;
-}
-
-interface RepositoryFacet {
-  owner: string;
-  name: string;
-  stars: number;
-  count: number;
-}
-
-interface BlueprintFacet {
-  path: string;
-  count: number;
-}
-
-interface TriggerFacet {
-  type: string;
-  count: number;
-}
-
-interface ActionDomainFacet {
-  domain: string;
-  count: number;
-}
-
-interface ActionFacet {
-  call: string;
-  count: number;
-}
-
-interface Facets {
-  repositories: RepositoryFacet[];
-  blueprints: BlueprintFacet[];
-  triggers: TriggerFacet[];
-  action_domains: ActionDomainFacet[];
-  actions: ActionFacet[];
-}
-
-interface SearchResponse {
-  query: string;
-  results: Automation[];
-  count: number;
-  total: number;
-  page: number;
-  per_page: number;
-  facets: Facets;
-}
-
-interface Statistics {
-  total_repositories: number;
-  total_automations: number;
-  last_indexed_at: string | null;
-  repo_star_count: number;
-}
+import {
+  type Automation,
+  EMPTY_FACETS,
+  type Facets,
+  type SearchIndex,
+  type Statistics,
+  searchAutomations,
+} from "./staticSearch";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const SEARCH_INDEX_URL =
+  process.env.NEXT_PUBLIC_SEARCH_INDEX_URL || "/data/search-index.json";
 const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
-
-if (!API_BASE_URL) {
-  console.error("NEXT_PUBLIC_API_URL environment variable is not set");
-}
+const CAN_TRIGGER_INDEXING = IS_DEVELOPMENT && Boolean(API_BASE_URL);
 
 if (IS_DEVELOPMENT) {
   console.info("🚧 Running in development mode");
@@ -107,15 +39,10 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [statistics, setStatistics] = useState<Statistics | null>(null);
+  const [searchIndex, setSearchIndex] = useState<SearchIndex | null>(null);
   const [indexing, setIndexing] = useState(false);
   const [isDark, setIsDark] = useState(true);
-  const [facets, setFacets] = useState<Facets>({
-    repositories: [],
-    blueprints: [],
-    triggers: [],
-    action_domains: [],
-    actions: [],
-  });
+  const [facets, setFacets] = useState<Facets>(EMPTY_FACETS);
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
   const [selectedBlueprint, setSelectedBlueprint] = useState<string | null>(
     null,
@@ -186,41 +113,38 @@ export default function Home() {
     };
   }, []);
 
-  const fetchStatistics = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/statistics`);
-      const data = await response.json();
-      setStatistics(data);
-    } catch (error) {
-      console.error("Error fetching statistics:", error);
-    }
-  };
-
-  const performSearch = async (searchQuery: string, page = 1) => {
+  const loadSearchIndex = async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      params.append("q", searchQuery);
-      params.append("page", page.toString());
-      params.append("per_page", perPage.toString());
-      if (selectedRepo) params.append("repo", selectedRepo);
-      if (selectedBlueprint) params.append("blueprint", selectedBlueprint);
-      if (selectedTrigger) params.append("trigger", selectedTrigger);
-      if (selectedActionDomain)
-        params.append("action_domain", selectedActionDomain);
-      if (selectedAction) params.append("action", selectedAction);
+      const response = await fetch(SEARCH_INDEX_URL, { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`Search index request failed: ${response.status}`);
+      }
+      const data: SearchIndex = await response.json();
+      setSearchIndex(data);
+      setStatistics(data.statistics);
 
-      const response = await fetch(
-        `${API_BASE_URL}/search?${params.toString()}`,
+      const initialSearch = searchAutomations(
+        data,
+        "",
+        {
+          repo: null,
+          blueprint: null,
+          trigger: null,
+          actionDomain: null,
+          action: null,
+        },
+        1,
+        perPage,
       );
-      const data: SearchResponse = await response.json();
-      setResults(data.results);
-      setFacets(data.facets);
-      setTotalResults(data.total);
-      setCurrentPage(page);
+      setResults(initialSearch.results);
+      setFacets(initialSearch.facets);
+      setTotalResults(initialSearch.total);
+      setCurrentPage(1);
     } catch (error) {
-      console.error("Error searching:", error);
+      console.error("Error loading search index:", error);
       setResults([]);
+      setFacets(EMPTY_FACETS);
       setTotalResults(0);
       setCurrentPage(1);
     } finally {
@@ -228,12 +152,42 @@ export default function Home() {
     }
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Functions are stable and should only run on mount
+  const performSearch = (searchQuery: string, page = 1) => {
+    if (!searchIndex) return;
+
+    setLoading(true);
+    try {
+      const data = searchAutomations(
+        searchIndex,
+        searchQuery,
+        {
+          repo: selectedRepo,
+          blueprint: selectedBlueprint,
+          trigger: selectedTrigger,
+          actionDomain: selectedActionDomain,
+          action: selectedAction,
+        },
+        page,
+        perPage,
+      );
+      setResults(data.results);
+      setFacets(data.facets);
+      setTotalResults(data.total);
+      setCurrentPage(page);
+    } catch (error) {
+      console.error("Error searching:", error);
+      setResults([]);
+      setFacets(EMPTY_FACETS);
+      setTotalResults(0);
+      setCurrentPage(1);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Load the static index once on mount.
   useEffect(() => {
-    // Load statistics on mount
-    fetchStatistics();
-    // Load initial results
-    performSearch("");
+    loadSearchIndex();
   }, []);
 
   // Scroll to results section after pagination changes and results are loaded
@@ -252,11 +206,11 @@ export default function Home() {
     }
   }, [shouldScrollToTop, loading]);
 
-  // Re-run search when filters change
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Filter changes should trigger search
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Filter changes should rerun the current query; typing alone waits for submit.
   useEffect(() => {
     performSearch(query, 1);
   }, [
+    searchIndex,
     selectedRepo,
     selectedBlueprint,
     selectedTrigger,
@@ -676,8 +630,8 @@ export default function Home() {
           </div>
         </form>
 
-        {/* Indexing Button - Only in development */}
-        {IS_DEVELOPMENT && (
+        {/* Indexing Button - Only available for local API development */}
+        {CAN_TRIGGER_INDEXING && (
           <div className="text-center mb-12">
             <button
               type="button"

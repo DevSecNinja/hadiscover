@@ -9,9 +9,8 @@ name: Deploy to GitHub Pages (Emergency Only)
 # - The release workflow is broken and you need to deploy immediately
 #
 # Before running this workflow manually, ensure:
-# 1. The backend API is deployed and ready
-# 2. API_URL secret is configured in GitHub repository settings
-#    OR NEXT_PUBLIC_API_URL is updated in the build step below
+# 1. The latest search data is available in the db-latest release
+# 2. Or FRONTEND_SEARCH_INDEX_URL points at an alternate static search index
 
 on:
   workflow_dispatch:
@@ -84,15 +83,14 @@ jobs:
         working-directory: ./frontend
         run: npm ci
 
+      - name: Download latest search index
+        run: .github/scripts/download-search-index.sh
+        env:
+          SEARCH_INDEX_URL: ${{ vars.FRONTEND_SEARCH_INDEX_URL || format('https://github.com/{0}/releases/download/db-latest/search-index.json', github.repository) }}
+
       - name: Build with Next.js
         working-directory: ./frontend
         run: npm run build
-        env:
-          # Configure your backend API URL here or use GitHub Secrets
-          # Option 1: Direct URL (quick start)
-          # NEXT_PUBLIC_API_URL: https://your-backend-api.railway.app/api/v1
-          # Option 2: GitHub Secret (recommended for production)
-          NEXT_PUBLIC_API_URL: ${{ secrets.API_URL || 'https://api.hadiscover.com/api/v1' }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4

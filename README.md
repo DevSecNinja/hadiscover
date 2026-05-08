@@ -111,6 +111,16 @@ docker-compose -f docker-compose.prod.yml up -d
 docker-compose up -d
 ```
 
+Production deployments use the pre-built SQLite database published by the daily `Update Database` GitHub Action. The Action runs the indexer, compresses `hadiscover.db`, and publishes it to the rolling `db-latest` GitHub release as `hadiscover.db.gz`. The backend downloads that release asset on startup, installs it atomically, and runs with the in-process scheduler disabled.
+
+To use another database release asset, set:
+
+```bash
+DB_DOWNLOAD_URL=https://github.com/<owner>/<repo>/releases/download/db-latest/hadiscover.db.gz
+DB_BOOTSTRAP_REQUIRED=true
+DISABLE_SCHEDULER=true
+```
+
 ### Testing
 
 Run backend tests:

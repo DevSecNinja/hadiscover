@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 
 from app.api.routes import router
 from app.models import init_db
+from app.services.database_bootstrap import bootstrap_database_from_release
 from app.services.scheduler import SchedulerService
 from app.version import __version__
 from dotenv import load_dotenv
@@ -45,6 +46,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 async def lifespan(app: FastAPI):
     """Manage application lifespan events."""
     # Startup
+    bootstrap_database_from_release()
     init_db()
     logging.info("Database initialized")
 

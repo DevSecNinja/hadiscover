@@ -31,7 +31,7 @@ pytest tests/ -v
 
 ## 🌐 Deployment
 
-The backend can be deployed as a web server or as a scheduled indexing job.
+The backend can be deployed as a read/search web server. Indexing for production is handled by the repository's `Update Database` GitHub Action, which publishes a compressed SQLite database to GitHub releases.
 
 ### Running Modes
 
@@ -39,6 +39,17 @@ The backend can be deployed as a web server or as a scheduled indexing job.
 
 ```bash
 docker run -p 8000:8000 hadiscover-backend
+```
+
+To run with the release-hosted database:
+
+```bash
+docker run \
+ -e DB_DOWNLOAD_URL=https://github.com/DevSecNinja/hadiscover/releases/download/db-latest/hadiscover.db.gz \
+ -e DB_BOOTSTRAP_REQUIRED=true \
+ -e DISABLE_SCHEDULER=true \
+ -p 8000:8000 \
+ hadiscover-backend
 ```
 
 or using the entrypoint:
@@ -49,7 +60,7 @@ docker run -p 8000:8000 hadiscover-backend
 
 #### Indexing Job Mode
 
-For running as a one-time indexing job (e.g., Azure Container App Job):
+For running as a one-time indexing job, including the GitHub Actions database build:
 
 ```bash
 docker run hadiscover-backend index-now
@@ -61,7 +72,7 @@ This will:
 2. Run the indexing process once
 3. Exit with code 0 on success or 1 on failure
 
-Perfect for scheduled container jobs that run daily to index repositories.
+This mode is used by `.github/workflows/update-db.yml` to create `hadiscover.db`, compress it, and publish it as a GitHub release asset.
 
 ### Quick Deploy Options
 
@@ -77,10 +88,13 @@ Perfect for scheduled container jobs that run daily to index repositories.
 
 ### Environment Variables
 
-- `GITHUB_TOKEN` (optional): GitHub Personal Access Token for higher API rate limits
+- `GITHUB_TOKEN` (optional): GitHub Personal Access Token for higher API rate limits when indexing
 - `ENVIRONMENT` (optional): Set to `development` to enable the manual `/index` endpoint trigger. Defaults to `production` which disables the endpoint. In production, use the `index-now` command for scheduled indexing.
 - `ROOT_PATH` (optional): Base path for the API when deployed behind a reverse proxy or on cloud platforms (e.g., Azure Container Apps). Leave empty for default behavior.
 - `DATABASE_URL` (optional): Database connection URL. Defaults to `sqlite:///./data/hadiscover.db`
+- `DB_DOWNLOAD_URL` (optional): URL of a gzip-compressed SQLite database release asset to install on startup
+- `DB_BOOTSTRAP_REQUIRED` (optional): Set to `true` to fail startup if `DB_DOWNLOAD_URL` cannot be installed
+- `DISABLE_SCHEDULER` (optional): Set to `true` when the database is built externally by GitHub Actions
 
 Create a `.env` file:
 
@@ -120,7 +134,14 @@ curl -X POST http://localhost:8000/api/v1/index
 
 ### Production Mode
 
-In production, the `/index` endpoint is disabled for security. Instead, use the container's CLI:
+In production, the `/index` endpoint is disabled for security. The recommended flow is:
+
+1. `.github/workflows/update-db.yml` runs `python -m app.cli index-now`
+2. The workflow compresses `data/hadiscover.db`
+3. The workflow publishes `hadiscover.db.gz` to the `db-latest` GitHub release and a dated snapshot release
+4. The backend downloads that release asset at startup using `DB_DOWNLOAD_URL`
+
+You can still run the container CLI manually to build a database:
 
 ```bash
 # Run as a one-time job
@@ -133,11 +154,7 @@ docker exec -it <container-id> index-now
 docker exec -it <container-id> python -m app.cli index-now
 ```
 
-This is ideal for:
-
-- Azure Container App Jobs scheduled to run daily
-- Kubernetes CronJobs
-- Any container orchestration platform with scheduled job support
+Self-hosted deployments can still use Azure Container App Jobs, Kubernetes CronJobs, or any scheduled job platform instead of the GitHub Actions workflow.
 
 ## 🛠️ Project Structure
 
@@ -148,6 +165,7 @@ backend/
 │   ├── cli.py            # CLI commands for batch operations
 │   ├── models/           # Database models
 │   ├── services/         # Business logic
+│   │   ├── database_bootstrap.py
 │   │   ├── github_service.py
 │   │   ├── parser.py
 │   │   ├── indexer.py

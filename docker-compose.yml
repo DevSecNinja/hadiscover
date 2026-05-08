@@ -19,6 +19,7 @@ services:
       # to the release asset URL and DISABLE_SCHEDULER=true
       # to skip the in-process hourly indexer.
       # - DB_DOWNLOAD_URL=${DB_DOWNLOAD_URL:-}
+      # - DB_BOOTSTRAP_REQUIRED=false
       # - DISABLE_SCHEDULER=true
     volumes:
       # Persist database across container restarts

@@ -128,9 +128,9 @@ jobs:
       pages: write
       id-token: write
     # This job requires manual approval via GitHub environment protection rules
-    # Configure the 'github-pages' environment in repository settings to add required reviewers
+    # Configure the 'production' environment in repository settings to add required reviewers
     environment:
-      name: github-pages
+      name: production
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build-pages

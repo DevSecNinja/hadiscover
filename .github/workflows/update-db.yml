@@ -24,7 +24,7 @@ jobs:
   update-db:
     runs-on: ubuntu-latest
     environment:
-      name: github-pages
+      name: production
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout

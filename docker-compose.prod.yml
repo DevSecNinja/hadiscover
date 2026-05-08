@@ -5,7 +5,10 @@
 
 services:
   web:
-    image: ghcr.io/devsecninja/hadiscover/frontend:0.3.0@sha256:1e58712d3c8f8a075991b5341a2d0a2dcb7da124e699b97d7a01cec9632aa4f8
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_SEARCH_INDEX_URL: ${NEXT_PUBLIC_SEARCH_INDEX_URL:-https://hadiscover.com/data/search-index.json}
     container_name: web
     ports:
       - "8080:80"

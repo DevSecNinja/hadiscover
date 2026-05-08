@@ -1,10 +1,6 @@
 services:
   api:
-    # Use the image from GHCR (recommended for production)
-    # Uncomment the line below and comment the build line to use pre-built images
-    # image: ghcr.io/devsecninja/hadiscover/backend:latest
-
-    # Or build locally (for development)
+    # Build locally for development/self-hosting.
     build: ./backend
 
     container_name: api
@@ -40,11 +36,7 @@ services:
       start_period: 5s
 
   web:
-    # Use the image from GHCR (recommended for production)
-    # Uncomment the line below and comment the build line to use pre-built images
-    # image: ghcr.io/devsecninja/hadiscover/frontend:latest
-
-    # Or build locally (for development)
+    # Build locally for development/self-hosting.
     build:
       context: ./frontend
       args:

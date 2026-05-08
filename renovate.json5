@@ -19,15 +19,4 @@
     enabled: true,
     pinDigests: false,
   },
-  packageRules: [
-    {
-      description: "Group hadiscover Docker images (backend/frontend) into one PR",
-      matchDatasources: ["docker"],
-      matchPackageNames: [
-        "ghcr.io/devsecninja/hadiscover/backend",
-        "ghcr.io/devsecninja/hadiscover/frontend",
-      ],
-      groupName: "hadiscover Docker images",
-    },
-  ],
 }

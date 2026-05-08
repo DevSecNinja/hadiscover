@@ -104,11 +104,11 @@ npm run dev
 ### Docker Deployment
 
 ```bash
-# Pre-built images from GHCR
-docker-compose -f docker-compose.prod.yml up -d
-
-# Or build locally
+# Build and run locally
 docker-compose up -d
+
+# Static frontend only
+docker-compose -f docker-compose.prod.yml up -d
 ```
 
 Production no longer runs a backend API container. The daily `Update Database` GitHub Action runs the indexer, exports `frontend/public/data/search-index.json`, builds the static Next.js site, and deploys it to GitHub Pages. The SQLite database is still published to the rolling `db-latest` GitHub release as an archival/debugging asset.

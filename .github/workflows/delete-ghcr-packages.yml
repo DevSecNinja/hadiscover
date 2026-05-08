@@ -1,0 +1,28 @@
+name: Delete GHCR Packages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/delete-ghcr-packages.yml"
+      - ".github/scripts/delete-ghcr-packages.sh"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  delete-ghcr-packages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+
+      - name: Delete backend and frontend GHCR packages
+        run: .github/scripts/delete-ghcr-packages.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

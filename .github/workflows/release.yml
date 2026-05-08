@@ -11,7 +11,6 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -32,7 +31,6 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./backend/coverage.xml
           flags: backend
           name: backend-coverage

@@ -28,9 +28,7 @@
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
         "biomejs.biome",
-        "bradlc.vscode-tailwindcss",
-        "GitHub.copilot",
-        "GitHub.copilot-chat"
+        "bradlc.vscode-tailwindcss"
       ],
       "settings": {
         "python.defaultInterpreterPath": "${workspaceFolder}/backend/venv/bin/python",

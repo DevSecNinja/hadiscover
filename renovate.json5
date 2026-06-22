@@ -13,10 +13,4 @@
     "github>DevSecNinja/.github//.renovate/packageRules.json5",
     "github>DevSecNinja/.github//.renovate/semanticCommits.json5",
   ],
-  prConcurrentLimit: 5,
-  prHourlyLimit: 2,
-  devcontainer: {
-    enabled: true,
-    pinDigests: false,
-  },
 }

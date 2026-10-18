@@ -41,7 +41,7 @@ pip install --upgrade pip && pip install -r requirements.txt
 
 **Dev server**: `npm run dev` at <http://localhost:8080>
 
-**Environment** (optional): `NEXT_PUBLIC_SEARCH_INDEX_URL=https://hadiscover.com/data/search-index.json` for alternate static data; `NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1` only enables the local dev re-index button
+**Environment** (optional): `NEXT_PUBLIC_SEARCH_INDEX_URL=https://hadiscover.ravensberg.org/data/search-index.json` for alternate static data; `NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1` only enables the local dev re-index button
 
 **Code Style**: Biome formatter/linter (configured in `/biome.json`). TypeScript strict mode enabled. Use functional components with hooks.
 
@@ -50,7 +50,7 @@ pip install --upgrade pip && pip install -r requirements.txt
 ```bash
 # Backend: docker build -t test ./backend && docker run -d -p 8000:8000 -e ENVIRONMENT=development test
 # Wait 5s, then: curl http://localhost:8000/api/v1/health
-# Frontend: docker build --build-arg NEXT_PUBLIC_SEARCH_INDEX_URL=https://hadiscover.com/data/search-index.json -t test ./frontend
+# Frontend: docker build --build-arg NEXT_PUBLIC_SEARCH_INDEX_URL=https://hadiscover.ravensberg.org/data/search-index.json -t test ./frontend
 # docker run -d -p 8080:80 test && sleep 3 && curl http://localhost:8080
 ```
 
@@ -98,7 +98,7 @@ Root: README.md, ARCHITECTURE.md, docker-compose.yml
 
 ## Key Implementation Notes
 
-- **CORS**: Backend allows localhost:8080, hadiscover.com. Update `app/main.py` if forking.
+- **CORS**: Backend allows localhost:8080, hadiscover.ravensberg.org. Update `app/main.py` if forking.
 - **Rate limit**: /api/v1/index limited to once per 10min (in-memory).
 - **Indexing**: Runs in background thread; returns immediately.
 - **Parsing**: Best-effort YAML parser; gracefully handles errors. Supports both old (`trigger`/`action`/`platform`) and new (`triggers`/`actions`/`trigger`) Home Assistant YAML formats. Automatically deduplicates trigger types.

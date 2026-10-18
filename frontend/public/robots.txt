@@ -8,4 +8,4 @@ Allow: /icon.png
 Allow: /apple-icon.png
 
 # Sitemap location (if you add one in the future)
-# Sitemap: https://hadiscover.com/sitemap.xml
+# Sitemap: https://hadiscover.ravensberg.org/sitemap.xml

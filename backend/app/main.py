@@ -87,7 +87,7 @@ app.add_middleware(SecurityHeadersMiddleware)
 # Configure CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080", "https://hadiscover.com"],
+    allow_origins=["http://localhost:8080", "https://hadiscover.ravensberg.org"],
     allow_credentials=True,
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type", "Authorization"],

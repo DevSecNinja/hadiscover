@@ -1,5 +1,6 @@
 """Tests for API endpoints."""
 
+import pytest
 from app.main import app
 from fastapi.testclient import TestClient
 
@@ -10,6 +11,60 @@ def test_health_endpoint():
     response = client.get("/api/v1/health")
     assert response.status_code == 200
     assert response.json() == {"status": "healthy"}
+
+
+@pytest.mark.parametrize(
+    "origin", ["http://localhost:8080", "https://hadiscover.ravensberg.org"]
+)
+def test_cors_allowed_origin(origin: str) -> None:
+    """Allow the local and production frontend origins."""
+    client = TestClient(app)
+    response = client.get("/api/v1/health", headers={"Origin": origin})
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == origin
+    assert response.headers["access-control-allow-credentials"] == "true"
+
+
+@pytest.mark.parametrize(
+    "origin", ["http://localhost:8080", "https://hadiscover.ravensberg.org"]
+)
+@pytest.mark.parametrize("method", ["GET", "POST"])
+def test_cors_preflight_allowed_origin(origin: str, method: str) -> None:
+    """Allow preflight requests for supported frontend methods and headers."""
+    client = TestClient(app)
+    response = client.options(
+        "/api/v1/health",
+        headers={
+            "Origin": origin,
+            "Access-Control-Request-Method": method,
+            "Access-Control-Request-Headers": "Content-Type, Authorization",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == origin
+    assert response.headers["access-control-allow-credentials"] == "true"
+
+
+def test_cors_disallowed_origin() -> None:
+    """Do not grant cross-origin access to unrelated sites."""
+    client = TestClient(app)
+    response = client.get("/api/v1/health", headers={"Origin": "https://example.com"})
+
+    assert response.status_code == 200
+    assert "access-control-allow-origin" not in response.headers
+
+    preflight = client.options(
+        "/api/v1/health",
+        headers={
+            "Origin": "https://example.com",
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+
+    assert preflight.status_code == 400
+    assert "access-control-allow-origin" not in preflight.headers
 
 
 def test_root_endpoint():

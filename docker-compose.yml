@@ -40,7 +40,7 @@ services:
     build:
       context: ./frontend
       args:
-        NEXT_PUBLIC_SEARCH_INDEX_URL: ${NEXT_PUBLIC_SEARCH_INDEX_URL:-https://hadiscover.com/data/search-index.json}
+        NEXT_PUBLIC_SEARCH_INDEX_URL: ${NEXT_PUBLIC_SEARCH_INDEX_URL:-https://hadiscover.ravensberg.org/data/search-index.json}
 
     container_name: web
     ports:

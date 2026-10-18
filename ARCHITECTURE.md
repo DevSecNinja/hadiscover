@@ -103,7 +103,7 @@ GitHub API
 - Installs the database atomically at the configured SQLite `DATABASE_URL` path
 - Validates the downloaded file with SQLite before replacing the local database
 - Supports `DB_BOOTSTRAP_REQUIRED=true` to fail startup when the release database cannot be installed
-- Retained for local/self-hosted API deployments; not used by hadiscover.com production
+- Retained for local/self-hosted API deployments; not used by hadiscover.ravensberg.org production
 
 ## Database Schema
 
@@ -152,7 +152,7 @@ id, key (unique), value, updated_at
 
 **Returns**: `{"status": "healthy"}`
 
-**CORS**: Allows `localhost:8080` and `hadiscover.com`
+**CORS**: Allows `http://localhost:8080` and `https://hadiscover.ravensberg.org`
 
 ## Key Design Decisions
 

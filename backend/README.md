@@ -193,9 +193,7 @@ backend/
 The local/development API is configured to accept requests from:
 
 - `http://localhost:8080` (local frontend)
-- `http://127.0.0.1:8080` (local frontend)
-- `https://hadiscover.com` (production frontend)
-- `https://www.hadiscover.com` (production frontend)
+- `https://hadiscover.ravensberg.org` (production frontend)
 
 If you fork the repository, update the CORS origins in `app/main.py`.
 

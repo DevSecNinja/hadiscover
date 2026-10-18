@@ -1,5 +1,5 @@
 # Production docker-compose configuration for the static frontend only.
-# The public hadiscover.com deployment is served by GitHub Pages and does not
+# The public hadiscover.ravensberg.org deployment is served by GitHub Pages and does not
 # require a hadiscover-backend/API container.
 # Usage: docker-compose -f docker-compose.prod.yml up -d
 
@@ -8,7 +8,7 @@ services:
     build:
       context: ./frontend
       args:
-        NEXT_PUBLIC_SEARCH_INDEX_URL: ${NEXT_PUBLIC_SEARCH_INDEX_URL:-https://hadiscover.com/data/search-index.json}
+        NEXT_PUBLIC_SEARCH_INDEX_URL: ${NEXT_PUBLIC_SEARCH_INDEX_URL:-https://hadiscover.ravensberg.org/data/search-index.json}
     container_name: web
     ports:
       - "8080:80"

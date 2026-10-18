@@ -10,9 +10,9 @@
 
 A search engine for discovering Home Assistant automations shared on GitHub.
 
-[Try it now at hadiscover.com](https://hadiscover.com/)
+[Try it now at hadiscover.ravensberg.org](https://hadiscover.ravensberg.org/)
 
-[![Screenshot of hadiscover.com web page in dark mode](frontend/assets/screenshot-dark.png)](https://hadiscover.com/)
+[![Screenshot of hadiscover.ravensberg.org web page in dark mode](frontend/assets/screenshot-dark.png)](https://hadiscover.ravensberg.org/)
 
 ## What is it?
 

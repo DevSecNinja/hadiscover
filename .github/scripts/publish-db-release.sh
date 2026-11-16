@@ -21,13 +21,13 @@ LATEST_TAG="db-latest"
 DATED_TAG="db-$(date -u +%Y-%m-%d)"
 
 if [ ! -f "${DB_FILE}" ]; then
-	echo "Error: Database file '${DB_FILE}' not found."
-	exit 1
+    echo "Error: Database file '${DB_FILE}' not found."
+    exit 1
 fi
 
 if [ ! -f "${SEARCH_INDEX_FILE}" ]; then
-	echo "Error: Search index file '${SEARCH_INDEX_FILE}' not found."
-	exit 1
+    echo "Error: Search index file '${SEARCH_INDEX_FILE}' not found."
+    exit 1
 fi
 
 RELEASE_BODY="Static search data and archived SQLite database updated by GitHub Actions.
@@ -46,30 +46,30 @@ https://github.com/${GITHUB_REPOSITORY}/releases/download/${LATEST_TAG}/hadiscov
 
 # --- Rolling latest release ---
 if gh release view "${LATEST_TAG}" &>/dev/null; then
-	echo "Updating existing '${LATEST_TAG}' release assets..."
-	gh release upload "${LATEST_TAG}" "${DB_FILE}" "${SEARCH_INDEX_FILE}" --clobber
+    echo "Updating existing '${LATEST_TAG}' release assets..."
+    gh release upload "${LATEST_TAG}" "${DB_FILE}" "${SEARCH_INDEX_FILE}" --clobber
 else
-	echo "Creating '${LATEST_TAG}' release..."
-	gh release create "${LATEST_TAG}" \
-		--title "Latest Search Data" \
-		--notes "${RELEASE_BODY}" \
-		--prerelease \
-		"${DB_FILE}" \
-		"${SEARCH_INDEX_FILE}"
+    echo "Creating '${LATEST_TAG}' release..."
+    gh release create "${LATEST_TAG}" \
+        --title "Latest Search Data" \
+        --notes "${RELEASE_BODY}" \
+        --prerelease \
+        "${DB_FILE}" \
+        "${SEARCH_INDEX_FILE}"
 fi
 echo "✓ Published to '${LATEST_TAG}'"
 
 # --- Dated snapshot release ---
 if gh release view "${DATED_TAG}" &>/dev/null; then
-	echo "Updating existing '${DATED_TAG}' release assets..."
-	gh release upload "${DATED_TAG}" "${DB_FILE}" "${SEARCH_INDEX_FILE}" --clobber
+    echo "Updating existing '${DATED_TAG}' release assets..."
+    gh release upload "${DATED_TAG}" "${DB_FILE}" "${SEARCH_INDEX_FILE}" --clobber
 else
-	echo "Creating '${DATED_TAG}' release..."
-	gh release create "${DATED_TAG}" \
-		--title "Search Data ${DATED_TAG#db-}" \
-		--notes "${RELEASE_BODY}" \
-		--prerelease \
-		"${DB_FILE}" \
-		"${SEARCH_INDEX_FILE}"
+    echo "Creating '${DATED_TAG}' release..."
+    gh release create "${DATED_TAG}" \
+        --title "Search Data ${DATED_TAG#db-}" \
+        --notes "${RELEASE_BODY}" \
+        --prerelease \
+        "${DB_FILE}" \
+        "${SEARCH_INDEX_FILE}"
 fi
 echo "✓ Published to '${DATED_TAG}'"

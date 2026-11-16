@@ -13,10 +13,10 @@ set -euo pipefail
 
 # Fetch auto-generated release notes from GitHub API
 GENERATED_NOTES=$(gh api \
-	--method POST \
-	"/repos/${GITHUB_REPOSITORY}/releases/generate-notes" \
-	-f "tag_name=${VERSION_TAG}" \
-	--jq '.body')
+    --method POST \
+    "/repos/${GITHUB_REPOSITORY}/releases/generate-notes" \
+    -f "tag_name=${VERSION_TAG}" \
+    --jq '.body')
 
 # Write the full release notes to a temp file
 RELEASE_NOTES_FILE=$(mktemp)
@@ -34,13 +34,13 @@ EOF
 
 # Build gh CLI argument list
 GH_ARGS=(
-	"${VERSION_TAG}"
-	--title "${VERSION}"
-	--notes-file "${RELEASE_NOTES_FILE}"
+    "${VERSION_TAG}"
+    --title "${VERSION}"
+    --notes-file "${RELEASE_NOTES_FILE}"
 )
 
 if [[ "${IS_PRERELEASE}" == "true" ]]; then
-	GH_ARGS+=(--prerelease)
+    GH_ARGS+=(--prerelease)
 fi
 
 gh release create "${GH_ARGS[@]}"

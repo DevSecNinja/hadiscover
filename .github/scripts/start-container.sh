@@ -10,17 +10,17 @@ PORT_MAPPING="${3}"
 shift 3
 ADDITIONAL_ARGS="$*"
 
-if [ -z "$CONTAINER_NAME" ] || [ -z "$IMAGE_TAG" ]; then
-	echo "Usage: $0 <container-name> <image-tag> <port-mapping> [additional-docker-run-args...]"
-	exit 1
+if [ -z "${CONTAINER_NAME}" ] || [ -z "${IMAGE_TAG}" ]; then
+    echo "Usage: $0 <container-name> <image-tag> <port-mapping> [additional-docker-run-args...]"
+    exit 1
 fi
 
-echo "Starting container $CONTAINER_NAME from image $IMAGE_TAG..."
+echo "Starting container ${CONTAINER_NAME} from image ${IMAGE_TAG}..."
 
 # shellcheck disable=SC2086
-docker run -d --name "$CONTAINER_NAME" \
-	-p "$PORT_MAPPING" \
-	$ADDITIONAL_ARGS \
-	"$IMAGE_TAG"
+docker run -d --name "${CONTAINER_NAME}" \
+    -p "${PORT_MAPPING}" \
+    ${ADDITIONAL_ARGS} \
+    "${IMAGE_TAG}"
 
-echo "✓ Container $CONTAINER_NAME started"
+echo "✓ Container ${CONTAINER_NAME} started"

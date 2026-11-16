@@ -10,10 +10,10 @@ nohup npm run dev >/tmp/frontend-dev.log 2>&1 &
 sleep 3
 
 if pgrep -f "next dev" >/dev/null; then
-	echo "✅ Frontend dev server started at http://localhost:8080"
-	echo "📋 View logs: tail -f /tmp/frontend-dev.log"
+    echo "✅ Frontend dev server started at http://localhost:8080"
+    echo "📋 View logs: tail -f /tmp/frontend-dev.log"
 else
-	echo "⚠️  Frontend dev server failed to start. Check logs: cat /tmp/frontend-dev.log"
+    echo "⚠️  Frontend dev server failed to start. Check logs: cat /tmp/frontend-dev.log"
 fi
 
 echo ""

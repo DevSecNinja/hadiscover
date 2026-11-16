@@ -10,11 +10,12 @@ SEARCH_INDEX_URL="${SEARCH_INDEX_URL:-https://github.com/${GITHUB_REPOSITORY}/re
 mkdir -p "$(dirname "${SEARCH_INDEX_PATH}")"
 
 if curl -fsSL "${SEARCH_INDEX_URL}" -o "${SEARCH_INDEX_PATH}"; then
-	echo "Downloaded search index from ${SEARCH_INDEX_URL}"
-	exit 0
+    echo "Downloaded search index from ${SEARCH_INDEX_URL}"
+    exit 0
 fi
 
 echo "Warning: could not download ${SEARCH_INDEX_URL}; writing empty search index."
+generated_at="$(date -u +%Y-%m-%dT%H:%M:%SZ || true)"
 cat >"${SEARCH_INDEX_PATH}" <<EOF
-{"version":1,"generated_at":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","statistics":{"total_repositories":0,"total_automations":0,"last_indexed_at":null,"repo_star_count":0},"automations":[]}
+{"version":1,"generated_at":"${generated_at}","statistics":{"total_repositories":0,"total_automations":0,"last_indexed_at":null,"repo_star_count":0},"automations":[]}
 EOF

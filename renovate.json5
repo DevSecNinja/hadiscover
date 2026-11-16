@@ -5,6 +5,7 @@
     "helpers:pinGitHubActionDigests",
     ":dependencyDashboard",
     ":semanticCommits",
+    ":semanticCommitTypeAll(build)",
     "github>DevSecNinja/.github//.renovate/autoMerge.json5",
     "github>DevSecNinja/.github//.renovate/base.json5",
     "github>DevSecNinja/.github//.renovate/customManagers.json5",
@@ -13,10 +14,4 @@
     "github>DevSecNinja/.github//.renovate/packageRules.json5",
     "github>DevSecNinja/.github//.renovate/semanticCommits.json5",
   ],
-  prConcurrentLimit: 5,
-  prHourlyLimit: 2,
-  devcontainer: {
-    enabled: true,
-    pinDigests: false,
-  },
 }

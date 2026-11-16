@@ -34,17 +34,17 @@ cd ../frontend
 npm install
 
 # Create .env.local for devcontainer
-if [ -n "$CODESPACE_NAME" ]; then
-	# GitHub Codespaces
-	CODESPACE_URL="https://${CODESPACE_NAME}-8080.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
-	echo "📝 Creating .env.local with Codespace URL..."
-	echo "NEXT_PUBLIC_API_URL=${CODESPACE_URL}/api/v1" >.env.local
-	echo "✅ .env.local created with Codespace URL: ${CODESPACE_URL}/api/v1"
+if [ -n "${CODESPACE_NAME}" ]; then
+    # GitHub Codespaces
+    CODESPACE_URL="https://${CODESPACE_NAME}-8080.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
+    echo "📝 Creating .env.local with Codespace URL..."
+    echo "NEXT_PUBLIC_API_URL=${CODESPACE_URL}/api/v1" >.env.local
+    echo "✅ .env.local created with Codespace URL: ${CODESPACE_URL}/api/v1"
 else
-	# Local devcontainer or other environment
-	echo "📝 Creating .env.local for local development..."
-	echo "NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1" >.env.local
-	echo "✅ .env.local created with local URL"
+    # Local devcontainer or other environment
+    echo "📝 Creating .env.local for local development..."
+    echo "NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1" >.env.local
+    echo "✅ .env.local created with local URL"
 fi
 
 echo "✅ Frontend setup complete!"

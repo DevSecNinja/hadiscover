@@ -36,7 +36,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Bandit Scanner
-        uses: DevSecNinja/python-bandit-scan@62d16066d02e3669359cd9b25f079d249f608c4d # v1.0.1
+        uses: DevSecNinja/python-bandit-scan@60a892a79e752ff1b425c6ebac2543a50b06fc6d # v1.0.2
         with: # optional arguments
           # exit with 0, even with results found
           exit_zero: true # optional, default is DEFAULT

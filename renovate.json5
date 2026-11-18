@@ -14,4 +14,21 @@
     "github>DevSecNinja/.github//.renovate/packageRules.json5",
     "github>DevSecNinja/.github//.renovate/semanticCommits.json5",
   ],
+  // pre-commit runs in the devcontainer (post-create.sh) and before every
+  // commit, but Renovate's pre-commit manager is off by default, so the hook
+  // revs in .pre-commit-config.yaml were never updated.
+  "pre-commit": {
+    enabled: true,
+  },
+  customManagers: [
+    {
+      // The pre-commit manager only updates Python additional_dependencies;
+      // this covers npm ones, e.g. ["@biomejs/biome@2.3.10"].
+      customType: "regex",
+      description: "Update npm additional_dependencies in .pre-commit-config.yaml",
+      managerFilePatterns: ["/(^|/)\\.pre-commit-config\\.ya?ml$/"],
+      matchStrings: ["additional_dependencies:\\s*\\[\\s*\"(?<depName>@?[a-z0-9][\\w./-]*)@(?<currentValue>\\d+\\.\\d+\\.\\d+[^\"]*)\""],
+      datasourceTemplate: "npm",
+    },
+  ],
 }

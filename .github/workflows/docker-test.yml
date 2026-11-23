@@ -33,6 +33,13 @@ jobs:
       - name: Run backend tests with coverage
         run: .github/scripts/run-backend-tests.sh
 
+      - name: Publish test results
+        if: always()
+        uses: DevSecNinja/.github/actions/test-report@83767fc52e76cff7dd185a15d1343b68a03cb483 # v4.10.1
+        with:
+          paths: backend/junit.xml
+          title: Backend pytest
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:

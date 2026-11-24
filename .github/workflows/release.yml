@@ -11,6 +11,8 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    outputs:
+      line-coverage: ${{ steps.report.outputs.line-coverage }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -27,6 +29,15 @@ jobs:
 
       - name: Run backend tests with coverage
         run: .github/scripts/run-backend-tests.sh
+
+      - name: Publish test results
+        id: report
+        if: always()
+        uses: DevSecNinja/.github/actions/test-report@2eaa83a731b119d02137a7908f5582a8bfd85826 # v5.0.0
+        with:
+          paths: backend/junit.xml
+          title: Backend pytest
+          coverage-paths: backend/coverage.xml
 
   determine-version:
     runs-on: ubuntu-latest
@@ -83,7 +94,7 @@ jobs:
           IS_PRERELEASE: ${{ needs.determine-version.outputs.is_prerelease }}
 
   build-pages:
-    needs: [create-release, determine-version]
+    needs: [test, create-release, determine-version]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -110,6 +121,11 @@ jobs:
       - name: Build with Next.js
         working-directory: ./frontend
         run: npm run build
+
+      - name: Write coverage badge
+        env:
+          LINE_COVERAGE: ${{ needs.test.outputs.line-coverage }}
+        run: bash .github/scripts/write-coverage-badge.sh frontend/out/coverage.json "$LINE_COVERAGE"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0

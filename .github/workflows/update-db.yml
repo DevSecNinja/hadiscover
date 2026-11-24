@@ -47,6 +47,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Setup Pages
+        id: pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 
       - name: Install backend dependencies
@@ -75,6 +76,12 @@ jobs:
       - name: Build static site
         working-directory: ./frontend
         run: npm run build
+
+      - name: Keep the coverage badge
+        # No tests run here; carry over the badge the last release deployed.
+        env:
+          PAGES_URL: ${{ steps.pages.outputs.base_url }}
+        run: bash .github/scripts/write-coverage-badge.sh frontend/out/coverage.json
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0

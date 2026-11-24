@@ -109,6 +109,7 @@ jobs:
           package-manager-cache: false
 
       - name: Setup Pages
+        id: pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 
       - name: Install dependencies
@@ -124,6 +125,7 @@ jobs:
 
       - name: Write coverage badge
         env:
+          PAGES_URL: ${{ steps.pages.outputs.base_url }}
           LINE_COVERAGE: ${{ needs.test.outputs.line-coverage }}
         run: bash .github/scripts/write-coverage-badge.sh frontend/out/coverage.json "$LINE_COVERAGE"
 

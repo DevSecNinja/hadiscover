@@ -22,7 +22,8 @@ if [[ -z "${percent}" ]]; then
     : "${PAGES_URL:?PAGES_URL is needed to keep the live badge}"
     url="${PAGES_URL%/}/coverage.json"
     if ! status="$(curl -sS --max-time 20 --retry 3 -o "${out_file}" -w '%{http_code}' "${url}")"; then
-        status="${status:-000}"
+        # A non-zero exit can follow a 200 header (timeout, truncated body).
+        status="curl error"
     fi
     case "${status}" in
     200)
@@ -35,7 +36,7 @@ if [[ -z "${percent}" ]]; then
         ;;
     *)
         rm -f "${out_file}"
-        echo "::error title=Coverage badge::Could not read ${url} (HTTP ${status}); stopping so this deploy doesn't drop the live badge."
+        echo "::error title=Coverage badge::Could not read ${url} (${status}); stopping so this deploy doesn't drop the live badge."
         exit 1
         ;;
     esac

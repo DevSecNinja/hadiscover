@@ -141,6 +141,11 @@ jobs:
     environment:
       name: production
       url: ${{ steps.deployment.outputs.page_url }}
+    # Same group as deploy.yml and update-db.yml, so the daily rebuild can't
+    # copy the live coverage badge and then deploy over a newer release.
+    concurrency:
+      group: "pages"
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     needs: build-pages
     steps:

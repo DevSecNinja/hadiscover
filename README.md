@@ -1,7 +1,6 @@
 # hadiscover
 
 [![Release](https://github.com/DevSecNinja/hadiscover/actions/workflows/release.yml/badge.svg)](https://github.com/DevSecNinja/hadiscover/actions/workflows/release.yml)
-[![codecov](https://codecov.io/gh/DevSecNinja/hadiscover/graph/badge.svg?token=4V189H55CG)](https://codecov.io/gh/DevSecNinja/hadiscover)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Docker](https://img.shields.io/badge/docker-ready-blue?logo=docker)](https://github.com/DevSecNinja?tab=packages&repo_name=hadiscover)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
